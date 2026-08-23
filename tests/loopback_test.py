@@ -43,9 +43,9 @@ pvc uni0/1 100 uni0/2 200
         f.write(config_content)
 
     print("Starting VFRS process...")
-    # Enable console thread in VFRS by passing "-c" and redirecting stdin/stdout
+    vfrs_exe = "bin/vfrs.exe" if os.path.exists("bin/vfrs.exe") else ("./vfrs.exe" if os.path.exists("./vfrs.exe") else "../bin/vfrs.exe")
     proc = subprocess.Popen(
-        ["./vfrs.exe", "-c", config_path],
+        [vfrs_exe, "-c", config_path],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -91,10 +91,12 @@ pvc uni0/1 100 uni0/2 200
     for i, expected_payload in enumerate(payloads):
         buf = bytearray()
         flag_count = 0
-        while flag_count < 2:
+        start_t = time.time()
+        while flag_count < 2 and (time.time() - start_t) < 3.0:
             b = p2.read(1)
             if not b:
-                break
+                time.sleep(0.01)
+                continue
             if b == b'\x7e':
                 flag_count += 1
                 if flag_count == 1:
@@ -102,7 +104,8 @@ pvc uni0/1 100 uni0/2 200
             else:
                 if flag_count >= 1:
                     buf.append(b[0])
-        buf.append(0x7e)
+        if flag_count == 2:
+            buf.append(0x7e)
 
         # Parse frame
         if len(buf) < 6:

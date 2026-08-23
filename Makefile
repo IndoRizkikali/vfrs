@@ -1,60 +1,204 @@
+# ==============================================================================
 # VFRS - Virtual Frame Relay Switch
-# Makefile for MSYS2 UCRT64 with GCC
+# Modernized Makefile for MSYS2 UCRT64 (GCC)
+# ==============================================================================
 
-CC = gcc
-CFLAGS = -Wall -Wextra -O2 -static -D_WIN32_WINNT=0x0A00 -D_GNU_SOURCE -I.
-LDFLAGS = -static -lws2_32 -lwinmm -ladvapi32
+# Toolchain configuration
+CC       ?= gcc
+AR       ?= ar
+RM        = rm -rf
+MKDIR_P  ?= mkdir -p
 
-TARGET = vfrs.exe
+# Build configuration: BUILD=release (default) or BUILD=debug
+BUILD    ?= release
 
-# Source files
-SRC = vfrs_main.c logger.c config.c \
-      fr_switching/fr_frame.c fr_switching/fr_switch.c fr_switching/svc_routing_common.c \
-      ports/port_common.c ports/port_queue.c ports/port_udp.c ports/port_tcp.c \
-      ports/port_serial.c ports/port_pipe.c ports/lapf/port_lapf.c ports/svc_numbering/svc_numbering.c \
-      ports/pcap/port_pcap.c \
-      pvc/pvc_lmi_common.c pvc/pvc_lmi_ansi.c pvc/pvc_lmi_gof.c pvc/pvc_lmi_q933a.c \
-      pvc/pvc_mcast_uni.c pvc/pvc_mcast_nni.c \
-      congestion_mgnt/cgst_mgnt.c congestion_mgnt/cgst_cllm.c \
-      svc_signalling/svc_sig_common.c svc_signalling/svc_sig_iel.c svc_signalling/svc_sig_iep.c svc_signalling/svc_sig_uni.c svc_signalling/svc_sig_nni.c
+# Base Compiler and Linker Flags
+BASE_CFLAGS  = -Wall -Wextra -Wno-unused-parameter \
+               -D_WIN32_WINNT=0x0A00 -D_GNU_SOURCE \
+               -Iinclude -Isrc
 
-# Object files
-OBJ = obj/vfrs_main.o obj/logger.o obj/config.o \
-      obj/fr_switching/fr_frame.o obj/fr_switching/fr_switch.o obj/fr_switching/svc_routing_common.o \
-      obj/ports/port_common.o obj/ports/port_queue.o obj/ports/port_udp.o obj/ports/port_tcp.o \
-      obj/ports/port_serial.o obj/ports/port_pipe.o obj/ports/lapf/port_lapf.o obj/ports/svc_numbering/svc_numbering.o \
-      obj/ports/pcap/port_pcap.o \
-      obj/pvc/pvc_lmi_common.o obj/pvc/pvc_lmi_ansi.o obj/pvc/pvc_lmi_gof.o obj/pvc/pvc_lmi_q933a.o \
-      obj/pvc/pvc_mcast_uni.o obj/pvc/pvc_mcast_nni.o \
-      obj/congestion_mgnt/cgst_mgnt.o obj/congestion_mgnt/cgst_cllm.o \
-      obj/svc_signalling/svc_sig_common.o obj/svc_signalling/svc_sig_iel.o obj/svc_signalling/svc_sig_iep.o obj/svc_signalling/svc_sig_uni.o obj/svc_signalling/svc_sig_nni.o
+LDFLAGS_BASE = -static -lws2_32 -lwinmm -ladvapi32
 
-all: dirs $(TARGET)
+ifeq ($(BUILD),debug)
+    OPT_FLAGS     = -O0 -g3 -DDEBUG -D_DEBUG -fno-omit-frame-pointer
+    LDFLAGS_EXTRA =
+else
+    OPT_FLAGS     = -O2 -DNDEBUG
+    LDFLAGS_EXTRA = -s
+endif
 
-dirs:
-	mkdir -p obj obj/fr_switching obj/ports obj/ports/lapf obj/ports/svc_numbering obj/ports/pcap obj/pvc obj/congestion_mgnt obj/svc_signalling
+CFLAGS   = $(OPT_FLAGS) $(BASE_CFLAGS) $(EXTRA_CFLAGS)
+LDFLAGS  = $(LDFLAGS_BASE) $(LDFLAGS_EXTRA) $(EXTRA_LDFLAGS)
 
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+# Directory Structure
+SRC_DIR   = src
+INC_DIR   = include
+BUILD_DIR = build
+BIN_DIR   = bin
+TESTS_DIR = tests
 
-$(OBJ): | dirs
+# Target Artifacts
+TARGET     = $(BIN_DIR)/vfrs.exe
+STATIC_LIB = $(BIN_DIR)/libvfrs.a
+IE_TEST    = $(BIN_DIR)/tests/ie_test.exe
 
-obj/%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# ------------------------------------------------------------------------------
+# Source File Structure
+# ------------------------------------------------------------------------------
 
-debug: CFLAGS = -Wall -Wextra -g -O0 -fno-omit-frame-pointer -D_WIN32_WINNT=0x0A00 -D_GNU_SOURCE -I.
-debug: LDFLAGS = -lws2_32 -lwinmm -ladvapi32
-debug: clean dirs $(TARGET)
+# Core & Infrastructure
+SRCS_CORE = $(SRC_DIR)/core/logger.c \
+            $(SRC_DIR)/core/config.c
 
+# Frame Relay Switching
+SRCS_SWITCH = $(SRC_DIR)/switching/fr_frame.c \
+              $(SRC_DIR)/switching/fr_switch.c \
+              $(SRC_DIR)/switching/svc_routing_common.c
+
+# Ports & Interface Drivers
+SRCS_PORTS = $(SRC_DIR)/ports/port_common.c \
+             $(SRC_DIR)/ports/port_queue.c \
+             $(SRC_DIR)/ports/port_udp.c \
+             $(SRC_DIR)/ports/port_tcp.c \
+             $(SRC_DIR)/ports/port_serial.c \
+             $(SRC_DIR)/ports/port_pipe.c \
+             $(SRC_DIR)/ports/lapf/port_lapf.c \
+             $(SRC_DIR)/ports/pcap/port_pcap.c \
+             $(SRC_DIR)/ports/svc_numbering/svc_numbering.c
+
+# PVC, LMI & Multicast
+SRCS_PVC = $(SRC_DIR)/pvc/pvc_lmi_common.c \
+           $(SRC_DIR)/pvc/pvc_lmi_ansi.c \
+           $(SRC_DIR)/pvc/pvc_lmi_gof.c \
+           $(SRC_DIR)/pvc/pvc_lmi_q933a.c \
+           $(SRC_DIR)/pvc/pvc_mcast_uni.c \
+           $(SRC_DIR)/pvc/pvc_mcast_nni.c
+
+# Congestion Management & CLLM
+SRCS_CGST = $(SRC_DIR)/congestion/cgst_mgnt.c \
+            $(SRC_DIR)/congestion/cgst_cllm.c
+
+# SVC Signalling (Q.933 / X.36 / X.76)
+SRCS_SVC = $(SRC_DIR)/svc/svc_sig_common.c \
+           $(SRC_DIR)/svc/svc_sig_iel.c \
+           $(SRC_DIR)/svc/svc_sig_iep.c \
+           $(SRC_DIR)/svc/svc_sig_uni.c \
+           $(SRC_DIR)/svc/svc_sig_nni.c
+
+# Library sources (all except main.c)
+LIB_SRCS  = $(SRCS_CORE) $(SRCS_SWITCH) $(SRCS_PORTS) $(SRCS_PVC) $(SRCS_CGST) $(SRCS_SVC)
+MAIN_SRC  = $(SRC_DIR)/main.c
+ALL_SRCS  = $(MAIN_SRC) $(LIB_SRCS)
+
+# Object files mapping (build/src/...)
+LIB_OBJS  = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/src/%.o,$(LIB_SRCS))
+MAIN_OBJ  = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/src/%.o,$(MAIN_SRC))
+ALL_OBJS  = $(MAIN_OBJ) $(LIB_OBJS)
+
+# Dependency files (.d)
+DEPS      = $(ALL_OBJS:.o=.d) $(BUILD_DIR)/tests/ie_test.d
+
+# ------------------------------------------------------------------------------
+# Primary Build Targets
+# ------------------------------------------------------------------------------
+
+.PHONY: all debug release static-lib test check clean distclean help dirs
+
+all: $(TARGET)
+
+debug:
+	@$(MAKE) BUILD=debug all
+
+release:
+	@$(MAKE) BUILD=release all
+
+# Monolithic Executable Target
+$(TARGET): $(ALL_OBJS)
+	@$(MKDIR_P) $(BIN_DIR)
+	@echo "  [LD]  $@"
+	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Static Library Target (Modular Switch Core)
+static-lib: $(STATIC_LIB)
+
+$(STATIC_LIB): $(LIB_OBJS)
+	@$(MKDIR_P) $(BIN_DIR)
+	@echo "  [AR]  $@"
+	@$(AR) rcs $@ $^
+
+# Compilation rule for src/
+$(BUILD_DIR)/src/%.o: $(SRC_DIR)/%.c
+	@$(MKDIR_P) $(dir $@)
+	@echo "  [CC]  $<"
+	@$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
+
+# Compilation rule for tests/
+$(BUILD_DIR)/tests/%.o: $(TESTS_DIR)/%.c
+	@$(MKDIR_P) $(dir $@)
+	@echo "  [CC]  $<"
+	@$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
+
+# ------------------------------------------------------------------------------
+# Testing Targets
+# ------------------------------------------------------------------------------
+
+# C Unit Test binary for Q.933 IEs
+IE_TEST_OBJS = $(BUILD_DIR)/tests/ie_test.o \
+               $(BUILD_DIR)/src/switching/fr_frame.o \
+               $(BUILD_DIR)/src/congestion/cgst_cllm.o \
+               $(BUILD_DIR)/src/svc/svc_sig_iel.o \
+               $(BUILD_DIR)/src/svc/svc_sig_iep.o
+
+$(IE_TEST): $(IE_TEST_OBJS)
+	@$(MKDIR_P) $(BIN_DIR)/tests
+	@echo "  [LD]  $@"
+	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Run full test suite (C unit tests + Python compliance & functional tests)
+test: all $(IE_TEST)
+	@echo "=== Running C Unit Tests (IE Parser/Builder) ==="
+	@./$(IE_TEST)
+	@echo "=== Running Python SVC Compliance Test Suite ==="
+	@python tests/svc_compliance_test.py
+	@echo "=== Running Python SVC Functional Test Suite ==="
+	@python tests/svc_test.py
+	@echo "=== All Tests Passed Successfully ==="
+
+# Run pipe loopback integration check
 check: debug
-	bash ./tests/run_pipe_loopback_test.sh
+	@echo "=== Running Pipe Loopback Self-Test ==="
+	@bash ./tests/run_pipe_loopback_test.sh
 
-test: all
-	$(CC) $(CFLAGS) -o tests/ie_test.exe tests/ie_test.c obj/logger.o obj/fr_switching/fr_frame.o obj/congestion_mgnt/cgst_cllm.o obj/svc_signalling/svc_sig_iel.o obj/svc_signalling/svc_sig_iep.o
-	./tests/ie_test.exe
-	python tests/svc_compliance_test.py
+# ------------------------------------------------------------------------------
+# Housekeeping Targets
+# ------------------------------------------------------------------------------
 
 clean:
-	rm -rf obj $(TARGET) tests/ie_test.exe
+	@echo "  [CLEAN]"
+	@$(RM) $(BUILD_DIR) $(BIN_DIR)
+	@$(RM) tests/loopback.conf tests/svc_compliance.conf tests/svc_test.conf tests/*.log tests/*.pcap
 
-.PHONY: all clean dirs debug check test
+distclean: clean
+	@$(RM) *.log *.pcap *.exe
+
+help:
+	@echo "VFRS Build System"
+	@echo "================="
+	@echo "Targets:"
+	@echo "  all         : Build release executable ($(TARGET))"
+	@echo "  debug       : Build with debug symbols and assertions (-O0 -g3)"
+	@echo "  release     : Build optimized release binary (-O2 -DNDEBUG)"
+	@echo "  static-lib  : Build monolithic static library ($(STATIC_LIB))"
+	@echo "  test        : Build and run all C unit & Python test suites"
+	@echo "  check       : Build debug binary and run loopback smoke test"
+	@echo "  clean       : Remove build/ and bin/ directories"
+	@echo "  distclean   : Remove all artifacts, temporary configs, and logs"
+	@echo ""
+	@echo "Variables:"
+	@echo "  BUILD=release|debug   (default: release)"
+	@echo "  CC=<compiler>         (default: gcc)"
+	@echo "  EXTRA_CFLAGS=<flags>  (additional C compiler flags)"
+	@echo "  EXTRA_LDFLAGS=<flags> (additional linker flags)"
+
+# Auto-include generated dependency files (.d)
+-include $(DEPS)

@@ -7,8 +7,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "vfr.h"
-#include "svc_signalling/svc_sig_iep.h"
-#include "fr_switching/fr_frame.h"
+#include "svc/svc_sig_iep.h"
+#include "switching/fr_frame.h"
 
 /* Global context stub */
 vfrs_ctx_t *g_vfrs = NULL;
@@ -50,6 +50,7 @@ int main() {
         u8 buf[128];
         memset(buf, 0, sizeof(buf));
         int len = q933_build_bearer_capability(buf, sizeof(buf));
+        (void)len;
         assert(len == 5);
         assert(buf[0] == 0x04); /* Bearer Capability ID */
         assert(buf[1] == 0x03); /* Length = 3 */
@@ -59,6 +60,7 @@ int main() {
 
         /* Parse and check */
         int parse_res = q933_parse_bearer_capability(&buf[2], 3);
+        (void)parse_res;
         assert(parse_res == 0);
         printf("Test Case 1 (Bearer Capability IE): PASSED\n");
     }
@@ -71,6 +73,7 @@ int main() {
         memset(buf, 0, sizeof(buf));
         u32 dlci = 512;
         int len = q933_build_dlci_ie(buf, sizeof(buf), dlci, 2);
+        (void)len;
         assert(len == 4);
         assert(buf[0] == 0x19); /* DLCI IE ID */
         assert(buf[1] == 0x02); /* Length = 2 */
@@ -80,6 +83,7 @@ int main() {
         u32 parsed_dlci = 0;
         u8 parsed_len = 0;
         int parse_res = q933_parse_dlci_ie(&buf[2], 2, &parsed_dlci, &parsed_len);
+        (void)parse_res;
         assert(parse_res == 0);
         assert(parsed_dlci == dlci);
         assert(parsed_len == 2);
@@ -94,6 +98,7 @@ int main() {
         memset(buf, 0, sizeof(buf));
         u32 dlci = 500000; /* Requires 4 octets */
         int len = q933_build_dlci_ie(buf, sizeof(buf), dlci, 4);
+        (void)len;
         assert(len == 6);
         assert(buf[0] == 0x19); /* DLCI IE ID */
         assert(buf[1] == 0x04); /* Length = 4 */
@@ -118,6 +123,7 @@ int main() {
         u32 parsed_dlci = 0;
         u8 parsed_len = 0;
         int parse_res = q933_parse_dlci_ie(&buf[2], 4, &parsed_dlci, &parsed_len);
+        (void)parse_res;
         assert(parse_res == 0);
         assert(parsed_dlci == dlci);
         assert(parsed_len == 4);
@@ -135,6 +141,7 @@ int main() {
         params.fwd_cir = 64000;
         
         int len = q933_build_llcore_params(buf, sizeof(buf), &params);
+        (void)len;
         assert(len > 0);
 
         /* Inspect Group 4 CIR parameter bytes in buf:
@@ -152,10 +159,12 @@ int main() {
                 break;
             }
         }
+        (void)found_cir_sub_ie;
         assert(found_cir_sub_ie);
 
         q933_llcore_params_t parsed_params;
         int parse_res = q933_parse_llcore_params(&buf[2], buf[1], &parsed_params);
+        (void)parse_res;
         assert(parse_res == 0);
         assert(parsed_params.fwd_cir == 64000);
         assert(parsed_params.bwd_cir == 64000);
@@ -173,10 +182,12 @@ int main() {
         params.fwd_cir = 2048000; /* mag = 4 (10^4), mult = 205 (best approximation) */
         
         int len = q933_build_llcore_params(buf, sizeof(buf), &params);
+        (void)len;
         assert(len > 0);
 
         q933_llcore_params_t parsed_params;
         int parse_res = q933_parse_llcore_params(&buf[2], buf[1], &parsed_params);
+        (void)parse_res;
         assert(parse_res == 0);
         assert(parsed_params.fwd_cir == 2050000);
         printf("Test Case 5 (LLCORE CIR Larger Value IE): PASSED\n");
@@ -190,6 +201,7 @@ int main() {
         u8 buf_0octet[] = { 0x08, 0x00, 0x46 }; /* Prot=0x08, CRV len=0, MsgType=RESTART */
         q933_msg_header_t hdr;
         int parsed_len = q933_parse_header(buf_0octet, sizeof(buf_0octet), &hdr);
+        (void)parsed_len;
         assert(parsed_len == 3);
         assert(hdr.protocol_disc == 0x08);
         assert(hdr.call_ref_len == 0);
@@ -213,6 +225,7 @@ int main() {
     {
         u8 bad_bc[] = { 0x88, 0xC0, 0x8F }; /* Octet 6 L2 Ident = 00 (invalid) */
         int parse_res = q933_parse_bearer_capability(bad_bc, sizeof(bad_bc));
+        (void)parse_res;
         assert(parse_res == -2);
         printf("Test Case 7 (Bearer Capability Invalid Content returns -2): PASSED\n");
     }
@@ -277,6 +290,9 @@ int main() {
         assert(found_llc == 1);
         assert(found_uu == 1);
         assert(off == (size_t)len);
+        (void)found_llc;
+        (void)found_uu;
+        (void)last_ie;
         printf("Test Case 8 (SETUP with LLC & User-User IEs in ascending order): PASSED\n");
     }
 
@@ -394,6 +410,7 @@ int main() {
     {
         u8 partial[3] = { 0x00, 0x00, 0x00 }; /* EA bits 0, 0, 0 */
         size_t len = fr_get_addr_len(partial, 3);
+        (void)len;
         assert(len == 3); /* Must not return 4 if max_len is 3 */
         printf("Test Case 12 (fr_get_addr_len Boundary Safety): PASSED\n");
     }
@@ -418,6 +435,7 @@ int main() {
         }
         assert(p3_pos > 0);
         u8 p3_len = xid_buf[p3_pos + 1];
+        (void)p3_len;
         assert(p3_len == 4); /* 2 DLCIs * 2 octets = 4 */
         /* Check DLCI 100: octet 2 (xid_buf[p3_pos + 3]) lower 4 bits must be 0 */
         assert((xid_buf[p3_pos + 3] & 0x0F) == 0x00);
@@ -429,6 +447,7 @@ int main() {
         u32 parsed_dlcis[16];
         int parsed_count = 0;
         int parse_res = cllm_parse_xid(xid_buf, build_len, &parsed_cause, parsed_dlcis, &parsed_count, 16);
+        (void)parse_res;
         assert(parse_res == 0);
         assert(parsed_cause == 0x02);
         assert(parsed_count == 2);
@@ -488,6 +507,7 @@ int main() {
         strcpy(port1.name, "port1");
 
         int handle_rc = cllm_handle_frame(&port1, xid_buf, xid_len);
+        (void)handle_rc;
         assert(handle_rc == 0);
 
         /* Verify BOTH the PVC reverse entry AND the SVC reverse entry have peer_congested = 1 */

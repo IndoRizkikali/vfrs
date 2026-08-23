@@ -1,0 +1,21 @@
+# Build directories
+build/
+bin/
+obj/
+
+# Object and dependency files
+*.o
+*.d
+*.a
+
+# Executables
+*.exe
+
+# Logs and captures
+*.log
+*.pcap
+
+# Temporary and backup files
+*.bak
+*.swp
+*~

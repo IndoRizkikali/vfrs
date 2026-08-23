@@ -7,36 +7,13 @@ from ctypes import wintypes
 import msvcrt
 
 kernel32 = ctypes.windll.kernel32
-kernel32.PeekNamedPipe.argtypes = [
+kernel32.SetNamedPipeHandleState.argtypes = [
     wintypes.HANDLE,
-    ctypes.c_void_p,
-    wintypes.DWORD,
-    ctypes.c_void_p,
     ctypes.POINTER(wintypes.DWORD),
+    ctypes.c_void_p,
     ctypes.c_void_p
 ]
-kernel32.PeekNamedPipe.restype = wintypes.BOOL
-
-def bytes_available(pipe):
-    try:
-        handle = msvcrt.get_osfhandle(pipe.fileno())
-        avail = wintypes.DWORD()
-        res = kernel32.PeekNamedPipe(
-            handle,
-            None,
-            0,
-            None,
-            ctypes.byref(avail),
-            None
-        )
-        if not res:
-            err = kernel32.GetLastError()
-            print(f"DEBUG: PeekNamedPipe failed with error {err}")
-            return 0
-        return avail.value
-    except Exception as e:
-        print(f"DEBUG: bytes_available exception: {e}")
-        return 0
+kernel32.SetNamedPipeHandleState.restype = wintypes.BOOL
 
 def crc16(data: bytes) -> int:
     crc = 0xFFFF
@@ -49,54 +26,33 @@ def crc16(data: bytes) -> int:
                 crc >>= 1
     return crc ^ 0xFFFF
 
-def hdlc_stuff(data: bytes) -> bytes:
-    stuffed = bytearray()
-    for b in data:
-        if b == 0x7E or b == 0x7D:
-            stuffed.append(0x7D)
-            stuffed.append(b ^ 0x20)
-        else:
-            stuffed.append(b)
-    return bytes(stuffed)
-
 def make_frame(addr_bytes, control_bytes, payload=b""):
     body = addr_bytes + control_bytes + payload
     c = crc16(body)
     crc_bytes = bytes([c & 0xff, (c >> 8) & 0xff])
-    stuffed_body = hdlc_stuff(body + crc_bytes)
-    return b'\x7e' + stuffed_body + b'\x7e'
+    return b'\x7e' + body + crc_bytes + b'\x7e'
 
 def read_one_frame_timeout(pipe, timeout_sec=2.0):
-    start = time.time()
     buf = bytearray()
     flag_count = 0
-    escape = False
-    while (time.time() - start) < timeout_sec:
-        if bytes_available(pipe) > 0:
+    start = time.time()
+    while (time.time() - start) < timeout_sec and flag_count < 2:
+        try:
             b = pipe.read(1)
-            if not b:
-                time.sleep(0.01)
-                continue
-            val = b[0]
-            if val == 0x7E:
+        except (BlockingIOError, OSError):
+            b = None
+        if b:
+            if b == b'\x7e':
                 flag_count += 1
                 if flag_count == 1:
                     buf.clear()
-                    escape = False
                 else:
                     return bytes(buf)
             else:
                 if flag_count == 1:
-                    if val == 0x7D:
-                        escape = True
-                    else:
-                        if escape:
-                            buf.append(val ^ 0x20)
-                            escape = False
-                        else:
-                            buf.append(val)
+                    buf.append(b[0])
         else:
-            time.sleep(0.01)
+            time.sleep(0.005)
     return None
 
 def parse_frame(frame_bytes):
@@ -142,6 +98,7 @@ def send_l3_p1(pipe, payload):
     global p1_ns, p1_nr
     ctrl = bytes([p1_ns << 1, p1_nr << 1])
     pipe.write(make_frame(b'\x00\x01', ctrl, payload))
+    pipe.flush()
     print(f"DEBUG send_l3_p1: Sent I-frame N(S)={p1_ns}, N(R)={p1_nr}")
     p1_ns = (p1_ns + 1) % 128
 
@@ -149,6 +106,7 @@ def send_l3_p2(pipe, payload):
     global p2_ns, p2_nr
     ctrl = bytes([p2_ns << 1, p2_nr << 1])
     pipe.write(make_frame(b'\x00\x01', ctrl, payload))
+    pipe.flush()
     print(f"DEBUG send_l3_p2: Sent I-frame N(S)={p2_ns}, N(R)={p2_nr}")
     p2_ns = (p2_ns + 1) % 128
 
@@ -156,62 +114,65 @@ def read_l3_p1_timeout(pipe, timeout_sec=2.0):
     global p1_nr
     start = time.time()
     while (time.time() - start) < timeout_sec:
-        if bytes_available(pipe) > 0:
-            resp = read_one_frame_timeout(pipe, timeout_sec=1.0)
-            if not resp:
-                continue
-            addr, ctrl, payload = parse_frame(resp)
-            if (ctrl[0] & 1) == 0:
-                # I-frame
-                vfrs_ns = ctrl[0] >> 1
-                p1_nr = (vfrs_ns + 1) % 128
-                print(f"DEBUG read_l3_p1: Received I-frame N(S)={vfrs_ns}, updated p1_nr={p1_nr}")
-                return addr, ctrl, payload
-            else:
-                print(f"DEBUG read_l3_p1: Ignored S/U-frame Control={ctrl.hex()}")
+        remaining = timeout_sec - (time.time() - start)
+        if remaining <= 0:
+            break
+        resp = read_one_frame_timeout(pipe, timeout_sec=remaining)
+        if not resp:
+            continue
+        addr, ctrl, payload = parse_frame(resp)
+        if (ctrl[0] & 1) == 0:
+            # I-frame
+            vfrs_ns = ctrl[0] >> 1
+            p1_nr = (vfrs_ns + 1) % 128
+            print(f"DEBUG read_l3_p1: Received I-frame N(S)={vfrs_ns}, updated p1_nr={p1_nr}")
+            return addr, ctrl, payload
         else:
-            time.sleep(0.01)
+            print(f"DEBUG read_l3_p1: Ignored S/U-frame Control={ctrl.hex()}")
     return None, None, None
 
 def read_l3_p2_timeout(pipe, timeout_sec=2.0):
     global p2_nr
     start = time.time()
     while (time.time() - start) < timeout_sec:
-        if bytes_available(pipe) > 0:
-            resp = read_one_frame_timeout(pipe, timeout_sec=1.0)
-            if not resp:
-                continue
-            addr, ctrl, payload = parse_frame(resp)
-            if (ctrl[0] & 1) == 0:
-                # I-frame
-                vfrs_ns = ctrl[0] >> 1
-                p2_nr = (vfrs_ns + 1) % 128
-                print(f"DEBUG read_l3_p2: Received I-frame N(S)={vfrs_ns}, updated p2_nr={p2_nr}")
-                return addr, ctrl, payload
-            else:
-                print(f"DEBUG read_l3_p2: Ignored S/U-frame Control={ctrl.hex()}")
+        remaining = timeout_sec - (time.time() - start)
+        if remaining <= 0:
+            break
+        resp = read_one_frame_timeout(pipe, timeout_sec=remaining)
+        if not resp:
+            continue
+        addr, ctrl, payload = parse_frame(resp)
+        if (ctrl[0] & 1) == 0:
+            # I-frame
+            vfrs_ns = ctrl[0] >> 1
+            p2_nr = (vfrs_ns + 1) % 128
+            print(f"DEBUG read_l3_p2: Received I-frame N(S)={vfrs_ns}, updated p2_nr={p2_nr}")
+            return addr, ctrl, payload
         else:
-            time.sleep(0.01)
+            print(f"DEBUG read_l3_p2: Ignored S/U-frame Control={ctrl.hex()}")
     return None, None, None
 
 def read_data_frame(pipe, timeout_sec=2.0):
     start = time.time()
     while (time.time() - start) < timeout_sec:
-        if bytes_available(pipe) > 0:
-            resp = read_one_frame_timeout(pipe, timeout_sec=0.2)
-            if not resp:
-                continue
-            addr, ctrl, payload = parse_frame(resp)
-            if addr in (b'\x00\x01', b'\x02\x01'):
-                # Ignore LAPF supervisory frames on DLCI 0
-                continue
-            return addr, ctrl, payload
-        else:
-            time.sleep(0.01)
+        remaining = timeout_sec - (time.time() - start)
+        if remaining <= 0:
+            break
+        resp = read_one_frame_timeout(pipe, timeout_sec=min(remaining, 0.5))
+        if not resp:
+            continue
+        addr, ctrl, payload = parse_frame(resp)
+        if addr in (b'\x00\x01', b'\x02\x01'):
+            # Ignore LAPF supervisory frames on DLCI 0
+            continue
+        return addr, ctrl, payload
     return None, None, None
 
 def main():
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(line_buffering=True)
     config_content = """# VFRS test config for SVC compliance
+log_level con=info txt=debug
 port uni0/1 pipe-server vfrs_svc_pipe_1
 port uni0/2 pipe-server vfrs_svc_pipe_2
 log_level con=info txt=debug
@@ -229,11 +190,12 @@ svc_route 510401010002 uni0/2
     my_env = os.environ.copy()
     my_env["PATH"] = r"C:\msys64\ucrt64\bin;" + my_env.get("PATH", "")
 
+    vfrs_exe = "bin/vfrs.exe" if os.path.exists("bin/vfrs.exe") else ("./vfrs.exe" if os.path.exists("./vfrs.exe") else "../bin/vfrs.exe")
     proc = subprocess.Popen(
-        ["./vfrs.exe", config_path],
+        [vfrs_exe, config_path],
         env=my_env
     )
-    time.sleep(1.0)
+    time.sleep(1.5)
 
     pipe1_path = r"\\.\pipe\vfrs_svc_pipe_1"
     pipe2_path = r"\\.\pipe\vfrs_svc_pipe_2"
@@ -246,12 +208,34 @@ svc_route 510401010002 uni0/2
         proc.terminate()
         sys.exit(1)
 
+    # Configure pipes for non-blocking read mode (PIPE_NOWAIT = 0x00000001)
+    mode = wintypes.DWORD(0x00000001)
+    h1 = wintypes.HANDLE(msvcrt.get_osfhandle(p1.fileno()))
+    h2 = wintypes.HANDLE(msvcrt.get_osfhandle(p2.fileno()))
+    kernel32.SetNamedPipeHandleState(h1, ctypes.byref(mode), None, None)
+    kernel32.SetNamedPipeHandleState(h2, ctypes.byref(mode), None, None)
+
     try:
         # Establish LAPF links
         p1.write(make_frame(b'\x00\x01', b'\x7F'))
-        read_one_frame_timeout(p1)
+        p1.flush()
+        print("Sent SABME on uni0/1 DLCI 0")
+        ua_1 = read_one_frame_timeout(p1, timeout_sec=2.0)
+        if not ua_1:
+            print("Error: No UA response on uni0/1")
+            proc.terminate()
+            sys.exit(1)
+        print("Received UA on uni0/1")
+
         p2.write(make_frame(b'\x00\x01', b'\x7F'))
-        read_one_frame_timeout(p2)
+        p2.flush()
+        print("Sent SABME on uni0/2 DLCI 0")
+        ua_2 = read_one_frame_timeout(p2, timeout_sec=2.0)
+        if not ua_2:
+            print("Error: No UA response on uni0/2")
+            proc.terminate()
+            sys.exit(1)
+        print("Received UA on uni0/2")
         print("LAPF links established.")
 
         # ==========================================================
@@ -395,12 +379,6 @@ svc_route 510401010002 uni0/2
         # Sleep briefly to allow VFRS to process RELEASE COMPLETE
         time.sleep(0.1)
 
-        # Drain any remaining LAPF control frames to maintain sequence sync
-        while bytes_available(p1) > 0:
-            read_l3_p1_timeout(p1, timeout_sec=0.05)
-        while bytes_available(p2) > 0:
-            read_l3_p2_timeout(p2, timeout_sec=0.05)
-
         # ==========================================================
         # Test Case 5: T308 retransmission & T305 expiry clearing
         # ==========================================================
@@ -438,6 +416,7 @@ svc_route 510401010002 uni0/2
         # Verify dynamic fast-path data switching on DLCI 512 (uni0/1 -> uni0/2)
         data_payload = b'\x03\xCC\x45\x00PingTestData'
         p1.write(make_frame(b'\x80\x01', b'', data_payload)) # Send frame on DLCI 512
+        p1.flush()
         addr_rx, ctrl_rx, payload_rx = read_data_frame(p2, timeout_sec=2.0)
         if not payload_rx:
             raise AssertionError("Data frame on DLCI 512 was not switched from uni0/1 to uni0/2!")
@@ -449,6 +428,7 @@ svc_route 510401010002 uni0/2
         # Verify reverse data switching on DLCI 512 (uni0/2 -> uni0/1)
         data_payload_rev = b'\x03\xCC\x45\x00PingReplyData'
         p2.write(make_frame(b'\x80\x01', b'', data_payload_rev)) # Send frame on DLCI 512
+        p2.flush()
         addr_rx2, ctrl_rx2, payload_rx2 = read_data_frame(p1, timeout_sec=2.0)
         if not payload_rx2:
             raise AssertionError("Data frame on DLCI 512 was not switched in reverse from uni0/2 to uni0/1!")

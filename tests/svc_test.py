@@ -20,13 +20,15 @@ def make_frame(addr_bytes, control_bytes, payload=b""):
     crc_bytes = bytes([c & 0xff, (c >> 8) & 0xff])
     return b'\x7e' + body + crc_bytes + b'\x7e'
 
-def read_one_frame(pipe):
+def read_one_frame(pipe, timeout_sec=2.0):
     buf = bytearray()
     flag_count = 0
-    while flag_count < 2:
+    start = time.time()
+    while (time.time() - start) < timeout_sec and flag_count < 2:
         b = pipe.read(1)
         if not b:
-            break
+            time.sleep(0.01)
+            continue
         if b == b'\x7e':
             flag_count += 1
             if flag_count == 1:
@@ -60,6 +62,7 @@ def parse_frame(frame_bytes):
 
 def main():
     config_content = """# VFRS test config for SVC and QoS / charging facilities
+log_level con=info txt=debug
 port uni0/1 pipe-server vfrs_svc_pipe_1
 port uni0/2 pipe-server vfrs_svc_pipe_2
 svc_int uni0/1 dlci_low=512 dlci_high=600 default_ftp=12 default_fdp=6 default_svc_class=2
@@ -76,8 +79,9 @@ svc_route 510401010002 uni0/2
     my_env = os.environ.copy()
     my_env["PATH"] = r"C:\msys64\ucrt64\bin;" + my_env.get("PATH", "")
 
+    vfrs_exe = "bin/vfrs.exe" if os.path.exists("bin/vfrs.exe") else ("./vfrs.exe" if os.path.exists("./vfrs.exe") else "../bin/vfrs.exe")
     proc = subprocess.Popen(
-        ["./vfrs.exe", config_path],
+        [vfrs_exe, config_path],
         env=my_env
     )
     time.sleep(1.5)
@@ -97,6 +101,7 @@ svc_route 510401010002 uni0/2
     # User Command DLCI 0 Address = [0x00, 0x01]
     sabme_frame = make_frame(b'\x00\x01', b'\x7F')
     p1.write(sabme_frame)
+    p1.flush()
     print("Sent SABME on uni0/1 DLCI 0")
 
     # Read UA Response from VFRS
@@ -117,6 +122,7 @@ svc_route 510401010002 uni0/2
     # 2. Establish LAPF link on uni0/2
     sabme_frame2 = make_frame(b'\x00\x01', b'\x7F')
     p2.write(sabme_frame2)
+    p2.flush()
     print("Sent SABME on uni0/2 DLCI 0")
     ua_raw2 = read_one_frame(p2)
     addr2, ctrl2, payload2 = parse_frame(ua_raw2)
@@ -150,6 +156,7 @@ svc_route 510401010002 uni0/2
     # Control: [0x00, 0x00]
     setup_frame = make_frame(b'\x00\x01', b'\x00\x00', setup_payload)
     p1.write(setup_frame)
+    p1.flush()
     print("Sent SETUP with Reverse Charging on uni0/1")
 
     # We expect RELEASE on uni0/1 with Cause 29 (Facility rejected)
@@ -174,6 +181,7 @@ svc_route 510401010002 uni0/2
                 # Prot Disc (0x08), CRV flag=1 (0x82 for CRV 5), Msg Type = RELEASE COMPLETE (0x5A)
                 rel_comp = make_frame(b'\x00\x01', b'\x00\x00', b'\x08\x02\x80\x05\x5A')
                 p1.write(rel_comp)
+                p1.flush()
                 print("Sent RELEASE COMPLETE to VFRS")
             else:
                 print(f"TEST FAILED: Expected Cause 29, got {cause}")
@@ -206,7 +214,7 @@ svc_route 510401010002 uni0/2
         f.write(config_content)
 
     proc = subprocess.Popen(
-        ["./vfrs.exe", config_path],
+        [vfrs_exe, config_path],
         env=my_env
     )
     time.sleep(1.5)
@@ -221,13 +229,16 @@ svc_route 510401010002 uni0/2
 
     # Establish LAPF links
     p1.write(make_frame(b'\x00\x01', b'\x7F'))
+    p1.flush()
     read_one_frame(p1)
     p2.write(make_frame(b'\x00\x01', b'\x7F'))
+    p2.flush()
     read_one_frame(p2)
     print("LAPF links re-established.")
 
     # Send SETUP with reverse charging again
     p1.write(make_frame(b'\x00\x01', b'\x00\x00', setup_payload))
+    p1.flush()
     print("Sent SETUP on uni0/1 (Reverse Charging Accepted by target)")
 
     # Read SETUP forwarded to uni0/2

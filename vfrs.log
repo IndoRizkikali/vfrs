@@ -1,12 +1,6 @@
-[2026-08-20 17:24:54] logger.c:77: Logger initialized (console=INFO , file=vfrs.log)
-[2026-08-20 17:24:54] vfrs_main.c:1624: VFRS - Virtual Frame Relay Switch
-[2026-08-20 17:24:54] vfrs_main.c:1625: Build: Aug 20 2026 17:17:17
-[2026-08-20 17:24:54] vfrs_main.c:166: Parsing configuration (Pass 1 - Defaults & Global Settings): .\vfrsTestSvc.conf
-[2026-08-20 17:24:54] config.c:41: Opened configuration file: .\vfrsTestSvc.conf
-[2026-08-20 17:24:54] vfrs_main.c:221: Switch configured: vfrsTestSvc (DNIC=5104, PNIC=0, SGC=1, SIC=1, subnumlen=4)
-[2026-08-20 18:51:12] logger.c:77: Logger initialized (console=INFO , file=vfrs.log)
-[2026-08-20 18:51:12] vfrs_main.c:1624: VFRS - Virtual Frame Relay Switch
-[2026-08-20 18:51:12] vfrs_main.c:1625: Build: Aug 20 2026 17:39:16
-[2026-08-20 18:51:12] vfrs_main.c:166: Parsing configuration (Pass 1 - Defaults & Global Settings): .\vfrsTestSvc.conf
-[2026-08-20 18:51:12] config.c:41: Opened configuration file: .\vfrsTestSvc.conf
-[2026-08-20 18:51:12] vfrs_main.c:221: Switch configured: vfrsTestSvc (DNIC=5104, PNIC=0, SGC=1, SIC=1, subnumlen=4)
+[2026-08-23 16:05:59] logger.c:77: Logger initialized (console=INFO , file=vfrs.log)
+[2026-08-23 16:05:59] main.c:1624: VFRS - Virtual Frame Relay Switch
+[2026-08-23 16:05:59] main.c:1625: Build: Aug 23 2026 15:40:08
+[2026-08-23 16:05:59] main.c:166: Parsing configuration (Pass 1 - Defaults & Global Settings): .\confs\vfrsTestSvc.conf
+[2026-08-23 16:05:59] config.c:41: Opened configuration file: .\confs\vfrsTestSvc.conf
+[2026-08-23 16:05:59] main.c:221: Switch configured: vfrsTestSvc (DNIC=5104, PNIC=0, SGC=1, SIC=1, subnumlen=4)
