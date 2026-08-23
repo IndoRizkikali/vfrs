@@ -1,0 +1,2439 @@
+<h1 style="text-align:center; font-family:verdana;"><b>List of Tables and Figures from ITU-T X.36 Clauses 10.5 to 10.6</b></h1>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-1/X.36 – Messages for frame relay SVC signalling</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-7btt{border-color:inherit;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-f8tv{border-color:inherit;font-style:italic;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-7btt">Message</th>
+    <th class="tg-7btt">Reference</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-f8tv" colspan="2">Virtual circuit establishment messages:</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">CALL PROCEEDING</td>
+    <td class="tg-c3ow">10.5.1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">CONNECT</td>
+    <td class="tg-c3ow">10.5.2</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">SETUP</td>
+    <td class="tg-c3ow">10.5.8</td>
+  </tr>
+  <tr>
+    <td class="tg-f8tv" colspan="2">Virtual circuit clearing messages:</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">DISCONNECT</td>
+    <td class="tg-c3ow">10.5.3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">RELEASE</td>
+    <td class="tg-c3ow">10.5.4</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">RELEASE COMPLETE</td>
+    <td class="tg-c3ow">10.5.5</td>
+  </tr>
+  <tr>
+    <td class="tg-f8tv" colspan="2">Miscellaneous messages:</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">RESTART</td>
+    <td class="tg-c3ow">10.5.6</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">RESTART ACKNOWLEDGE</td>
+    <td class="tg-c3ow">10.5.7</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">STATUS</td>
+    <td class="tg-baqh">10.5.9</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">STATUS ENQUIRY</td>
+    <td class="tg-baqh">10.5.10</td>
+  </tr>
+</tbody></table>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-2/X.36 – CALL PROCEEDING message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-7btt{border-color:inherit;font-weight:bold;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">CALL PROCEEDING</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Local</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-7btt">Information element</td>
+    <td class="tg-7btt">Reference</td>
+    <td class="tg-7btt">Direction</td>
+    <td class="tg-7btt">Type</td>
+    <td class="tg-7btt">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Data Link Connection Identifier</td>
+    <td class="tg-c3ow">10.6.14</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">4-6</td>
+  </tr>
+</tbody></table>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-3/X.36 – CONNECT message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-7btt{border-color:inherit;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">CONNECT</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Global</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-7btt">Information element</td>
+    <td class="tg-7btt">Reference</td>
+    <td class="tg-7btt">Direction</td>
+    <td class="tg-7btt">Type</td>
+    <td class="tg-7btt">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Data Link Connection Identifier</td>
+    <td class="tg-c3ow">10.6.14</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Optional<br>(Note 1)</td>
+    <td class="tg-c3ow">4-6</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Link layer core parameters</td>
+    <td class="tg-baqh">10.6.15</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Mandatory</td>
+    <td class="tg-baqh">4-31</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Connected number</td>
+    <td class="tg-baqh">10.6.12</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 2)</td>
+    <td class="tg-baqh">*</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Connected subaddress</td>
+    <td class="tg-baqh">10.6.13</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 3)</td>
+    <td class="tg-baqh">*</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Low layer compatibility</td>
+    <td class="tg-baqh">10.6.17</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 5)</td>
+    <td class="tg-baqh">4-15</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">User-user</td>
+    <td class="tg-baqh">10.6.21</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 4)</td>
+    <td class="tg-baqh">2-131</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE 1 – Mandatory in the DTE-to-DCE direction when the called DTE replies to the incoming SETUP message with a CONNECT message. In all other cases it is optional.
+NOTE 2 – If included by the called DTE in the DTE-to-DCE direction, then its presence is optional in the DCE-to-DTE direction if it is the same as the Called party number presented to the called DTE in the SETUP message.
+         Its presence is mandatory in the DCE-to-DTE direction if it is different from the called party number presented to the called DTE in the SETUP message.
+NOTE 3 – Included in the DCE-to-DTE direction at the calling DTE/DCE interface if it was included in the DTE-to-DCE direction at the called DTE/DCE interface to identify the connected subaddress to the calling DTE.
+NOTE 4 – Included in the DCE-to-DTE direction at the calling DTE/DCE interface if it was included in the DTE-to-DCE direction at the called DTE/DCE interface to pass user data from the answering DTE to the calling DTE.
+NOTE 5 – Included in the DCE-to-DTE direction at the calling DTE/DCE interface if it was included in the DTE-to-DCE direction at the called DTE/DCE interface. See procedures in D.6.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-4/X.36 – DISCONNECT message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-7btt{border-color:inherit;font-weight:bold;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">DISCONNECT</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Global</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-7btt">Information element</td>
+    <td class="tg-7btt">Reference</td>
+    <td class="tg-7btt">Direction</td>
+    <td class="tg-7btt">Type</td>
+    <td class="tg-7btt">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Cause</td>
+    <td class="tg-c3ow">10.6.10</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">4-*</td>
+  </tr>
+</tbody></table>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-5/X.36 – RELEASE message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">RELEASE</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Local (Note 1)</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Information element</td>
+    <td class="tg-c3ow">Reference</td>
+    <td class="tg-c3ow">Direction</td>
+    <td class="tg-c3ow">Type</td>
+    <td class="tg-c3ow">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Cause</td>
+    <td class="tg-c3ow">10.6.10</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">(Note 2)</td>
+    <td class="tg-c3ow">4-*</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE 1 – This message has local significance. However, it may carry information of global significance when used as the first call clearing message.
+NOTE 2 – Mandatory if the RELEASE message is the first call clearing message sent as a result of an error handling condition; otherwise, it is optional.
+         This information element may be repeated to indicate multiple clearing causes.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-6/X.36 – RELEASE COMPLETE message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">RELEASE COMPLETE</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Local (Note 1)</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Information element</td>
+    <td class="tg-c3ow">Reference</td>
+    <td class="tg-c3ow">Direction</td>
+    <td class="tg-c3ow">Type</td>
+    <td class="tg-c3ow">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Cause</td>
+    <td class="tg-c3ow">10.6.10</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">(Note 2)</td>
+    <td class="tg-c3ow">4-*</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE 1 – This message has local significance. However, it may carry information of global significance when used as the first call clearing message.
+NOTE 2 – Mandatory if the RELEASE COMPLETE message is the first call clearing message sent as a result of an error handling condition, otherwise it is optional.
+         This information element may be repeated to indicate multiple clearing causes.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-7/X.36 – RESTART message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">RESTART</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Local</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Information element</td>
+    <td class="tg-c3ow">Reference</td>
+    <td class="tg-c3ow">Direction</td>
+    <td class="tg-c3ow">Type</td>
+    <td class="tg-c3ow">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory<br>(Note)</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE – The RESTART message is sent with the global call reference.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-8/X.36 – RESTART ACKNOWLEDGE message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">RESTART ACKNOWLEDGE</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Local</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Information element</td>
+    <td class="tg-c3ow">Reference</td>
+    <td class="tg-c3ow">Direction</td>
+    <td class="tg-c3ow">Type</td>
+    <td class="tg-c3ow">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory<br>(Note)</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE – The RESTART ACKNOWLEDGE message is sent with the global call reference.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-9/X.36 – SETUP message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">SETUP</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Global</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Information element</td>
+    <td class="tg-c3ow">Reference</td>
+    <td class="tg-c3ow">Direction</td>
+    <td class="tg-c3ow">Type</td>
+    <td class="tg-c3ow">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Bearer capability</td>
+    <td class="tg-c3ow">10.6.4</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">5</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Data Link Connection Identifier</td>
+    <td class="tg-c3ow">10.6.14</td>
+    <td class="tg-c3ow">n → u</td>
+    <td class="tg-c3ow">Mandatory<br>(Note 1)</td>
+    <td class="tg-c3ow">4-6</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Closed user group</td>
+    <td class="tg-c3ow">10.6.11</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Optional</td>
+    <td class="tg-c3ow">4-7</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Link layer core parameters</td>
+    <td class="tg-c3ow">10.6.15</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Optional<br>(Note 2)</td>
+    <td class="tg-c3ow">4-31</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Link layer protocol parameters</td>
+    <td class="tg-c3ow">10.6.16</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Optional</td>
+    <td class="tg-c3ow">2-9</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Priority and service class<br>parameters</td>
+    <td class="tg-c3ow">10.6.18</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Optional</td>
+    <td class="tg-c3ow">2-8</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Reverse charging indication</td>
+    <td class="tg-baqh">10.6.19</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional</td>
+    <td class="tg-baqh">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Calling party number</td>
+    <td class="tg-baqh">10.6.8</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 3)</td>
+    <td class="tg-baqh">*</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Calling party subaddress</td>
+    <td class="tg-baqh">10.6.9</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 4)</td>
+    <td class="tg-baqh">*</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Called party number</td>
+    <td class="tg-baqh">10.6.6</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 5)</td>
+    <td class="tg-baqh">*</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Called party subaddress</td>
+    <td class="tg-baqh">10.6.9</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 6)</td>
+    <td class="tg-baqh">*</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Transit network selection</td>
+    <td class="tg-baqh">10.6.20</td>
+    <td class="tg-baqh">u → n</td>
+    <td class="tg-baqh">Optional</td>
+    <td class="tg-baqh">7-11</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Low layer compatibility</td>
+    <td class="tg-baqh">10.6.17</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Notes 6, 7, 8)</td>
+    <td class="tg-baqh">4-15</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">User-user</td>
+    <td class="tg-baqh">10.6.21</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Optional<br>(Note 6)</td>
+    <td class="tg-baqh">2-131</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE 1 – Mandatory in the DCE-to-DTE direction. Not allowed in the DTE-to-DCE direction.
+NOTE 2 – Included in the DTE-to-DCE direction when the calling DTE wants to indicate the proposed link layer core parameters to the network.
+         Always included in the DCE-to-DTE direction.
+         If the link layer core parameters information element is missing or partially specified, in the DTE-to-DCE direction, the network will use default values and will present them to the called DTE.
+NOTE 3 – Mandatory in the DCE-to-DTE direction to identify the calling user.
+         Optional in the DTE-to-DCE direction.
+NOTE 4 – Included in the DCE-to-DTE direction if the calling party included this information element in the DTE-to-DCE direction.
+NOTE 5 – Mandatory in the DTE-to-DCE direction to identify the called user.
+         Included in the DCE-to-DTE direction when called party number information is to be conveyed to the called DTE (e.g., when the called DTE is a private network).
+NOTE 6 – Included in the DCE-to-DTE direction at the called DTE/DCE interface if it was included by the calling DTE.
+NOTE 7 – Included in the DCE-to-DTE direction at the called DTE/DCE interface if it was included by the calling DTE.
+         This information element may be repeated according to the procedures in D.6.
+NOTE 8 – This information element may occur up to three times.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-10/X.36 – STATUS message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">STATUS</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Local</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Information element</td>
+    <td class="tg-c3ow">Reference</td>
+    <td class="tg-c3ow">Direction</td>
+    <td class="tg-c3ow">Type</td>
+    <td class="tg-c3ow">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Cause</td>
+    <td class="tg-baqh">10.6.10</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Mandatory</td>
+    <td class="tg-baqh">4-*</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Call State</td>
+    <td class="tg-baqh">10.6.5</td>
+    <td class="tg-baqh">Both</td>
+    <td class="tg-baqh">Mandatory</td>
+    <td class="tg-baqh">3</td>
+  </tr>
+</tbody></table>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>Table 10-11/X.36 – STATUS ENQUIRY message content</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-0pky">Message type:</th>
+    <th class="tg-0pky">STATUS ENQUIRY</th>
+    <th class="tg-0pky">Direction:</th>
+    <th class="tg-0pky">Both</th>
+    <th class="tg-0pky"></th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Significance:</td>
+    <td class="tg-0pky">Local</td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Information element</td>
+    <td class="tg-c3ow">Reference</td>
+    <td class="tg-c3ow">Direction</td>
+    <td class="tg-c3ow">Type</td>
+    <td class="tg-c3ow">Length</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Protocol discriminator</td>
+    <td class="tg-c3ow">10.6.1</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call reference</td>
+    <td class="tg-c3ow">10.6.2</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">3</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Message type</td>
+    <td class="tg-c3ow">10.6.3</td>
+    <td class="tg-c3ow">Both</td>
+    <td class="tg-c3ow">Mandatory</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+</tbody></table>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6 General message format and information element coding</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-7btt{border-color:inherit;font-weight:bold;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-7btt">Information element</th>
+    <th class="tg-7btt">Information element<br>identifier</th>
+    <th class="tg-7btt">Reference</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow">Protocol discriminator</td>
+    <td class="tg-c3ow">Not applicable</td>
+    <td class="tg-c3ow">10.6.1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Call reference</td>
+    <td class="tg-c3ow">Not applicable</td>
+    <td class="tg-c3ow">10.6.2</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Message type</td>
+    <td class="tg-c3ow">Not applicable</td>
+    <td class="tg-c3ow">10.6.3</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Bearer Capability</td>
+    <td class="tg-c3ow">0 0 0 0 0 1 0 0</td>
+    <td class="tg-c3ow">10.6.4</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Call State</td>
+    <td class="tg-c3ow">0 0 0 1 0 1 0 0</td>
+    <td class="tg-c3ow">10.6.5</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Called party number</td>
+    <td class="tg-c3ow">0 1 1 1 0 0 0 0</td>
+    <td class="tg-c3ow">10.6.6</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Called party subaddress</td>
+    <td class="tg-c3ow">0 1 1 1 0 0 0 1</td>
+    <td class="tg-c3ow">10.6.7</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Calling party number</td>
+    <td class="tg-c3ow">0 1 1 0 1 1 0 0</td>
+    <td class="tg-c3ow">10.6.8</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Calling party subaddress</td>
+    <td class="tg-c3ow">0 1 1 0 1 1 0 1</td>
+    <td class="tg-c3ow">10.6.9</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Cause</td>
+    <td class="tg-baqh">0 0 0 0 1 0 0 0</td>
+    <td class="tg-baqh">10.6.10</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Closed user group</td>
+    <td class="tg-baqh">0 1 0 0 0 1 1 1</td>
+    <td class="tg-baqh">10.6.11</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Connected number</td>
+    <td class="tg-baqh">0 1 0 0 1 1 0 0</td>
+    <td class="tg-baqh">10.6.12</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Connected subaddress</td>
+    <td class="tg-baqh">0 1 0 0 1 1 0 1</td>
+    <td class="tg-baqh">10.6.13</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Data link connection identifier</td>
+    <td class="tg-baqh">0 0 0 1 1 0 0 1</td>
+    <td class="tg-baqh">10.6.14</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Link layer core parameters</td>
+    <td class="tg-baqh">0 1 0 0 1 0 0 0</td>
+    <td class="tg-baqh">10.6.15</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Link layer protocol parameters</td>
+    <td class="tg-baqh">0 1 0 0 1 0 0 1</td>
+    <td class="tg-baqh">10.6.16</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Low layer compatibility</td>
+    <td class="tg-baqh">0 1 1 1 1 1 0 0</td>
+    <td class="tg-baqh">10.6.17</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Priority and service class parameters</td>
+    <td class="tg-baqh">0 1 1 0 1 0 1 0</td>
+    <td class="tg-baqh">10.6.18</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Reverse charge indication</td>
+    <td class="tg-baqh">0 1 0 0 1 0 1 0</td>
+    <td class="tg-baqh">10.6.19</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Transit network selection</td>
+    <td class="tg-baqh">0 1 1 1 1 0 0 0</td>
+    <td class="tg-baqh">10.6.20</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">User-user</td>
+    <td class="tg-baqh">0 1 1 1 1 1 1 0</td>
+    <td class="tg-baqh">10.6.21</td>
+  </tr>
+</tbody></table>
+<pre style="text-align:justify;">
+The coding of the information elements other than the first three mandatory information elements (protocol discriminator, call reference and message type) is as follows:
+• The information elements used with frame relay call control are of variable length. They are described in alphabetical order.
+  However, there is a particular order of appearance for each information element in a message.
+  The code values of the variable length information element identifiers are assigned in numerical order according to the actual order of appearance of each information element in a message.
+  This allows a receiver to detect the presence or absence of a particular information element without scanning through the entire message.
+• Information element identifier values (first octet of a variable length information element) with bits 5-8 coded "0000" are for future information elements for which comprehension by the receiver is required.
+• When the description of the information elements contains spare bits, these bits are indicated as being set to "0".
+• The second octet of a variable length information element indicates the total length of the contents starting with octet 3.
+  It is the binary coding of the number of octets of the contents, with bit 1 as the least significant bit.
+• Each octet of a variable length information element is numbered.
+• Optional octet(s) are marked with asterisks (*).
+• An octet group is a self-contained entity, it contains one or more octets.
+  For frame relay information elements, the internal structure of an octet group is defined by using the following extension mechanism:
+  – The first octet of an octet group is identified by a number (N). The subsequent octets are identified as Na, Nb, Nc, ... Bit 8 of each octet is the extension bit.
+    The value "0" of bit 8 indicates that the octet group continues to the next octet. The value "1" of bit 8 indicates that this octet is the last octet of the octet group.
+    If one octet (Nc) must be present, the preceding octets (N, Na and Nb) must also be present.
+  – In the description of the information elements, bit 8 is marked "0/1 ext." if another octet follows.
+    Bit 8 is marked "1 ext." if this is the last octet of the octet group.
+• When a field extends over more than one octet, the order of bit values progressively decreases as the octet number increases.
+  The least significant bit of the field is represented by the lowest numbered bit of the highest-numbered octet of the field.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.1 Protocol discriminator</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Protocol discriminator</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+</tbody>
+</table>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.2 Call reference</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh" colspan="4">Length of call reference (in octets)</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Flag</td>
+    <td class="tg-baqh" colspan="7">Call reference value (most significant 7 bits)</td>
+    <td class="tg-baqh">2</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">Call reference value (2nd most significant 8 bits)</td>
+    <td class="tg-baqh">3</td>
+  </tr>
+</tbody>
+</table>
+<pre>
+<i>Flag (octet 2)</i>
+Bit
+<u>8</u>
+0 The message is sent from the side of the DTE/DCE interface that originates the call reference.
+1 The message is sent to the side of the DTE/DCE interface that originates the call reference.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.3 Message type</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-baqh" colspan="8">Message type</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+</tbody>
+</table>
+<h4 style="font-family:verdana;">Table 10-12/X.36 – Message types</h4>
+<pre>
+Bits
+<u>8 7 6 5 4 3 2 1</u>
+                <i>SVC establishment messages</i>
+0 0 0 0 0 0 1 0 CALL PROCEEDING
+0 0 0 0 0 1 1 1 CONNECT
+0 0 0 0 0 1 0 1 SETUP
+                <i>SVC clearing messages</i>
+0 1 0 0 0 1 0 1 DISCONNECT
+0 1 0 0 1 1 0 1 RELEASE
+0 1 0 1 1 0 1 0 RELEASE COMPLETE
+                <i>Miscellaneous messages</i>
+0 1 0 0 0 1 1 0 RESTART
+0 1 0 0 1 1 1 0 RESTART ACKNOWLEDGE
+0 1 1 1 1 1 0 1 STATUS
+0 1 1 1 0 1 0 1 STATUS ENQUIRY
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.4 Bearer capability</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet<br>(Note)</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Bearer capability information element identifier</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Length of the bearer capability contents</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Coding Standard</td>
+    <td class="tg-c3ow" colspan="5">Information Transfer capability</td>
+    <td class="tg-c3ow" rowspan="2">3</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Transfer mode</td>
+    <td class="tg-c3ow" colspan="5">Reserved</td>
+    <td class="tg-c3ow" rowspan="2">4</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Layer 2 ident.</td>
+    <td class="tg-c3ow" colspan="5">User information layer 2 protocol</td>
+    <td class="tg-c3ow" rowspan="2">6</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE – Octet group 5 defined in ITU-T Recs Q.931 and Q.933 is not used. For consistency, Q.931 and Q.933 octet numbering is kept.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.5 Call state</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Call state information element identifier</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Length of call state contents</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="2">Coding Standard</td>
+    <td class="tg-baqh" colspan="6" rowspan="2">Call state value/Global interface state<br>(state value is coded in binary)</td>
+    <td class="tg-baqh" rowspan="2">3</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+</tbody></table>
+<h4 style="font-family:verdana;">Table 10-13/X.36 – Call state information element</h4>
+<pre>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-73oq" colspan="4">Call state value (octet 3)</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-73oq" colspan="4">Bits</td>
+  </tr>
+  <tr>
+    <td class="tg-12k0"><u>6 5 4</u></td>
+    <td class="tg-12k0"><u>3 2 1</u></td>
+    <td class="tg-lmxn">Call state at the DTE side</td>
+    <td class="tg-lmxn">Call state at the DCE side</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 0</td>
+    <td class="tg-73oq">0 0 0</td>
+    <td class="tg-73oq">U0 Null</td>
+    <td class="tg-73oq">N0 Null</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 0</td>
+    <td class="tg-73oq">0 0 1</td>
+    <td class="tg-73oq">U1 Call initiated</td>
+    <td class="tg-73oq">N1 Call initiated</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 0</td>
+    <td class="tg-73oq">0 1 1</td>
+    <td class="tg-73oq">U3 Outgoing call proceeding</td>
+    <td class="tg-73oq">N3 Outgoing call proceeding</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 0</td>
+    <td class="tg-73oq">1 1 0</td>
+    <td class="tg-73oq">U6 Call present</td>
+    <td class="tg-73oq">N6 Call present</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 1</td>
+    <td class="tg-73oq">0 0 1</td>
+    <td class="tg-73oq">U9 Incoming call proceeding</td>
+    <td class="tg-73oq">N9 Incoming call proceeding</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 1</td>
+    <td class="tg-73oq">0 1 0</td>
+    <td class="tg-73oq">U10 Active</td>
+    <td class="tg-73oq">N10 Active</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 1</td>
+    <td class="tg-73oq">0 1 1</td>
+    <td class="tg-73oq">U11 Disconnect request</td>
+    <td class="tg-73oq">N11 Disconnect request</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 1</td>
+    <td class="tg-73oq">1 0 0</td>
+    <td class="tg-73oq">U12 Disconnect indication</td>
+    <td class="tg-73oq">N12 Disconnect indication</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 1 0</td>
+    <td class="tg-73oq">0 1 1</td>
+    <td class="tg-73oq">U19 Release request</td>
+    <td class="tg-73oq">N19 Release request</td>
+  </tr></tbody>
+  <thead><tr>
+    <th class="tg-73oq" colspan="4">Global interface state value (octet 3)</th>
+  </tr></thead>
+  <tbody><tr>
+    <td class="tg-73oq" colspan="4">Bits</td>
+  </tr>
+  <tr>
+    <td class="tg-12k0"><u>6 5 4</u></td>
+    <td class="tg-12k0"><u>3 2 1</u></td>
+    <td class="tg-lmxn" colspan="2">State</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">0 0 0</td>
+    <td class="tg-73oq">0 0 0</td>
+    <td class="tg-73oq">REST0</td>
+    <td class="tg-73oq">Null</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">1 1 1</td>
+    <td class="tg-73oq">1 0 1</td>
+    <td class="tg-73oq">REST1</td>
+    <td class="tg-73oq">Restart request</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">1 1 1</td>
+    <td class="tg-73oq">1 1 0</td>
+    <td class="tg-73oq">REST2</td>
+    <td class="tg-73oq">Restart</td>
+  </tr>
+</tbody></table>
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.10 Cause</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Cause information element identifier</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Length of cause contents</td>
+    <td class="tg-c3ow">2</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Coding standard</td>
+    <td class="tg-c3ow">Spare</td>
+    <td class="tg-c3ow" colspan="4" rowspan="2">Location</td>
+    <td class="tg-c3ow" rowspan="2">3</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Cause value</td>
+    <td class="tg-c3ow" rowspan="2">4</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Diagnostic(s) (if any) </td>
+    <td class="tg-c3ow">5*<br>etc.</td>
+  </tr>
+</tbody></table>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.14 Data link connection identifier</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Data link connection identifier information element identifier</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Length of data link connection identifier contents</td>
+    <td class="tg-c3ow">2</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh">Pref./<br>excl.</td>
+    <td class="tg-baqh" colspan="6" rowspan="2">Data link connection identifier<br>(Most significant 6 bits)</td>
+    <td class="tg-baqh" rowspan="2">3</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="4" rowspan="2">Data link connection identifier<br>(2nd most significant 4 bits)</td>
+    <td class="tg-baqh" colspan="3">Reserved</td>
+    <td class="tg-baqh" rowspan="2">3a</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">1/0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="7" rowspan="2">Data link connection identifier<br>(3rd most significant 7 bits)</td>
+    <td class="tg-baqh" rowspan="2">3b*<br>(Note)</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="6" rowspan="2">Data link connection identifier<br>(4th most significant 6 bits)</td>
+    <td class="tg-baqh">Res.</td>
+    <td class="tg-baqh" rowspan="2">3c*<br>(Note)</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE – These octets shall both be included only when subscription allows DLCIs of four octets (23 bits).
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.15 Link layer core parameters</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Link layer core parameters information element identifier</td>
+    <td class="tg-c3ow" rowspan="2">1<br>(Notes 1, 2)</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Length of link layer core parameters contents</td>
+    <td class="tg-c3ow">2</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7">Maximum Frame Relay Information Field (FRIF) size</td>
+    <td class="tg-c3ow" rowspan="2">3</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Outgoing maximum FRIF size</td>
+    <td class="tg-c3ow" rowspan="2">3a</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Outgoing maximum FRIF size (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">3b</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0/1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Incoming maximum FRIF size</td>
+    <td class="tg-c3ow" rowspan="2">3c*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Incoming maximum FRIF size (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">3d*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7">Throughput</td>
+    <td class="tg-c3ow" rowspan="2">4*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="3" rowspan="2">Outgoing magnitude</td>
+    <td class="tg-c3ow" colspan="4" rowspan="2">Outgoing multiplier</td>
+    <td class="tg-c3ow" rowspan="2">4a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Outgoing multiplier (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">4b*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0/1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="3" rowspan="2">Incoming magnitude</td>
+    <td class="tg-c3ow" colspan="4" rowspan="2">Incoming multiplier</td>
+    <td class="tg-c3ow" rowspan="2">4c*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Incoming multiplier (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">4d*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7">Minimum acceptable throughput</td>
+    <td class="tg-c3ow" rowspan="2">5*<br>(Note 3)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="3" rowspan="2">Outgoing magnitude</td>
+    <td class="tg-c3ow" colspan="4" rowspan="2">Outgoing multiplier</td>
+    <td class="tg-c3ow" rowspan="2">5a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Outgoing multiplier (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">5b*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0/1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="3" rowspan="2">Incoming magnitude</td>
+    <td class="tg-c3ow" colspan="4" rowspan="2">Incoming multiplier</td>
+    <td class="tg-c3ow" rowspan="2">5c*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Incoming multiplier (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">5d*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7">Committed burst size</td>
+    <td class="tg-c3ow" rowspan="2">6*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Outgoing committed burst size value</td>
+    <td class="tg-c3ow" rowspan="2">6a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Outgoing committed burst size value (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">6b*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0/1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Incoming committed burst size value</td>
+    <td class="tg-c3ow" rowspan="2">6c*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Incoming committed burst size value (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">6d*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7">Excess burst size</td>
+    <td class="tg-c3ow" rowspan="2">7*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Outgoing excess burst size value</td>
+    <td class="tg-c3ow" rowspan="2">7a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Outgoing excess burst size value (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">7b*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0/1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Incoming excess burst size value</td>
+    <td class="tg-c3ow" rowspan="2">7c*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">Incoming excess burst size value (cont.)</td>
+    <td class="tg-c3ow" rowspan="2">7d*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7">Committed burst size magnitude</td>
+    <td class="tg-c3ow" rowspan="2">8*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow">Spare</td>
+    <td class="tg-c3ow" colspan="3" rowspan="2">Incoming Bc<br>magnitude</td>
+    <td class="tg-c3ow" colspan="3" rowspan="2">Outgoing Bc<br>magnitude</td>
+    <td class="tg-c3ow" rowspan="2">8a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7">Excess burst size magnitude</td>
+    <td class="tg-c3ow" rowspan="2">9*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow">Spare</td>
+    <td class="tg-c3ow" colspan="3" rowspan="2">Incoming Be<br>magnitude</td>
+    <td class="tg-c3ow" colspan="3" rowspan="2">Outgoing Be<br>magnitude</td>
+    <td class="tg-c3ow" rowspan="2">9a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+</tbody></table>
+<h4 style="font-family:verdana;">Notes relative to Figure 10-17</h4>
+<pre>
+NOTE 1 – All the parameters are position independent. All the parameters are optional except the outgoing maximum FRIF size. If a parameter is not included, a default value will be used.
+         The term outgoing corresponds to the calling to called DTE direction and the term incoming refers to the direction from the called to the calling DTE.
+         Several fields of the link layer core parameters information element are coded as binary numbers using 2 octets.
+         The Most Significant Bit (MSB) of the field is the bit with the highest bit number of the first octet and the Least Significant Bit (LSB) is bit 1 of the second octet.
+         When a field is coded as a binary number and requires one octet or less than 8 bits, the LSB is bit 1 and the MSB is the highest bit number allocated to the field.
+NOTE 2 – When octet N (N = 3, 4, 5, 6 or 7) is present, octets Na and Nb shall also be present but the presence of octets Nc and Nd is not mandatory.
+NOTE 3 – Octet group 5 (minimum acceptable throughput) may be included only in the SETUP message.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.16 Link layer protocol parameters</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-baqh">8</th>
+    <th class="tg-baqh">7</th>
+    <th class="tg-baqh">6</th>
+    <th class="tg-baqh">5</th>
+    <th class="tg-baqh">4</th>
+    <th class="tg-baqh">3</th>
+    <th class="tg-baqh">2</th>
+    <th class="tg-baqh">1</th>
+    <th class="tg-baqh">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-baqh" colspan="8">Link layer protocol parameters information element identifier</td>
+    <td class="tg-baqh" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">Length of link layer protocol parameters contents</td>
+    <td class="tg-baqh">2</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="7">Transmit window size identifier</td>
+    <td class="tg-baqh" rowspan="2">3*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="7" rowspan="2">Transmit window value</td>
+    <td class="tg-baqh" rowspan="2">3a*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="7">Retransmission timer identifier</td>
+    <td class="tg-baqh" rowspan="2">4*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="7" rowspan="2">Retransmission timer value</td>
+    <td class="tg-baqh" rowspan="2">4a*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="7" rowspan="2">Retransmission timer value (cont.)</td>
+    <td class="tg-baqh" rowspan="2">4b*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="7">Mode of operation</td>
+    <td class="tg-baqh" rowspan="2">5*<br>(Note)</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="5" rowspan="2">Spare</td>
+    <td class="tg-baqh" colspan="2" rowspan="2">Mode<br>indication</td>
+    <td class="tg-baqh" rowspan="2">5a*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">1</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE – Mode of operation is only included when the LLC octet 6 "user information layer 2 protocol" is coded with one of the code points:
+       ITU-T X.25 link layer, ITU-T X.25 multilink, extended LAPB for half duplex operation (see ITU-T Rec. T.71) and ITU-T Rec. X.75 Single Link Procedures (SLP).
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.17 Low layer compatibility</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">8</th>
+    <th class="tg-c3ow">7</th>
+    <th class="tg-c3ow">6</th>
+    <th class="tg-c3ow">5</th>
+    <th class="tg-c3ow">4</th>
+    <th class="tg-c3ow">3</th>
+    <th class="tg-c3ow">2</th>
+    <th class="tg-c3ow">1</th>
+    <th class="tg-c3ow">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Low layer compatibility information element identifier</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="8">Length of the low layer compatibility contents</td>
+    <td class="tg-c3ow">2</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Coding Standard</td>
+    <td class="tg-c3ow" colspan="5">Information transfer capability</td>
+    <td class="tg-c3ow" rowspan="2">3</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Transfer Mode</td>
+    <td class="tg-c3ow" colspan="5">Reserved</td>
+    <td class="tg-c3ow" rowspan="2">4</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Layer 2 ident.</td>
+    <td class="tg-c3ow" colspan="5" rowspan="2">User info Layer 2 protocol</td>
+    <td class="tg-c3ow" rowspan="2">6*<br>(Notes 1, 4)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0/1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Reserved</td>
+    <td class="tg-c3ow" rowspan="2">SREJ<br>use</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2">Modulo</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2">Address<br>Inclusion</td>
+    <td class="tg-c3ow" rowspan="2">6a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">User specified</td>
+    <td class="tg-c3ow" rowspan="2">6a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">Layer 3 ident.</td>
+    <td class="tg-c3ow" colspan="5" rowspan="2">User information layer 3 protocol</td>
+    <td class="tg-c3ow" rowspan="2">7*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0/1</td>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">User specified layer 3 protocol information</td>
+    <td class="tg-c3ow" rowspan="2">7a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="7" rowspan="2">ITU-T Rec. X.263 | ISO/IEC TR 9577 Initial Protocol Identifier (IPI)</td>
+    <td class="tg-c3ow" rowspan="2">7a*</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" rowspan="2">IPI</td>
+    <td class="tg-c3ow" colspan="6">Spare</td>
+    <td class="tg-c3ow" rowspan="2">7b*<br>(Note 2)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">ext.</td>
+    <td class="tg-c3ow" colspan="2">SNAP ID</td>
+    <td class="tg-c3ow" colspan="5">Spare</td>
+    <td class="tg-c3ow" rowspan="2">8*<br>(Note 3)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">1</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+    <td class="tg-c3ow">0</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">OUI Octet 1</td>
+    <td class="tg-baqh">8.1*<br>(Note 3)</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">OUI Octet 2</td>
+    <td class="tg-baqh">8.2*<br>(Note 3)</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">OUI Octet 3</td>
+    <td class="tg-baqh">8.3*<br>(Note 3)</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">PID Octet 1</td>
+    <td class="tg-baqh">8.4*<br>(Note 3)</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">PID Octet 2</td>
+    <td class="tg-baqh">8.5*<br>(Note 3)</td>
+  </tr>
+</tbody></table>
+<pre>
+NOTE 1 – Octet group 5 defined in ITU-T Rec. Q.933 is not used in ITU-T Rec. X.36.
+NOTE 2 – These octet(s) may be present only if octet 7 indicates ITU-T Rec. X.263 | ISO/IEC TR 9577.
+NOTE 3 – This octet group shall be present only if octet 7 indicates ITU-T Rec. X.263 | ISO/IEC TR 9577 and octets 7a and 7b indicate IEEE 802.1 SNAP.
+NOTE 4 – Octet group 6 is omitted if no layer 2 protocol is used.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.18 Priority and service class parameters information element</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-baqh">8</th>
+    <th class="tg-baqh">7</th>
+    <th class="tg-baqh">6</th>
+    <th class="tg-baqh">5</th>
+    <th class="tg-baqh">4</th>
+    <th class="tg-baqh">3</th>
+    <th class="tg-baqh">2</th>
+    <th class="tg-baqh">1</th>
+    <th class="tg-baqh">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-baqh" colspan="8">Priority and service class parameters information element identifier</td>
+    <td class="tg-baqh" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">Length of Priority and service classes parameters contents</td>
+    <td class="tg-baqh">2</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">Frame transfer priority identifier</td>
+    <td class="tg-baqh" rowspan="2">3*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="4">Outgoing transfer priority index</td>
+    <td class="tg-baqh" colspan="4">Incoming transfer priority index</td>
+    <td class="tg-baqh">3.1*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">Frame discard priority identifier</td>
+    <td class="tg-baqh" rowspan="2">4*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="4">Outgoing discard priority index</td>
+    <td class="tg-baqh" colspan="4">Incoming discard priority index</td>
+    <td class="tg-baqh">4.1*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">Service class</td>
+    <td class="tg-baqh" rowspan="2">5*</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">Service class value</td>
+    <td class="tg-baqh">5.1*</td>
+  </tr>
+</tbody></table>
+<h4 style="font-family:verdana;">Table 10-24/X.36 – Priority and service class parameters information element</h4>
+<pre>
+<i>Outgoing transfer priority index (octet 3.1 bits 5-8) (Notes 1, 2)</i>
+A binary number in the range of 0 to 15 indicating the Frame transfer priority index for the outgoing direction. 0 denotes the lowest priority and 15 the highest.
+<i>Incoming requested transfer priority (octet 3.1 bits 1-4) (Notes 1, 2)</i>
+A binary number in the range of 0 to 15 indicating the Frame transfer priority index for the incoming direction. 0 denotes the lowest priority and 15 the highest.
+NOTE 1 – A Frame transfer priority index has a local significance.
+NOTE 2 – The term outgoing refers to the calling to called DTE direction and the term incoming refers to the direction from the called to calling DTE.
+
+<i>Outgoing Frame Discard Priority index (octet 4.1 bits 5-8) (Notes 3, 4)</i>
+A binary number in the range of 0 to 7 indicating the Frame Discard Priority index in the outgoing direction.
+0 denotes the lowest priority (first to be discarded) and 7 the highest. Other values (8 to 15) are reserved.
+<i>Incoming Frame Discard Priority (octet 4.1 bits 1-4) (Notes 3, 4)</i>
+A binary number in the range of 0 to 7 indicating the Frame Discard Priority index in the incoming direction.
+0 denotes the lowest priority (first to be discarded) and 7 the highest. Other values (8 to 15) are reserved.
+NOTE 3 – A frame discard priority index has a local significance.
+NOTE 4 – The term outgoing refers to the calling to called DTE direction and the term incoming refers to the direction from the called to calling DTE.
+
+<i>Service class value (octet 5.1)</i>
+A binary number in the range of 0 to 3 indicating the specified Service Class. Other values are reserved.
+Service classes and their associated quality of service characteristics are standardized – see Table 7-1/X.36 and ITU-T Rec. X.146.
+</pre>
+<br>
+<hr>
+<h4 style="text-align:center; font-family:verdana;"><b>10.6.19 Reverse charging indication</b></h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-baqh">8</th>
+    <th class="tg-baqh">7</th>
+    <th class="tg-baqh">6</th>
+    <th class="tg-baqh">5</th>
+    <th class="tg-baqh">4</th>
+    <th class="tg-baqh">3</th>
+    <th class="tg-baqh">2</th>
+    <th class="tg-baqh">1</th>
+    <th class="tg-baqh">Octet</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-baqh" colspan="8">Reverse charging indication information element identifier</td>
+    <td class="tg-baqh" rowspan="2">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh" colspan="8">Length of reverse charging indication contents</td>
+    <td class="tg-baqh" rowspan="2">2</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">ext.</td>
+    <td class="tg-baqh" colspan="4">Spare</td>
+    <td class="tg-baqh" colspan="3" rowspan="2">Reverse charging indication</td>
+    <td class="tg-baqh" rowspan="2">3</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+</tbody></table>
+<h4 style="font-family:verdana;">Table 10-25/X.36 – Reverse charging indication information element</h4>
+<pre>
+<i>Reverse charging indication (octet 3)</i>
+Bits
+<u>3 2 1</u>
+0 0 1 Reverse charging requested
+All other values are reserved.
+</pre>

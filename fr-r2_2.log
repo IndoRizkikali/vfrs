@@ -1,0 +1,166 @@
+Connected to Dynamips VM "default" (ID 2, type c3600) - Console port
+Press ENTER to get the prompt.
+ROMMON emulation microcode.
+                           Launching IOS image at 0x80008000...
+                                                               Smart Init is disabled. IOMEM set to: 5
+                                                                                                        Using iomem percentage: 5
+              Restricted Rights Legend
+Use, duplication, or disclosure by the Government is
+subject to restrictions as set forth in subparagraph
+(c) of the Commercial Computer Software - Restricted
+Rights clause at FAR sec. 52.227-19 and subparagraph
+(c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+           cisco Systems, Inc.
+           170 West Tasman Drive
+           San Jose, California 95134-1706
+Cisco IOS Software, 3600 Software (C3660-A3JK9S-M), Version 12.4(15)T14, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2010 by Cisco Systems, Inc.
+Compiled Tue 17-Aug-10 11:00 by prod_rel_team
+Image text-base: 0x60008930, data-base: 0x632E0000
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+Cisco 3660 (R527x) processor (revision 1.0) with 187392K/9216K bytes of memory.
+Processor board ID FTX0945W0MY
+R527x CPU at 250MHz, Implementation 40, Rev 1.2, 512KB L2 Cache
+3660 Chassis type: ENTERPRISE
+2 FastEthernet interfaces
+4 Serial interfaces
+DRAM configuration is 64 bits wide with parity enabled.
+125K bytes of NVRAM.
+8192K bytes of processor board System flash (Read/Write)
+Press RETURN to get started!
+*Mar  1 00:00:05.247: %LINEPROTO-5-UPDOWN: Line protocol on Interface VoIP-Null0, changed state to up
+*Mar  1 00:00:05.251: %LINK-3-UPDOWN: Interface FastEthernet0/0, changed state to up
+*Mar  1 00:00:05.255: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up
+*Mar  1 00:00:05.259: %LINK-3-UPDOWN: Interface Serial1/0, changed state to up
+*Mar  1 00:00:05.263: %LINK-3-UPDOWN: Interface Serial1/1, changed state to up
+*Mar  1 00:00:05.267: %LINK-3-UPDOWN: Interface Serial1/2, changed state to up
+*Mar  1 00:00:05.271: %LINK-3-UPDOWN: Interface Serial1/3, changed state to up
+*Mar  1 00:00:05.275: %LINEPROTO-5-UPDOWN: Line protocol on Interface IPv6-mpls, changed state to up
+*Mar  1 00:00:06.291: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/0, changed state to down
+*Mar  1 00:00:06.291: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up
+*Mar  1 00:00:06.291: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/0, changed state to up
+*Mar  1 00:00:06.295: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/1, changed state to up
+*Mar  1 00:00:06.295: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/2, changed state to up
+*Mar  1 00:00:06.299: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/3, changed state to up
+*Mar  1 00:00:07.915: %SYS-5-CONFIG_I: Configured from memory by console
+*Mar  1 00:00:08.199: %LINK-5-CHANGED: Interface FastEthernet0/0, changed state to administratively down
+*Mar  1 00:00:08.447: %SYS-5-RESTART: System restarted --
+Cisco IOS Software, 3600 Software (C3660-A3JK9S-M), Version 12.4(15)T14, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2010 by Cisco Systems, Inc.
+Compiled Tue 17-Aug-10 11:00 by prod_rel_team
+*Mar  1 00:00:08.463: %SNMP-5-COLDSTART: SNMP agent on host Router is undergoing a cold start
+*Mar  1 00:00:08.519: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down
+*Mar  1 00:00:08.531: %CRYPTO-6-GDOI_ON_OFF: GDOI is OFF
+*Mar  1 00:00:08.535: %CRYPTO-6-ISAKMP_ON_OFF: ISAKMP is OFF
+*Mar  1 00:00:08.535: %CRYPTO-6-GDOI_ON_OFF: GDOI is OFF
+*Mar  1 00:00:08.539: %CRYPTO-6-ISAKMP_ON_OFF: ISAKMP is OFF
+*Mar  1 00:00:09.379: %LINK-5-CHANGED: Interface Serial1/1, changed state to administratively down
+*Mar  1 00:00:09.427: %LINK-5-CHANGED: Interface Serial1/2, changed state to administratively down
+*Mar  1 00:00:09.475: %LINK-5-CHANGED: Interface Serial1/3, changed state to administratively down
+*Mar  1 00:00:09.519: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down
+*Mar  1 00:00:10.379: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/1, changed state to down
+*Mar  1 00:00:10.427: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/2, changed state to down
+*Mar  1 00:00:10.475: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/3, changed state to down
+Router>enable
+Router#config term
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#inter serial1/0
+Router(config-if)#ip address 10.10.10.2 255.255.255.224
+Router(config-if)#do write
+Building configuration...
+[OK]
+Router(config-if)#exit
+Router(config)#ip route 10.10.10.3 255.255.255.255 ?
+  A.B.C.D            Forwarding router's address
+  Async              Async interface
+  BVI                Bridge-Group Virtual Interface
+  CDMA-Ix            CDMA Ix interface
+  CTunnel            CTunnel interface
+  DHCP               Default Gateway obtained from DHCP
+  Dialer             Dialer interface
+  FastEthernet       FastEthernet IEEE 802.3
+  Lex                Lex interface
+  Loopback           Loopback interface
+  MFR                Multilink Frame Relay bundle interface
+  Multilink          Multilink-group interface
+  Null               Null interface
+  Port-channel       Ethernet Channel of interfaces
+  Serial             Serial
+  Tunnel             Tunnel interface
+  Vif                PGM Multicast Host interface
+  Virtual-PPP        Virtual PPP interface
+  Virtual-TokenRing  Virtual TokenRing
+  vmi                Virtual Multipoint Interface
+Router(config)#ip route 10.10.10.3 255.255.255.255 10.10.10.1
+Router(config)#do ping 10.10.10.3
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 32/72/116 ms
+Router(config)#do traceroute 10.10.10.3
+Type escape sequence to abort.
+Tracing the route to 10.10.10.3
+  1 10.10.10.1 108 msec 104 msec 64 msec
+  2 10.10.10.3 136 msec 124 msec *
+Router(config)#do traceroute 10.10.10.3
+Type escape sequence to abort.
+Tracing the route to 10.10.10.3
+  1 10.10.10.1 76 msec 108 msec 104 msec
+  2 10.10.10.3 176 msec 132 msec *
+Router(config)#do traceroute 10.10.10.3
+Type escape sequence to abort.
+Tracing the route to 10.10.10.3
+  1 10.10.10.1 108 msec 128 msec 76 msec
+  2 10.10.10.3 136 msec 128 msec *
+Router(config)#do traceroute 10.10.10.3
+Type escape sequence to abort.
+Tracing the route to 10.10.10.3
+  1 10.10.10.1 56 msec 100 msec 72 msec
+  2 10.10.10.3 140 msec 124 msec *
+Router(config)#do traceroute 10.10.10.3
+Type escape sequence to abort.
+Tracing the route to 10.10.10.3
+  1 10.10.10.1 124 msec 104 msec 68 msec
+  2 10.10.10.3 144 msec 76 msec *
+Router(config)#do ping 10.10.10.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 68/88/120 ms
+Router(config)#do ping 10.10.10.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 72/86/104 ms
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#do ping 10.10.10.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 68/78/100 ms
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#do reload

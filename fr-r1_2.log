@@ -1,0 +1,930 @@
+Connected to Dynamips VM "default" (ID 1, type c3600) - Console port
+Press ENTER to get the prompt.
+ROMMON emulation microcode.
+                           Launching IOS image at 0x80008000...
+                                                               Smart Init is disabled. IOMEM set to: 5
+                                                                                                        Using iomem percentage: 5
+              Restricted Rights Legend
+Use, duplication, or disclosure by the Government is
+subject to restrictions as set forth in subparagraph
+(c) of the Commercial Computer Software - Restricted
+Rights clause at FAR sec. 52.227-19 and subparagraph
+(c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+           cisco Systems, Inc.
+           170 West Tasman Drive
+           San Jose, California 95134-1706
+Cisco IOS Software, 3600 Software (C3660-A3JK9S-M), Version 12.4(15)T14, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2010 by Cisco Systems, Inc.
+Compiled Tue 17-Aug-10 11:00 by prod_rel_team
+Image text-base: 0x60008930, data-base: 0x632E0000
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+Cisco 3660 (R527x) processor (revision 1.0) with 187392K/9216K bytes of memory.
+Processor board ID FTX0945W0MY
+R527x CPU at 250MHz, Implementation 40, Rev 1.2, 512KB L2 Cache
+3660 Chassis type: ENTERPRISE
+2 FastEthernet interfaces
+4 Serial interfaces
+DRAM configuration is 64 bits wide with parity enabled.
+125K bytes of NVRAM.
+8192K bytes of processor board System flash (Read/Write)
+Press RETURN to get started!
+*Mar  1 00:00:05.343: %LINEPROTO-5-UPDOWN: Line protocol on Interface VoIP-Null0, changed state to up
+*Mar  1 00:00:05.347: %LINK-3-UPDOWN: Interface FastEthernet0/0, changed state to up
+*Mar  1 00:00:05.351: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up
+*Mar  1 00:00:05.355: %LINK-3-UPDOWN: Interface Serial1/0, changed state to up
+*Mar  1 00:00:05.359: %LINK-3-UPDOWN: Interface Serial1/1, changed state to up
+*Mar  1 00:00:05.363: %LINK-3-UPDOWN: Interface Serial1/2, changed state to up
+*Mar  1 00:00:05.367: %LINK-3-UPDOWN: Interface Serial1/3, changed state to up
+*Mar  1 00:00:05.371: %LINEPROTO-5-UPDOWN: Line protocol on Interface IPv6-mpls, changed state to up
+*Mar  1 00:00:06.383: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/0, changed state to down
+*Mar  1 00:00:06.383: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up
+*Mar  1 00:00:06.383: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/0, changed state to up
+*Mar  1 00:00:06.387: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/1, changed state to up
+*Mar  1 00:00:06.387: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/2, changed state to up
+*Mar  1 00:00:06.391: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/3, changed state to up
+*Mar  1 00:00:08.067: %SYS-5-CONFIG_I: Configured from memory by console
+*Mar  1 00:00:08.311: %LINK-5-CHANGED: Interface FastEthernet0/0, changed state to administratively down
+*Mar  1 00:00:08.591: %SYS-5-RESTART: System restarted --
+Cisco IOS Software, 3600 Software (C3660-A3JK9S-M), Version 12.4(15)T14, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2010 by Cisco Systems, Inc.
+Compiled Tue 17-Aug-10 11:00 by prod_rel_team
+*Mar  1 00:00:08.603: %SNMP-5-COLDSTART: SNMP agent on host Router is undergoing a cold start
+*Mar  1 00:00:08.651: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down
+*Mar  1 00:00:08.667: %CRYPTO-6-GDOI_ON_OFF: GDOI is OFF
+*Mar  1 00:00:08.667: %CRYPTO-6-ISAKMP_ON_OFF: ISAKMP is OFF
+*Mar  1 00:00:08.671: %CRYPTO-6-GDOI_ON_OFF: GDOI is OFF
+*Mar  1 00:00:08.671: %CRYPTO-6-ISAKMP_ON_OFF: ISAKMP is OFF
+*Mar  1 00:00:09.523: %LINK-5-CHANGED: Interface Serial1/1, changed state to administratively down
+*Mar  1 00:00:09.571: %LINK-5-CHANGED: Interface Serial1/2, changed state to administratively down
+*Mar  1 00:00:09.615: %LINK-5-CHANGED: Interface Serial1/3, changed state to administratively down
+*Mar  1 00:00:09.651: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down
+*Mar  1 00:00:10.523: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/1, changed state to down
+*Mar  1 00:00:10.571: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/2, changed state to down
+*Mar  1 00:00:10.615: %LINEPROTO-5-UPDOWN: Line protocol on Interface Serial1/3, changed state to down
+Router>enable
+Router#show running
+Building configuration...
+Current configuration : 1310 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+!
+!
+ip cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial1/0
+ ip address 10.10.10.1 255.255.255.248
+ encapsulation frame-relay IETF
+ map-group linktest
+ serial restart-delay 0
+ frame-relay lmi-type q933a
+ frame-relay svc
+!
+interface Serial1/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+!
+ip http server
+no ip http secure-server
+ip forward-protocol nd
+!
+!
+!
+!
+map-list linktest source-addr X121 510401011000 dest-addr X121 510401011001
+ ip 10.10.10.2 class linktest broadcast ietf
+!
+map-class frame-relay linktest
+ frame-relay cir 64000
+ frame-relay bc 1024000
+ frame-relay be 768000
+ frame-relay idle-timer 90
+ 
+Router#config terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#inter serial1/0
+Router(config-if)#ip address 10.10.10.1 255.255.255.224
+Router(config-if)#exit
+Router(config)#$rce-addr X121 510401011000 dest-addr X121 510401011002
+Router(config-map-list)#ip 10.10.10.3 class linktest broadcast ietf
+Router(config-map-list)#exit
+Router(config)#do show run
+Building configuration...
+Current configuration : 1355 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+!
+!
+ip cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial1/0
+ ip address 10.10.10.1 255.255.255.224
+ encapsulation frame-relay IETF
+ map-group linktest
+ serial restart-delay 0
+ frame-relay lmi-type q933a
+ frame-relay svc
+!
+interface Serial1/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+!
+ip http server
+no ip http secure-server
+ip forward-protocol nd
+!
+!
+!
+!
+map-list linktest source-addr X121 510401011000 dest-addr X121 510401011002
+ ip 10.10.10.2 class linktest broadcast ietf
+ ip 10.10.10.3 class linktest broadcast ietf
+!
+ 
+Router(config)#$rce-addr X121 510401011000 dest-addr X121 510401011001
+Router(config-map-list)#no ip 10.10.10.3 class linktest broadcast ietf
+Router(config-map-list)#ip 10.10.10.2 class linktest broadcast ietf
+Router(config-map-list)#exit
+Router(config)#do show run
+Building configuration...
+Current configuration : 1310 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+!
+!
+ip cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial1/0
+ ip address 10.10.10.1 255.255.255.224
+ encapsulation frame-relay IETF
+ map-group linktest
+ serial restart-delay 0
+ frame-relay lmi-type q933a
+ frame-relay svc
+!
+interface Serial1/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+!
+ip http server
+no ip http secure-server
+ip forward-protocol nd
+!
+!
+!
+!
+map-list linktest source-addr X121 510401011000 dest-addr X121 510401011001
+ ip 10.10.10.2 class linktest broadcast ietf
+!
+ 
+Router(config)#interface Serial1/0
+Router(config-if)#map-group linktest ?
+  <cr>
+Router(config-if)#map-group linktest2 ?
+  <cr>
+Router(config-if)#map-group linktest2
+Router(config-if)#exit
+Router(config)#do show run
+Building configuration...
+Current configuration : 1310 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+!
+!
+ip cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial1/0
+ ip address 10.10.10.1 255.255.255.224
+ encapsulation frame-relay IETF
+ map-group linktest
+ serial restart-delay 0
+ frame-relay lmi-type q933a
+ frame-relay svc
+!
+interface Serial1/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+!
+ip http server
+no ip http secure-server
+ip forward-protocol nd
+!
+!
+!
+!
+map-list linktest source-addr X121 510401011000 dest-addr X121 510401011001
+ ip 10.10.10.2 class linktest broadcast ietf
+!
+map-class frame-relay linktest
+ frame-relay cir 64000
+ frame-relay bc 1024000
+ frame-relay be 768000
+ frame-relay idle-timer 90
+!
+ 
+Router(config)#$urce-addr X121 510401011000 dest-addr X121 510401011002
+Router(config-map-list)#ip 10.10.10.3 class linktest broadcast ietf
+Router(config-map-list)#exit
+Router(config)#do show run
+Building configuration...
+Current configuration : 1455 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+!
+!
+ip cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial1/0
+ ip address 10.10.10.1 255.255.255.224
+ encapsulation frame-relay IETF
+ map-group linktest
+ map-group linktest2
+ serial restart-delay 0
+ frame-relay lmi-type q933a
+ frame-relay svc
+!
+interface Serial1/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+!
+ip http server
+no ip http secure-server
+ip forward-protocol nd
+!
+!
+!
+!
+map-list linktest source-addr X121 510401011000 dest-addr X121 510401011001
+ ip 10.10.10.2 class linktest broadcast ietf
+!
+map-list linktest2 source-addr X121 510401011000 dest-addr X121 510401011002
+ ip 10.10.10.3 class linktest broadcast ietf
+!
+map-class frame-relay linktest
+ 
+Router(config)#$urce-addr X121 510401011000 dest-addr X121 510401011003
+Router(config-map-list)#ip 10.10.10.4 class linktest broadcast ietf
+Router(config-map-list)#exit
+Router(config)#inter serial1/0
+Router(config-if)#map-gr
+Router(config-if)#map-group linktest3
+Router(config-if)#exit
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#do show run
+Building configuration...
+Current configuration : 1600 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+!
+!
+ip cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial1/0
+ ip address 10.10.10.1 255.255.255.224
+ encapsulation frame-relay IETF
+ map-group linktest
+ map-group linktest2
+ map-group linktest3
+ serial restart-delay 0
+ frame-relay lmi-type q933a
+ frame-relay svc
+!
+interface Serial1/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+!
+ip http server
+no ip http secure-server
+ip forward-protocol nd
+!
+!
+!
+!
+map-list linktest source-addr X121 510401011000 dest-addr X121 510401011001
+ ip 10.10.10.2 class linktest broadcast ietf
+!
+map-list linktest2 source-addr X121 510401011000 dest-addr X121 510401011002
+ ip 10.10.10.3 class linktest broadcast ietf
+!
+map-list linktest3 source-addr X121 510401011000 dest-addr X121 510401011003
+ ip 10.10.10.4 class linktest broadcast ietf
+ 
+Router(config)#do ping 10.10.10.2
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 76/199/584 ms
+Router(config)#do ping 10.10.10.3
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 44/154/484 ms
+Router(config)#do ping 10.10.10.30
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.30, timeout is 2 seconds:
+.....
+Success rate is 0 percent (0/5)
+Router(config)#do ping 10.10.10.31
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.31, timeout is 2 seconds:
+Reply to request 0 from 10.10.10.2, 140 ms
+Reply to request 0 from 10.10.10.3, 140 ms
+Reply to request 1 from 10.10.10.2, 156 ms
+Reply to request 1 from 10.10.10.3, 156 ms
+Reply to request 2 from 10.10.10.2, 132 ms
+Reply to request 2 from 10.10.10.3, 132 ms
+Reply to request 3 from 10.10.10.2, 112 ms
+Reply to request 3 from 10.10.10.3, 112 ms
+Reply to request 4 from 10.10.10.2, 104 ms
+Reply to request 4 from 10.10.10.3, 104 ms
+Router(config)#do ping 10.10.10.2
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 100/111/128 ms
+Router(config)#do ping 10.10.10.3
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 72/108/144 ms
+Router(config)#do ping 10.10.10.3
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 68/88/112 ms
+Router(config)#do ping 10.10.10.2
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 72/90/120 ms
+Router(config)#do ping 10.10.10.2
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 56/81/108 ms
+Router(config)#do ping 10.10.10.3
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 68/99/136 ms
+Router(config)#do ping 10.10.10.4
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.4, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 36/69/136 ms
+Router(config)#do ping 10.10.10.4
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.4, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 76/100/144 ms
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#do ping 10.10.10.2
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 72/102/140 ms
+Router(config)#do ping 10.10.10.3
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 40/80/156 ms
+Router(config)#do ping 10.10.10.4
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.4, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 64/82/104 ms
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#do ping 10.10.10.31
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.31, timeout is 2 seconds:
+.....
+Router(config)#do ping 10.10.10.2
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 68/200/668 ms
+Router(config)#do ping 10.10.10.3
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 72/184/524 ms
+Router(config)#do ping 10.10.10.4
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.4, timeout is 2 seconds:
+.....
+Success rate is 0 percent (0/5)
+Router(config)#do show run
+Building configuration...
+Current configuration : 1600 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+!
+!
+ip cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial1/0
+ ip address 10.10.10.1 255.255.255.224
+ encapsulation frame-relay IETF
+ map-group linktest
+ map-group linktest2
+ map-group linktest3
+ serial restart-delay 0
+ frame-relay lmi-type q933a
+ frame-relay svc
+!
+interface Serial1/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+!
+ip http server
+no ip http secure-server
+ip forward-protocol nd
+!
+!
+!
+!
+map-list linktest source-addr X121 510401011000 dest-addr X121 510401011001
+ ip 10.10.10.2 class linktest broadcast ietf
+!
+map-list linktest2 source-addr X121 510401011000 dest-addr X121 510401011002
+ ip 10.10.10.3 class linktest broadcast ietf
+!
+map-list linktest3 source-addr X121 510401011000 dest-addr X121 510401011003
+ ip 10.10.10.4 class linktest broadcast ietf
+!
+ 
+Router(config)#do ping 10.10.10.4
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.10.10.4, timeout is 2 seconds:
+.....
+Success rate is 0 percent (0/5)
+Router(config)#do write
+Building configuration...
+[OK]
+Router(config)#reload
+                 ^
+% Invalid input detected at '^' marker.
+Router(config)#do reload

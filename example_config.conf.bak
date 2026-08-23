@@ -1,0 +1,705 @@
+# vfr_switch - Contoh Berkas konfigurasi
+#              (Draf)
+#
+# Ketentuan penamaan antarmuka (format ala Cisco IOS):
+#   uni<X>/<Y>  antarmuka UNI (X.36 user-to-network interface),
+#               VFRS berperan sebagai DCE pada tipe antarmuka ini
+#   nni<X>/<Y>  antarmuka NNI (X.76 network-to-network interface),
+#               VFRS berperan sebagai DCE dan DTE sekaligus pada
+#               tipe antarmuka ini
+#   X = kode kelompok antarmuka, 0-255
+#   Y = kode antarmuka anggota dari kelompok antarmuka, 0-255
+# Contoh: uni0/0, uni1/0, nni0/0, nni1/0
+# Jumlah maksimum seluruh antarmuka per tiap instance VFRS adalah
+# 131072 (2 * 256 * 256).
+# Jumlah maksimum antarmuka per tipe antarmuka per tiap instance VFRS
+# adalah 65536 (256 * 256).
+#
+# Baris yang dimulai dengan tanda pagar (#) adalah baris komentar.
+
+# ======================================================================
+# KONFIGURASI DASAR SWITCH/INSTANCE VFRS
+# ======================================================================
+# Mengatur konfigurasi dasar dan utama switch/instance VFRS ini, yang
+# meliputi identifikasi switch, kode negara data (DCC), kode jaringan
+# (ND), kode identifikasi jaringan data (DNIC), kode identifikasi
+# jaringan data privat (PNIC), kode kelompok sistem (system group code,
+# SGC/KKS), kode identikasi sistem (system identification code, SIC/KIS),
+# dan panjang nomor pelanggan/terminal default untuk pengalamatan otomatis.
+#
+# Format: swconfig <key1=value1> [key2=value2] [key3=value3] ...
+# Parameter:
+#   swid=<string>      Nilai string untuk identifikasi instance VFRS ini
+#                      dalam antarmuka konsol dan berkas log (default: "vfrs0")
+#   dcc=NNN            Data Country Code (kode negara data) milik instance
+#                      ini untuk persinyalan dan perutean SVC NNI
+#                      (3 digit, default: 100)
+#   nd=<number>|none   Network Digit (kode jaringan) setelah DCC milik
+#                      instance ini untuk persinyalan dan perutean SVC NNI
+#                      (0/tidak ada sampai 6 digit, default: none)
+#   dnic=NNNN          Data Network Identification Code
+#                      (kode identifikasi jaringan data) milik instance ini
+#                      untuk persinyalan dan perutean SVC NNI,
+#                      jika dikonfigurasi bersama DCC dan/atau ND
+#                      maka akan menggantikan konfigurasi DCC + ND
+#                      (4 digit, default: 1000)
+#   pnic=<number>|none Private data Network Identification Code
+#                      (kode identifikasi jaringan data privat) milik instance
+#                      ini untuk persinyalan dan perutean SVC NNI, setelah DNIC
+#                      atau DCC + ND (0/tidak ada sampai 6 digit, default: none)
+#   sgclen=N           Panjang Kode Kelompok Sistem (KKS/SGC) milik
+#                      instance ini untuk persinyalan dan perutean SVC NNI
+#                      (angka 1 sampai 4, default: 1)
+#   sgc=<number>       Kode Kelompok Sistem (KKS/SGC) untuk persinyalan
+#                      dan perutean SVC NNI (1 sampai 4 digit, default: 1)
+#                      Jika panjang nilai KKS yang dikonfigurasikan disini 
+#                      kurang dari panjang nilai yang dikonfigurasikan di
+#                      sgclen, maka akan dipadding di depan nilai KKS dengan
+#                      angka 0 (nol)
+#   siclen=N           Panjang Kode Identifikasi Sistem (KIS/SIC) milik
+#                      instance ini untuk persinyalan dan perutean SVC NNI
+#                      (angka 1 sampai 4, default: 1)
+#   sic=<number>       Kode Identifikasi Sistem (KIS/SIC) untuk persinyalan
+#                      dan perutean SVC NNI (1 sampai 4 digit, default: 1)
+#                      Jika panjang nilai KIS yang dikonfigurasikan disini 
+#                      kurang dari panjang nilai yang dikonfigurasikan di
+#                      siclen, maka akan dipadding di depan nilai KIS dengan angka
+#                      0 (nol)
+#   subnumlen=N        Panjang nomor pelanggan/terminal yang akan diberikan secara
+#                      otomatis, hanya berlaku jika sistem pengalokasian penomoran
+#                      otomatis telah dikonfigurasikan pada (masing-masing) antarmuka
+#                      UNI (angka 1 sampai 6, default: 4)
+
+# Pada contoh ini, karena panjang nilai dalam parameter `sgc` adalah sepanjang
+# 1 digit, sedangkan nilai `sgclen` adalah 2, maka kode kelompok sistem yang
+# dibuat adalah `01`, bukan `1`.
+# Begitu juga pada `sic=1` dan `siclen=2`, juga menghasilkan kode identifikasi
+# sistem `01`, bukan `1`.
+swconfig swid=vfrsA dnic=5104 sgclen=2 sgc=1 siclen=2 sic=1 subnumlen=4
+
+# ======================================================================
+# TINGKAT LOG
+# ======================================================================
+# Mengatur tingkat log yang ditampilkan dan/atau disimpan oleh instance
+# VFRS ini.
+#
+# Format: log_level con=<level> [txt=<level>]
+# Parameter: 
+#   con=<level>    Mengatur tingkat log yang ditampilkan
+#                  oleh konsol VFRS ke pengguna
+#   txt=<level>    Mengatur tingkat log yang disimpan
+#                  dalam berkas log oleh VFRS 
+#   <level>:       trace, debug, info (pengaturan default), warn, error
+
+log_level con=info txt=debug
+
+# ======================================================================
+# BERKAS LOG
+# ======================================================================
+# Mengatur alamat berkas log yang disimpan oleh instance VFRS ini.
+# Pengaturan ini bersifat opsional. Apabila tidak dikonfigurasikan,
+# VFRS tidak akan menghasilkan/membuat berkas log.
+#
+# Format: log_file <log_file_path>
+
+log_file C:\vfrns\vfrs\vfrsA.log
+
+# ======================================================================
+# KONFIGURASI DEFAULT GLOBAL
+# ======================================================================
+# Mengatur nilai parameter/penghitung/pewaktu default ke seluruh antarmuka
+# sebelum konfigurasi override/default per tiap antarmuka yang ditentukan.
+# Apabila salah satu dari parameter-parameter berikut di bawah ini
+# dikonfigurasi, maka nilai parameter default yang diatur disini akan
+# menggantikan nilai konstanta default tetap yang dikodekan secara
+# permanen pada saat kompilasi program ini.
+# Letakkan statement konfigurasi default global SEBELUM konfigurasi default
+# umum pada setiap antarmuka-antarmuka maupun konfigurasi spesifik.
+#
+# Format: defaults <key1=value1> [key2=value2] [key3=value3] ...
+#
+# Parameter untuk LAPF (Q.922 §5.9):
+#   lapf_k=<n>      Window size (compile-time: 8)
+#   lapf_n200=<n>   Max retransmissions (compile-time: 3)
+#   lapf_n201=<n>   Max I-frame info field, octets (compile-time: 260)
+#   lapf_t200=<s>   Retransmission timer, seconds (compile-time: 2s)
+#   lapf_t203=<s>   Idle timer, seconds (compile-time: 30s)
+#
+# Parameter untuk LMI (X.36 §11.6, X.76 §11.7):
+#   lmi_dte_n391=<n>   Global DTE N391 default (1-255; 0=unset, compile-time: 6)
+#   lmi_dte_n392=<n>   Global DTE N392 default (1-10; 0=unset, compile-time: 3)
+#   lmi_dte_n393=<n>   Global DTE N393 default (1-10; 0=unset, compile-time: 4)
+#   lmi_dte_t391=<s>   Global DTE T391 default (5-30; 0=unset, compile-time: 10s)
+#   lmi_n392=<n>       Global DCE N392 default (1-10; 0=unset, compile-time: 3)
+#   lmi_n393=<n>       Global DCE N393 default (1-10; 0=unset, compile-time: 4)
+#   lmi_t392=<s>       Global DCE T392 default (5-30; 0=unset, compile-time: 15s)
+#
+# Parameter pewaktu untuk SVC UNI (X.36 §10.11.2):
+#   svc_uni_t303=<s>   SETUP sent, awaiting response (compile-time: 4s)
+#   svc_uni_t305=<s>   DISCONNECT sent (compile-time: 30s)
+#   svc_uni_t308=<s>   RELEASE sent (compile-time: 4s)
+#   svc_uni_t310=<s>   Awaiting CONNECT after CALL PROC (compile-time: 35s)
+#   svc_uni_t316=<s>   RESTART sent (compile-time: 120s)
+#   svc_uni_t317=<s>   RESTART received, internal clear (compile-time: 10s)
+#   svc_uni_t322=<s>   STATUS ENQUIRY sent (compile-time: 4s)
+#
+# Parameter pewaktu untuk SVC NNI (X.76 §10.6.8):
+#   svc_nni_t303=<s>   SETUP sent, awaiting response (compile-time: 4s)
+#   svc_nni_t308=<s>   RELEASE sent (compile-time: 4s)
+#   svc_nni_t310=<s>   Awaiting CONNECT after CALL PROC (compile-time: 40s)
+#   svc_nni_t316=<s>   RESTART sent (compile-time: 120s)
+#   svc_nni_t317=<s>   RESTART received, internal clear (compile-time: 20s)
+#   svc_nni_t322=<s>   STATUS ENQUIRY sent (compile-time: 4s)
+#
+# Pembatasan QoS untuk SVC (per-port overridable, see 'svc' command):
+#   svc_max_fmif=<n> Max frame size cap for SVCs
+#   svc_max_cir=<n>  Max CIR cap (bps)
+#   svc_min_cir=<n>  Min CIR floor (bps)
+#   svc_max_bc=<n>   Max Bc cap (bits)
+#   svc_max_be=<n>   Max Be cap (bits)
+#
+# Parameter layanan (X.36 §8.2, §8.3):
+#   ar=<bps>                    Physical access rate for all ports (§8.2.1)
+#   svc_default_cir=<bps>       Default CIR for SVCs when DTE omits LLCORE
+#   svc_default_bc=<bits>       Default Bc for SVCs (§8.3.3)
+#   svc_default_be=<bits>       Default Be for SVCs (§8.3.3)
+#   svc_default_fmif=<octets>   Default max frame size for SVCs (§8.3.3)
+#   svc_default_ftp=<0-15>      Default Frame Transfer Priority (§7.4, §8.3.6)
+#   svc_default_fdp=<0-7>       Default Frame Discard Priority (§7.5, §8.3.6)
+#   svc_default_svc_class=<0-3> Default Service Class (§7.6, Table 7-1)
+#
+# defaults lapf_t200=2 lapf_n200=3 lapf_k=7
+# defaults svc_t303=4 svc_t310=30
+# defaults ar=64000 svc_default_cir=32000 svc_default_bc=32000
+# defaults svc_default_ftp=8 svc_default_fdp=4 svc_default_svc_class=1
+
+# ======================================================================
+# DEFINISI ANTARMUKA
+# ======================================================================
+# Mendefinisikan antarmuka-antarmuka yang diaktifkan oleh instance
+# VFRS ini.
+#
+# Format: port <name> <transport> [transport-args...]
+# Nama antarmuka harus menggunakan format uni<X>/<Y> atau nni<X>/<Y>.
+#
+# Mode transport frame yang didukung:
+#  - Named pipe
+#    port <name> pipe-client <nama_pipa> [dlcibit=<10|23>]
+#    port <name> pipe-server <nama_pipa> [dlcibit=<10|23>]
+#  - Antarmuka serial (fisik/virtual)
+#    port <name> serial      <device> <baudrate> [dlcibit=<10|23>]
+#  - TCP raw socket
+#    port <name> tcp         [<local_addr>] <local_port> <remote_addr> <remote_port>
+#                            [dlcibit=<10|23>]
+#    port <name> tcp-client  <remote_addr> <port> [dlcibit=<10|23>] 
+#    port <name> tcp-server  [<bind_addr>] <port> [dlcibit=<10|23>]
+#  - UDP raw socket
+#    port <name> udp         [<local_addr>] <local_port> <remote_addr> <remote_port>
+#                           [dlcibit=<10|23>]
+#    port <name> udp-client  <remote_addr> <port> [dlcibit=<10|23>]
+#    port <name> udp-server  [<bind_addr>] <port> [dlcibit=<10|23>]
+#  - L2TPv3 (untuk masa depan, hanya untuk NNI antar VFRS dan UNI dengan DTE VFRNS)
+#    port <name> l2tpv3-fr   [<local_addr>] <remote_addr> <base_vcid> [dlcibit=<10|23>]
+#    port <name> l2tpv3-hdlc [<local_addr>] <remote_addr> <vcid> [dlcibit=<10|23>]
+#
+# Untuk tipe named pipe, diharuskan salah satu ujung sebagai server (pembuat pipa) dan
+# ujung yang lain sebagai client (pengguna pipa).
+# Jika ujung yang berperan sebagai server tidak berjalan, maka saat ujung client
+# dijalankan, antarmuka klien dengan transport tersebut tidak akan tersedia.
+# Untuk tipe soket TCP/UDP:
+#  - `tcp`/`udp`: mode berpasangan, kedua ujung mendengarkan dan membuat koneksi
+#  - `tcp-client`/`udp-client`: mode client, VFRS membuat koneksi dari port soket acak
+#                               ke port soket di server
+#  - `tcp-server`/`udp-server`: mode server, VFRS menerima koneksi di port soket server
+#                               dari port soket acak client
+# Untuk tipe L2TPv3, antarmuka ini akan tersedia di masa depan. Mode transport ini hanya
+# tersedia untuk koneksi NNI antar instance VFRS dan untuk koneksi UNI dengan DTE dari keluarga
+# VFRNS (VFRAD/VFRTAC), serta dengan  DTE Frame Relay lainnya yang terhubung langsung atau
+# melalui perantara konverter/translator ke L2TPv3.
+# L2TPv3 di VFRS akan mendukung 2 mode:
+#  - HDLC over L2TPv3 (RFC 4349): L2TPv3 berperan sebagai 'kabel', mengangkut seluruh frame
+#    'FR port-to-port pseudowire' Frame Relay hampir secara utuh (tanpa flag dan FCS),
+#                                 dari suatu antarmuka ke antarmuka lain (port-to-port)
+#                                 tanpa memandang tipe dan isi frame, selama masih berupa
+#                                 frame HDLC (Frame Relay menggunakan format frame HDLC).
+#  - FR over L2TPv3 (RFC 4591): L2TPv3 berperan sebagai 'terowongan', mengangkut seluruh
+#    'FR PVC pseudowire'        frame Frame Relay hampir secara utuh (tanpa flag dan FCS),
+#                               dari suatu DLCI dalam suatu antarmuka lokal ke DLCI lain
+#                               pada antarmuka tujuan (DLCI-based FR PVC pseudowire).
+# Pada mode transport L2TPv3, diwajibkan untuk memberikan parameter Virtual Circuit ID
+# (VCID) untuk identifikasi pseudowire L2TPv3. Konfigurasi VCID harus sama diantara
+# kedua ujung koneksi L2TPv3.
+#
+# Format pengalamatan (untuk soket TCP/UDP dan L2TPv3):
+#   - IPv4: "127.0.0.1", "0.0.0.0" (bind all interfaces)
+#   - IPv6: "::1", "::" (bind all interfaces)
+#   - Hostname: "localhost", "router1.example.com"
+#   - Kosong/dihilangkan: bind to all interfaces (0.0.0.0 dan/atau ::)
+#
+# Baudrate maksimum untuk serial adalah 8192000 bps, tergantung dari
+# lingkungan OS yang menjalankan instance VFRS serta driver yang terinstalasi.
+#
+# Framing: TCP dan named pipe menggunakan prefix panjang big-endian 4-byte
+# (4-byte big-endian length prefix), yang kompatibel/sesuai dengan DynaMIPS/GNS3.
+#
+# Konfigurasi Access rate (AR) (X.36 §8.2.1) secara otomatis:
+#   Untuk antarmuka tipe serial, access rate untuk antarmuka yang
+#   bersangkutan akan diturunkan (derived) secara otomatis dari kecepatan
+#   baud (baud rate) serial, apabila tidak konfigurasikan secara eksplisit.
+#   Untuk antarmuka tipe lainnya, gunakan parameter
+#   'congestion <port> access_rate=<bps>' atau 'defaults access_rate=<bps>'
+#   secara manual.
+#
+# Secara default, seluruh antarmuka menggunakan panjang alamat DLCI 10-bit,
+# (0-1023). Jika diperlukan/diinginkan, dapat digunakan panjang alamat DLCI
+# 23-bit (0-8388607), melalui konfigurasi dlcibit. Konfigurasi 23-bit
+# hanya berlaku pada antarmuka yang dikonfigurasi demikian secara eksplisit.
+
+# Konfigurasi 4 endpoint soket UDP ke loopback untuk uji coba,
+# terhubung sebagai antarmuka UNI dalam satu kelompok yang sama
+#    portid udp lhost     lport rhost     rport 
+port uni0/0 udp 127.0.0.1 10000 127.0.0.1 10001 dlcibit=23
+port uni0/1 udp 127.0.0.1 10002 127.0.0.1 10003 dlcibit=23
+port uni0/2 udp 127.0.0.1 10004 127.0.0.1 10005
+port uni0/3 udp 127.0.0.1 10006 127.0.0.1 10007
+
+# Konfigurasi 2 endpoint soket TCP dalam mode server,
+# VFRS akan mendengar koneksi pada alamat IP dan port tersebut
+# EN: TCP server port waiting for a connection
+# EN: Listens on the specified address/port; TCP_NODELAY and SO_KEEPALIVE are enabled.
+# port uni1/0 tcp-server 0.0.0.0 10010
+# port uni1/0 tcp-server :: 10010
+
+# Konfigurasi 3 endpoint soket TCP dalam mode client,
+# VFRS akan menghubungkan ke host tersebut pada port-port ini
+# EN: TCP client with auto-reconnection (exponential backoff 1s-60s)
+# EN: Automatically reconnects if the connection drops.
+# port uni1/0 tcp-client 10.1.0.1 10010
+# port uni1/0 tcp-client localhost 10010          # hostname
+# port uni1/0 tcp-client ::1 10010                # IPv6 loopback
+
+# Antarmuka Named pipe dalam format Windows (UNI)
+# port uni1/1 pipe-server \\.\pipe\vfr_uni11
+
+# Antarmuka serial (Windows / Linux)
+# Access rate diturunkan secara otomatis berdasarkan kecepatan
+# port serial
+# EN: Access rate auto-derived: 115200 baud -> AR = 115200 bps
+# port uni2/0 serial COM3 115200
+# port uni2/1 serial /dev/ttyUSB0 115200
+
+# Antarmuka NNI (Network-to-Network Interface)
+# Polling LMI dua arah secara simetris wajib dilakukan pada antarmuka
+# tipe NNI. Hanya protokol LMI tipe X.36/X.76 (PD=0x08) yang dapat
+# digunakan untuk antarmuka NNI.
+# port nni0/0 tcp-client 10.1.0.1 20000
+# port nni0/1 tcp-server 0.0.0.0 20001
+
+# ======================================================================
+# DEFINISI PVC (Permanent Virtual Circuits)
+# ======================================================================
+# Membuat pemetaan DLCI dua arah (dua entri tabel switching).
+# Koneksi PVC dibuat secara permanen dan menghubungkan antara 2 DLCI
+# tertentu dari 2 antarmuka yang berbeda.
+#
+# Format: pvc <port1> <dlci1> <port2> <dlci2> [cir=<bps>] [bc=<bits>]
+#             [be=<bits>] [ftp=<0-15>] [fdp=<0-7>] [srvcls=<0-3>]
+# Parameter layanan opsional (X.36 §7.4-7.6, §8.2):
+#   cir         Committed Information Rate, dalam bps (traffic policing)
+#   bc          Committed burst size Bc, dalam bit (Tc = Bc/CIR)
+#   be          Excess burst size Be, dalam bit
+#   ftp         Frame Transfer Priority, 0 sampai 15
+#               (lebih tinggi = waktu penundaan yang lebih baik)
+#   fdp         Frame Discard Priority, 0 sampai 7
+#               (lebih tinggi = dibuang lebih terakhir)
+#   srvcls      Service Class (per X.36 Table 7-1), 0 sampai 3
+#
+# Pengaturan lalu lintas: token bucket tiga lapis memberlakukan CIR/Bc/Be.
+# Lalu-lintas Committed (dalam Bc): diteruskan apa adanya
+# Lalu-lintas berlebih (dalam Be): bit DE disetel (X.36 §8.2)
+# Di luar Bc+Be: seperti lalu-lintas berlebih, tetapi akan lebih lambat
+#                diproses dan akan dapat langsung dibuang oleh VFRS
+#
+# Rentang DLCI 10-bit per X.36:
+#            0 Reserved for LMI (Clause 11 X.36/X.76) over UI-frame,
+#              and SVC signaling (Clause 10 X.36/X.76) over I-frame
+#     1 -   15 Reserved for future use
+#    16 -  991 User data circuits (PVCs and SVCs)
+#   992 - 1007 Layer 2 management of FRDTS, such as CLLM
+#  1008 - 1022 Reserved for future use
+#         1023 Reserved for in channel layer 2 management 
+#              (Cisco/Gang of Four LMI)
+# Rentang DLCI 23-bit per X.36:
+#               0 Reserved for LMI (Clause 11 X.36/X.76) over UI-frame,
+#                 and SVC signaling (Clause 10 X.36/X.76) over I-frame
+#     1 -      15 Reserved for future use
+#    16 -     991 User data circuits (PVCs and SVCs)
+#   992 -    1007 Layer 2 management of FRDTS, such as CLLM
+#  1008 -    1022 Reserved for future use
+#            1023 Reserved for in channel layer 2 management 
+#                 (Cisco/Gang of Four LMI)
+#  1024 - 8388607 Virtual circuit identification
+
+# Koneksi PVC antara uni0/0 dan uni0/1
+pvc uni0/0 100 uni0/1 200
+pvc uni0/0 101 uni0/1 201
+
+# Koneksi PVC antara uni0/0 dan uni0/2
+pvc uni0/0 102 uni0/2 300
+
+# Koneksi PVC NNI
+#
+# DTE UNI lokal <-> VFRS lokal <- NNI -> VFRS tujuan <-> DTE UNI tujuan
+#
+# Pastikan nilai DLCI pada antarmuka NNI lokal sama dengan nilai DLCI pada
+# antarmuka NNI VFRS tujuan, dan dihubungkan dengan DLCI pada antarmuka UNI ke 
+# DTE tujuan oleh instance VFRS tujuan.
+# pvc uni0/0 110 nni0/0 210
+# pvc uni0/1 111 nni0/0 211
+
+# Koneksi PVC dengan pengaturan lalu-lintas dan prioritas frame
+# pvc uni0/0 103 uni0/1 203 cir=64000 bc=64000 be=32000 ftp=8 fdp=4
+
+# ======================================================================
+# KONFIGURASI LMI (Q.933 Annex A / T1.617 Annex D / Cisco LMI)
+# ======================================================================
+# Mengaktifkan dan mengatur protokol persinyalan LMI
+# (Local Management Interface) untuk pengelolaan koneksi PVC.
+# Apabila suatu antarmuka tidak dikonfigurasikan secara eksplisit
+# dengan `lmi`, maka antarmuka tersebut tidak dilayani/dikelola oleh
+# protokol LMI.
+#
+# Format: lmi <port_name> [q933a|ansi|cisco|none]
+#                         [t392=<s>] [n392=<n>] [n393=<n>]
+#                         [async=<true|false>]
+# Tipe protokol LMI yang didukung:
+#   q933a   ITU-T Q.933 Annex A - VFRS menggunakan LMI versi ITU-T X.36/X.76 Klausa 11,
+#           yang sama persis dengan Q.933 Annex A, ditambah dengan implementasi lampiran
+#           X.36 Annex G/X.76 Annex C (Full Status Continued)
+#   ansi    ANSI T1.617 Annex D - hampir persis dengan Q.933 Annex A dengan
+#           beberapa perbedaan
+#   cisco   Protokol LMI vendor Gang of Four (Cisco-DEC-Nortel-StrataCom)
+#   none    Protokol LMI dinonaktifkan secara eksplisit pada antarmuka ini
+# Secara default, VFRS menggunakan LMI tipe Q.933 Annex A, jika tipe LMI yang
+# digunakan pada port tersebut tidak dinyatakan secara eksplisit.
+#
+# Parameter DCE LMI:
+#   n392   Error threshold, 1-10 (default: 3)
+#   n393   Monitored events window, 1-10 (default: 4)
+#   t392   DCE polling verification timer, 5-30 seconds (default: 15s)
+# Parameter lainnya:
+#   async=<true|false>   Mengatur pengiriman STATUS secara asinkron
+#                        oleh instans VFRS ini.
+
+# Konfigurasi LMI pada 4 antarmuka UNI dalam kelompok yang sama,
+# dengan tipe protokol Q.933 Annex A dan nilai parameter standar
+# (kecuali digantikan dengan nilai parameter global yang ditetapkan 
+# sebelumnya pada bagian Default Global).
+lmi uni0/0 q933a
+lmi uni0/1 q933a
+lmi uni0/2 q933a
+lmi uni0/3 q933a
+
+# Konfigurasi LMI pada antarmuka UNI dengan nilai parameter custom.
+# Nilai parameter custom yang ditetapkan ini menggantikan nilai
+# parameter LMI global (atau yang dikodekan permanen) di antarmuka ini.
+# Jika ada parameter yang tidak ditetapkan di antarmuka ini, maka digunakan
+# parameter LMI global (atau yang dikodekan secara permanen).
+# lmi uni0/0 q933a t392=20 n392=3 n393=4
+
+# Untuk antarmuka tipe NNI, hanya LMI tipe `q933a` atau `none` yang
+# dapat digunakan. Jika menggunakan parameter selain kedua tipe tersebut,
+# nilainya akan diubah secara paksa menjadi `q933a`.
+# `lmi` tetap dapat digunakan untuk mengubah parameter DCE LMI pada
+# antarmuka NNI.
+# lmi nni0/0 q933a t392=15 n392=3 n393=4
+
+# ======================================================================
+# KONFIGURASI LMI DUA ARAH (Bidirectional LMI)
+# ======================================================================
+# Mengaktifkan fungsionalitas polling sisi DTE pada suatu antarmuka.
+# Apabila diaktifkan pada suatu antarmuka, instance VFRS akan mengirim
+# pesan LMI STATUS ENQUIRY dan memproses pesan LMI STATUS dengan DTE
+# pada antarmuka tersebut.
+#
+# Format: lmi_dte <port_name> [t391=<s>] [n391=<n>] [n392=<n>] [n393=<n>]
+# Parameter DTE LMI:
+#   n391  Full status polling counter, 1-255 (default: 6)
+#   n392  Error threshold, 1-10 (default: 3)
+#   n393  Monitored events window, 1-10 (default: 4)
+#   t391  DTE polling interval, 5-30 seconds (default: 10s)
+#
+# Apabila suatu antarmuka yang dikonfigurasikan dengan `lmi_dte` tidak 
+# dikonfigurasikan dengan `lmi`, maka berdasarkan jenis antarmuka:
+# - Antarmuka tipe UNI: konfigurasi `lmi_dte` ditolak dan tidak diaktifkan
+# - Antarmuka tipe NNI: konfigurasi `lmi` diaktifkan secara implisit (tersirat),
+#                       dengan nilai parameter sisi DCE default
+
+# Mengaktifkan mode LMI bidirectional pada antarmuka UNI
+# dengan pengaturan nilai custom. Nilai custom disini akan menggantikan
+# nilai parameter DTE LMI global di antarmuka ini.
+# (Lihat bagian konfigurasi LMI)
+# lmi_dte uni0/0 t391=10 n391=6
+
+# Untuk antarmuka tipe NNI, lmi_dte akan diaktifkan secara otomatis
+# (diwajibkan berdasarkan X.76 §11.4) untuk persinyalan LMI NNI, apabila
+# antarmuka NNI tersebut sudah dikonfigurasikan dengan pengaturan `lmi`.
+# Walaupun demikian, `lmi_dte` dapat digunakan untuk mengubah parameter
+# DTE LMI pada antarmuka NNI tersebut.
+# lmi_dte nni0/0 t391=10 n391=6
+
+# ======================================================================
+# KONFIGURASI PARAMETER LAPF CUSTOM (Q.922 §5.9)
+# ======================================================================
+# Mengubah nilai parameter LAPF default pada suatu antarmuka. Apabila
+# dikonfigurasikan pada suatu antarmuka, maka antarmuka tersebut
+# akan menggunakan parameter custom yang ditetapkan disini. Jika ada
+# parameter yang tidak ditetapkan disini, maka antarmuka tersebut
+# akan menggunakan parameter yang ditetapkan di konfigurasi default global
+# atau yang dikodekan secara permanen.
+#
+# Format: lapf <port_name> [k=<n>] [n200=<n>] [n201=<n>] [t200=<s>] [t203=<s>]
+# Parameter:
+#   k=<n>      Window size (default: 8)
+#   n200=<n>   Max retransmissions (default: 3)
+#   n201=<n>   Max I-frame info field, octets (default: 260)
+#   t200=<s>   Retransmission timer, seconds (default: 2s)
+#   t203=<s>   Idle timer, seconds (default: 30s)
+
+# lapf uni0/0 t200=1 n200=5
+# lapf uni0/2 k=3 n201=1598
+
+# ======================================================================
+# DEFINISI SVC (Switched Virtual Circuits)
+# ======================================================================
+# Mengaktifkan fungsionalitas layanan dan persinyalan SVC di suatu antarmuka.
+# Untuk antarmuka UNI, VFRS bekerja sebagai sisi DCE (jaringan) dan
+# menggunakan protokol persinyalan yang diatur dalam Rekomendasi ITU-T X.36 (2003)
+# pada Klausul 10.
+# Untuk antarmuka NNI, VFRS bekerja sebagai sisi DTE dan DCE sekaligus (STE)
+# dan menggunakan protokol persinyalan yang diatur dalam Rekomendasi ITU-T X.76 (2003)
+# pada Klausul 10.
+# !!PERHATIAN!! Konfigurasi di bagian ini hanya berfungsi untuk mengaktifkan
+# fungsionalitas dan sistem persinyalan SVC saja.
+# Untuk mengatur penomoran/pengalamatan SVC, lihat bagian `svc_addr`.
+# Untuk mengatur perutean SVC, lihat bagian `svc_route`.
+#
+# Format: svc_int  <port_name> [dlci_low=<n>] [dlci_high=<n>]
+#                  [t303=<s>] [t305=<s>] [t308=<s>] [t310=<s>] [t301=<s>]
+#                  [t316=<s>] [t317=<s>] [t322=<s>]
+#                  [default_cir=<bps>] [default_bc=<bits>] [default_be=<bits>]
+#                  [default_fmif=<octets>] [default_ftp=<0-15>] [default_fdp=<0-7>]
+#                  [default_svc_class=<0-3>]
+#
+# Parameter:
+#   dlci_low    Nilai DLCI yang paling rendah dalam pool alokasi DLCI SVC
+#               (default: 512)
+#   dlci_high   Nilai DLCI yang paling tinggi dalam pool alokasi DLCI SVC
+#               (default: 991)
+#
+# Parameter layanan SVC default per antarmuka (X.36 §8.3.3, §8.3.6):
+#   default_cir       Default CIR (bps) when DTE omits LLCORE
+#   default_bc        Default Bc (bits) measurement interval
+#   default_be        Default Be (bits) excess burst
+#   default_fmif      Default max frame information field (octets)
+#   default_ftp       Default Frame Transfer Priority, 0-15 (§7.4)
+#   default_fdp       Default Frame Discard Priority, 0-7 (§7.5)
+#   default_svc_class Default Service Class, 0-3 per Table 7-1 (§7.6)
+#
+# Timers (network-side, per X.36 Tables 10-27/10-28):
+#   T303  4s   SETUP sent, awaiting response (retransmit once)
+#   T305  30s  DISCONNECT sent, awaiting RELEASE
+#   T308  4s   RELEASE sent (retransmit once, then force clear)
+#   T310  10s  CALL PROCEEDING received, awaiting ALERTING/CONNECT
+#   T301  180s Alerting, awaiting CONNECT
+#   T316  120s RESTART sent (retransmit)
+#   T317  10s  RESTART received, internal clearing watchdog
+#   T322  4s   STATUS ENQUIRY sent (retransmit)
+#
+# EN: Per-port timer overrides replace global defaults for that port.
+
+# ======================================================================
+# KONFIGURASI PENOMORAN SVC
+# ======================================================================
+# Mengatur pengalokasian nomor telepon/pelanggan untuk layanan/persinyalan
+# SVC pada suatu antarmuka UNI.
+# Walapun antarmuka tersebut tidak diaktifkan untuk layanan/persinyalan SVC,
+# VFRS tetap dapat mengalokasikan nomor ke antarmuka tersebut, selama nomor
+# untuk antarmuka tersebut tetap dikonfigurasikan disini. Nomor yang
+# ditetapkan ke antarmuka tersebut akan tetap diproses saat pembacaan berkas
+# konfigurasi, akan tetapi VFRS akan mencegat dan menolak segala panggilan
+# yang akan masuk ke nomor tersebut dengan kode alasan 3 (No route to destination).
+#
+# Format: svc_addr  <port_name> [args...]
+#  - Mode alokasi manual untuk E.164 dan X.121:
+#    svc_addr  <port_name> manual [x121|e164] <primary_sub_number>
+#              [alias=x121|e164,<alias_sub_number>]
+#  - Mode alokasi semi-otomatis prefiks (DNIC + KKS + KIS) khusus X.121:
+#    svc_addr  <port_name> autoprefix <primary_sub_number>
+#              [alias=x121|e164,<alias_sub_number>]
+# <port_name> harus merupakan antarmuka tipe UNI.
+#
+# Sistem penomoran yang didukung:
+#   x121    Menggunakan sistem penomoran jaringan data (PDN) X.121 (default)
+#   e164    Menggunakan sistem penomoran jaringan telepon (PSTN/ISDN) E.164
+#
+# Untuk mempermudah proses penomoran secara manual, dapat digunakan karakter
+# mnemonik berikut yang akan digantikan dengan nilai pada bagian `swconfig`
+# (hanya berlaku untuk antarmuka dengan sistem penomoran X.121):
+#   D       Kode DNIC instans VFRS ini
+#   G       Kode Kelompok Sistem instans VFRS ini
+#   E       Kode Identifikasi Sistem instans VFRS ini
+#
+# Untuk mode alokasi manual, panjang nomor pada bagian `<primary_sub_number>`
+# hanya dibatasi oleh batas panjang maksimum program sekitar 20 digit.
+# Untuk mode alokasi semi-otomatis prefiks, karena DNIC + KKS + KIS
+# (yang berasal dari nilai pada bagian `swconfig`) ditambahkan secara otomatis
+# di depan nilai `<primary_sub_number>` (prepending), panjang `<primary_sub_number>`
+# dibatasi maksimal hingga nilai parameter `subnumlen` pada bagian `swconfig`.
+#
+# Perlu diketahui bahwa instance VFRS itu sendiri dialokasikan nomor pelanggan
+# berupa DNIC + KKS + KIS + angka 0 (nol) sebanyak nilai `subnumlen`
+# (contoh untuk `subnumlen=4`: 5104+01+01+0000 -> 510401010000). Nomor ini
+# dapat diakses dari semua antarmuka (UNI dan NNI) dan digunakan untuk banyak
+# hal, termasuk persinyalan dan penyediaan layanan tertentu.
+
+# ======================================================================
+# KONFIGURASI PERSINYALAN SVC
+# ======================================================================
+#
+# Format: svc_route  <port_name> [x121|e164] [args...]
+#  - Tipe perutean struktural (untuk X.121):
+#         svc_route  <port_name> x121 dnic=<dst_dnic> [sgc=<dst_sgc>
+#                    [sic=<dst_sic>]]
+#  - Tipe perutean prefiks terpanjang (untuk X.121 dan E.164):
+#         svc_route  <port_name> [x121|e164] prefix=<prefix>
+# <port_name> harus merupakan antarmuka tipe NNI.
+#
+# Untuk memudahkan proses penomoran, digunakan mnemonik berikut yang akan
+# digantikan dengan nilai pada bagian swconfig (hanya berlaku untuk antarmuka
+# dengan sistem penomoran X.121):
+#   D       Kode DNIC instans VFRS ini
+#   G       Kode Kelompok Sistem instans VFRS ini
+#   E       Kode Identifikasi Sistem instans VFRS ini
+
+# ======================================================================
+# KONFIGURASI DETEKSI DAN MANAJEMEN KEMACETAN (X.36 §12)
+# ======================================================================
+# Mengatur dan mengaktifkan deteksi dan manajemen kemacetan pada suatu
+# antarmuka, dengan pemberlakuan FECN/BECN/DE dan pengiriman notifikasi
+# CLLM (Consolidated Link Layer Management) opsional.
+# Konfigurasi deteksi dan manajemen kemacetan ini berlaku secara global
+# (tanpa memandang DLCI) dalam suatu antarmuka.
+#
+# Format: congestion <port_name> rate=<fps> [clear=<fps>]
+#              [threshold=<n>] [cllm=on|off] [access_rate=<bps>]
+#
+# Parameter:
+#   rate        Batas minimum untuk mengindikasikan terjadinya kemacetan,
+#               dalam frame/detik (wajib)
+#   clear       Batas minimum untuk mengindikasikan terurainya kemacetan,
+#               dalam frame/detik (default: nilai rate dibagi 2)
+#   threshold   Write failure count to trigger congestion (default: 0=off)
+#   cllm        Enable CLLM notifications on this port (on/off)
+#   access_rate Physical access rate for the port in bps (X.36 §8.2.1)
+#
+# Ketika terjadi tingkat kemacetan ringan hingga sedang:
+#   - bit FECN akan diaktifkan (disetel 1) pada frame yang menuju
+#     node/jaringan tujuan dari node/jaringan yang mengalami kemacetan.
+#     (arah normal)
+#   - bit BECN akan diaktifkan (disetel 1) pada frame yang menuju
+#     node/jaringan asal dari node/jaringan yang mengalami kemacetan.
+#     (arah berlawanan)
+# Ketika terjadi tingkat kemacetan sedang hingga berat, kedua hal diatas
+# tetap berlaku dan ditambah dengan:
+#   - Frame-frame dengan bit DE disetel (1) akan langsung dibuang.
+#   - Frame notifikasi CLLM akan dikirimkan pada DLCI 1007
+#     ke antarmuka yang mengalami kemacetan, jika CLLM diaktifkan pada
+#     antarmuka tersebut.
+#
+# Per X.36 §9.3.3: bit FECN/BECN/DE yang bernilai 1 dari frame-frame
+# yang masuk TIDAK BOLEH disetel ke 0 (cleared) oleh switch.
+# Nilai dalam bit FECN/BECN/DE tidak boleh diubah-ubah (passthrough)
+# oleh jaringan/switch lain.
+#
+# congestion uni0/0 rate=10000 clear=5000 cllm=on
+# congestion uni0/1 rate=5000 threshold=3
+
+# ======================================================================
+# KONFIGURASI CLLM (X.36 Annex C)
+# ======================================================================
+# Mengatur pengiriman pesan notifikasi kemacetan CLLM pada DLCI 1007.
+# Jika konfigurasi ini diatur secara eksplisit pada suatu antarmuka yang
+# tidak mengaktifkan CLLM di bagian 'congestion', maka secara otomatis
+# konfigurasi CLLM akan diaktifkan secara paksa dengan parameter yang
+# diatur disini.
+# Fungsi utama konfigurasi ini adalah untuk mengatur interval transmisi
+# ulang pesan CLLM selama masa kemacetan.
+#
+# Format: cllm <port_name> [tx=<s>]
+#
+# Parameter:
+#   tx   interval retransmisi CLLM selama kemacetan, 5-30s (default: 10s)
+
+cllm uni0/0 tx=10
+cllm uni0/1
+
+# ======================================================================
+# Multicast groups (frame replication)
+# ======================================================================
+# Replicates frames between endpoints with DLCI rewriting.
+#
+# Modes:
+#   oneway  Source -> members only  (point-to-multipoint)
+#   twoway  Source <-> members      (bidirectional, members reply to source)
+#   nway    Any -> all others       (multipoint-to-multipoint, full mesh)
+#
+# Format:
+#   mcast <group_name> <source_port> <source_dlci> [oneway|twoway|nway]
+#   mcast_member <group_name> <member_port> <member_dlci>
+#
+# Endpoint ownership constraints:
+#   - A (port,dlci) multicast endpoint may belong to only one multicast group.
+#   - A (port,dlci) multicast endpoint cannot also be a PVC ingress endpoint.
+#
+# Forwarding behavior:
+#   - Copies are sent only to currently operational recipients (active group).
+#   - Inactive recipients are skipped (frames are not queued for later delivery).
+#   - Sender never receives its own copy.
+#
+# LMI active-bit semantics for multicast DLCIs:
+#   - oneway root Mdlci: active if active to at least one destination.
+#   - oneway leaf Mdlci: active only when point-to-point + multicast connectivity
+#     requirements to the root are satisfied.
+#   - twoway root Mdlci: active if active to at least one destination.
+#   - twoway leaf Mdlci: active if active to the root.
+#   - nway member Mdlci: active if active to at least one other member.
+#
+
+# One-way broadcast: uni0/0:1019 -> uni0/0:1020, uni0/1:1021
+# mcast broadcast1 uni0/0 1019 oneway
+# mcast_member broadcast1 uni0/0 1020
+# mcast_member broadcast1 uni0/1 1021
+
+# N-way full mesh: any participant -> all others
+# mcast mesh1 uni0/0 500 nway
+# mcast_member mesh1 uni0/1 501
+# mcast_member mesh1 uni0/1 502
+
+# ======================================================================
+# Packet Capture (pcap)
+# ======================================================================
+# Format: capture <port_name|all> <filename> [svc=iframe|ui]
+#
+# Captures Frame Relay frames in standard pcap format
+# (LINKTYPE_FRELAY, DLT 107). Viewable in Wireshark.
+# SVC capture mode:
+#   svc=iframe  capture LAPF I-frame SVC payloads (default)
+#   svc=ui      capture UI-frame SVC payloads
+
+# Per-port capture:
+# capture uni0/0 uni00_trace.pcap
+# capture nni0/0 nni00_trace.pcap
+
+# Global capture (all frames through the switch):
+# capture all switch_trace.pcap
