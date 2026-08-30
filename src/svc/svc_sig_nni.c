@@ -5,6 +5,7 @@
 
 #include "svc_sig_nni.h"
 #include "svc_sig_uni.h"
+#include "svc_spvc.h"
 #include "vfr.h"
 #include "ports/svc_numbering/svc_numbering.h"
 #include "switching/svc_routing_common.h"
@@ -21,25 +22,10 @@ static int send_sig_frame_nni(vfr_port_t *port, const u8 *msg_data, size_t msg_l
     if (!port || !msg_data || msg_len == 0) return -1;
 
     if (port_get_lapf_ctx(port, 0)) {
-        return lapf_send_l3(port, 0, msg_data, msg_len);
+        return port_dl_send_data(port, 0, msg_data, msg_len);
     }
 
-    u8 frame_buf[FR_MAX_FRAMESZ];
-    fr_addr_t flags;
-    memset(&flags, 0, sizeof(flags));
-
-    size_t frame_len = fr_build_ui_frame(frame_buf, sizeof(frame_buf), 0, msg_data, msg_len, &flags);
-    if (frame_len == 0) return -1;
-
-    if (port->capture) {
-        pcap_writer_write(port->capture, frame_buf, frame_len);
-    }
-
-    if (port->ops && port->ops->send) {
-        return port->ops->send(port, frame_buf, frame_len);
-    }
-
-    return -1;
+    return port_dl_send_unit_data(port, 0, msg_data, msg_len, 0, 0, 0, 0);
 }
 
 /* Helper to initiate standard NNI call clearing procedure (ITU-T X.76 §10.6.2) */
@@ -239,6 +225,11 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
 
             while (offset < ie_total_len) {
                 u8 ie_id = ie_start[offset];
+                if (ie_id & 0x80) {
+                    /* Single-octet IE: consumes 1 octet */
+                    offset += 1;
+                    continue;
+                }
                 if (offset + 1 >= ie_total_len) break;
                 u8 ie_len = ie_start[offset + 1];
                 const u8 *ie_data = &ie_start[offset + 2];
@@ -319,6 +310,23 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
                             call->uu_len = (u8)ie_len;
                         }
                         break;
+                    case Q933_IE_CALLED_SPVC: {
+                        q933_spvc_ie_t spvc_called;
+                        if (q933_parse_called_spvc_ie(ie_data, ie_len, &spvc_called) == 0) {
+                            call->is_spvc = 1;
+                            call->spvc_selection_type = spvc_called.selection_type;
+                            call->spvc_target_dlci = spvc_called.dlci;
+                        }
+                        break;
+                    }
+                    case Q933_IE_CALLING_SPVC: {
+                        u32 calling_dlci = 0;
+                        u8 dlci_len_p = 0;
+                        if (q933_parse_calling_spvc_ie(ie_data, ie_len, &calling_dlci, &dlci_len_p) == 0) {
+                            call->spvc_calling_dlci = calling_dlci;
+                        }
+                        break;
+                    }
                     default:
                         /* Unrecognized IE (X.76 §10.6.7.4 / §10.10.7.4) */
                         if ((ie_id & 0x10) == 0) {
@@ -343,6 +351,14 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
             if (call->rev_charge_requested && sctx->reverse_charging_prevention) {
                 svc_nni_initiate_clearing(port, sctx, call, Q850_CAUSE_FACILITY_REJECTED);
                 return 0;
+            }
+
+            /* Check if this incoming SETUP is terminating at a local SPVC endpoint (ITU-T X.76 Annex A.4.2) */
+            if (call->is_spvc && g_vfrs) {
+                int spvc_rc = spvc_handle_nni_incoming_setup(g_vfrs, port, call);
+                if (spvc_rc >= 0) {
+                    return 0; /* Handled as local SPVC termination */
+                }
             }
 
             if (sctx->network_id[0] && call->tni_list.count < SVC_MAX_TRANSIT_NETWORKS) {
@@ -447,12 +463,30 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
                 timer_cancel(&call->t303);
                 call->state = SVC_NNI_STATE_NN9_CALL_PROC_RCVD;
                 timer_set(&call->t310, sctx->t310_ms);
+            } else {
+                /* Table IV.1/X.76: Send STATUS Cause 98 on incompatible CALL PROCEEDING */
+                u8 tx_buf[128];
+                int tx_len = q933_build_status_raw_ex(tx_buf, sizeof(tx_buf), hdr.call_ref_value, hdr.call_ref_flag ^ 1, hdr.call_ref_len, call->state, Q850_CAUSE_MSG_NOT_COMPAT_WITH_STATE, hdr.message_type, 1);
+                if (tx_len > 0) send_sig_frame_nni(port, tx_buf, tx_len);
+                LOG_WARN("SVC NNI [Port %s CRV 0x%04X]: Incompatible CALL PROCEEDING received in state %s. Sent STATUS Cause 98.",
+                         port->name, call->call_ref, q933_get_state_name(call->state));
             }
             return 0;
         }
 
         case Q933_MSG_CONNECT: {
             if (!call) return 0;
+
+            if (call->state != SVC_NNI_STATE_NN6_CALL_PRESENT && call->state != SVC_NNI_STATE_NN9_CALL_PROC_RCVD) {
+                /* Table IV.1/X.76: Send STATUS Cause 98 on incompatible CONNECT */
+                u8 tx_buf[128];
+                int tx_len = q933_build_status_raw_ex(tx_buf, sizeof(tx_buf), hdr.call_ref_value, hdr.call_ref_flag ^ 1, hdr.call_ref_len, call->state, Q850_CAUSE_MSG_NOT_COMPAT_WITH_STATE, hdr.message_type, 1);
+                if (tx_len > 0) send_sig_frame_nni(port, tx_buf, tx_len);
+                LOG_WARN("SVC NNI [Port %s CRV 0x%04X]: Incompatible CONNECT received in state %s. Sent STATUS Cause 98.",
+                         port->name, call->call_ref, q933_get_state_name(call->state));
+                return 0;
+            }
+
             timer_cancel(&call->t303);
             timer_cancel(&call->t310);
             timer_cancel(&call->t322);
@@ -467,6 +501,11 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
 
             while (offset < ie_total_len) {
                 u8 ie_id = ie_start[offset];
+                if (ie_id & 0x80) {
+                    /* Single-octet IE: consumes 1 octet */
+                    offset += 1;
+                    continue;
+                }
                 if (offset + 1 >= ie_total_len) break;
                 u8 ie_len = ie_start[offset + 1];
                 const u8 *ie_data = &ie_start[offset + 2];
@@ -507,6 +546,15 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
                             call->uu_len = (u8)ie_len;
                         }
                         break;
+                    case Q933_IE_CALLED_SPVC: {
+                        q933_spvc_ie_t spvc_called;
+                        if (q933_parse_called_spvc_ie(ie_data, ie_len, &spvc_called) == 0) {
+                            call->is_spvc = 1;
+                            call->spvc_selection_type = spvc_called.selection_type;
+                            call->spvc_target_dlci = spvc_called.dlci;
+                        }
+                        break;
+                    }
                     default:
                         /* Unrecognized IE (X.76 §10.6.7.4 / §10.10.7.4) */
                         if ((ie_id & 0x10) == 0) {
@@ -570,6 +618,8 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
                         }
                     }
                 }
+            } else if (g_vfrs) {
+                spvc_handle_nni_connect(g_vfrs, port, call);
             }
             return 0;
         }
@@ -582,6 +632,10 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
             size_t offset = 0;
             while (offset < ie_total_len) {
                 u8 ie_id = ie_start[offset];
+                if (ie_id & 0x80) {
+                    offset += 1;
+                    continue;
+                }
                 if (offset + 1 >= ie_total_len) break;
                 u8 ie_len = ie_start[offset + 1];
                 const u8 *ie_data = &ie_start[offset + 2];
@@ -607,6 +661,7 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
                 u8 tx_buf[128];
                 int tx_len = q933_build_nni_release_complete(tx_buf, sizeof(tx_buf), call->call_ref, call->call_ref_flag, call->call_ref_len, 0, sctx->network_id, sctx->network_id_type_plan);
                 if (tx_len > 0) send_sig_frame_nni(port, tx_buf, tx_len);
+                if (g_vfrs) spvc_handle_nni_release_cause(g_vfrs, port, call, cause);
                 svc_free_call(sctx, call);
                 return 0;
             }
@@ -615,7 +670,10 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
             int tx_len = q933_build_nni_release_complete(tx_buf, sizeof(tx_buf), call->call_ref, call->call_ref_flag, call->call_ref_len, 0, sctx->network_id, sctx->network_id_type_plan);
             if (tx_len > 0) send_sig_frame_nni(port, tx_buf, tx_len);
 
-            if (g_vfrs) svc_destroy_data_pvcs(g_vfrs, call);
+            if (g_vfrs) {
+                svc_destroy_data_pvcs(g_vfrs, call);
+                spvc_handle_nni_release_cause(g_vfrs, port, call, cause);
+            }
             forward_clearing_to_peer(call, cause, cni[0] ? cni : sctx->network_id, cni_tp);
             svc_free_call(sctx, call);
             return 0;
@@ -624,7 +682,35 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
         case Q933_MSG_RELEASE_COMPLETE: {
             if (!call) return 0;
             if (g_vfrs) svc_destroy_data_pvcs(g_vfrs, call);
-            forward_clearing_to_peer(call, Q850_CAUSE_NORMAL_CLEARING, sctx->network_id, sctx->network_id_type_plan);
+
+            u8 cause = Q850_CAUSE_NORMAL_UNSPECIFIED;
+            char cni[16] = {0};
+            u8 cni_tp = 0;
+
+            size_t offset = 0;
+            while (offset < ie_total_len) {
+                u8 ie_id = ie_start[offset];
+                if (ie_id & 0x80) {
+                    offset += 1;
+                    continue;
+                }
+                if (offset + 1 >= ie_total_len) break;
+                u8 ie_len = ie_start[offset + 1];
+                const u8 *ie_data = &ie_start[offset + 2];
+                if (offset + 2 + ie_len > ie_total_len) break;
+
+                if (ie_id == Q933_IE_CAUSE) {
+                    q933_parse_cause(ie_data, ie_len, NULL, &cause);
+                } else if (ie_id == Q933_IE_CLEARING_NET_ID) {
+                    q933_parse_clearing_net_id(ie_data, ie_len, cni, sizeof(cni), &cni_tp);
+                }
+                offset += 2 + ie_len;
+            }
+
+            if (g_vfrs) {
+                spvc_handle_nni_release_cause(g_vfrs, port, call, cause);
+            }
+            forward_clearing_to_peer(call, cause, cni[0] ? cni : sctx->network_id, cni_tp);
             svc_free_call(sctx, call);
             return 0;
         }
@@ -649,6 +735,10 @@ static int svc_nni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
 
             while (offset < ie_total_len) {
                 u8 ie_id = ie_start[offset];
+                if (ie_id & 0x80) {
+                    offset += 1;
+                    continue;
+                }
                 if (offset + 1 >= ie_total_len) break;
                 u8 ie_len = ie_start[offset + 1];
                 const u8 *ie_data = &ie_start[offset + 2];

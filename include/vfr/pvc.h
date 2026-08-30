@@ -49,6 +49,11 @@ typedef struct vfr_dlci_entry_s {
     u64         tx_bytes;
     u64         rx_bytes;
 
+    /* FRF.12 Fragmentation */
+    size_t      fragment_size;
+    u16         frag_seq;
+    void        *reasm_ctx;
+
     struct vfr_dlci_entry_s *next; /* Hash table linkage */
 } vfr_dlci_entry_t;
 

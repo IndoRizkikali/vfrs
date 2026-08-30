@@ -36,28 +36,43 @@ int q933_parse_header(const u8 *data, size_t len, q933_msg_header_t *hdr) {
         return 3;
     }
 
-    /* X.36 §10.10.3.1.2: Call Reference length MUST be 2 octets */
-    if (hdr->call_ref_len != 2) {
-        LOG_WARN("Q.933 Parse Header: Non-compliant CRV length %u (expected 2)", hdr->call_ref_len);
+    /* Support 1-octet and 2-octet Call Reference Values */
+    if (hdr->call_ref_len == 1) {
+        if (len < 4) return -1;
+        hdr->call_ref_flag = (data[2] & 0x80) ? 1 : 0;
+        hdr->call_ref_value = (data[2] & 0x7F);
+        hdr->message_type = data[3];
+        return 4;
+    } else if (hdr->call_ref_len == 2) {
+        if (len < 5) return -1;
+        hdr->call_ref_flag = (data[2] & 0x80) ? 1 : 0;
+        hdr->call_ref_value = (((u16)(data[2] & 0x7F)) << 8) | data[3];
+        hdr->message_type = data[4];
+        return 5;
+    } else {
+        LOG_WARN("Q.933 Parse Header: Non-compliant CRV length %u (expected 1 or 2)", hdr->call_ref_len);
         return -1;
     }
-
-    if (len < 5) return -1;
-    hdr->call_ref_flag = (data[2] & 0x80) ? 1 : 0;
-    hdr->call_ref_value = (((u16)(data[2] & 0x7F)) << 8) | data[3];
-    hdr->message_type = data[4];
-    return 5;
 }
 
 int q933_build_header(u8 *buf, size_t max_len, u16 call_ref, u8 call_ref_flag, u8 call_ref_len, u8 msg_type) {
-    (void)call_ref_len; /* Standard: always 2-octet CRV */
-    if (!buf || max_len < 5) return -1;
-    buf[0] = Q933_PROTOCOL_DISC;
-    buf[1] = 0x02; /* Length = 2 */
-    buf[2] = (call_ref_flag ? 0x80 : 0x00) | ((call_ref >> 8) & 0x7F);
-    buf[3] = (call_ref & 0xFF);
-    buf[4] = msg_type;
-    return 5;
+    if (!buf) return -1;
+    if (call_ref_len == 1) {
+        if (max_len < 4) return -1;
+        buf[0] = Q933_PROTOCOL_DISC;
+        buf[1] = 0x01;
+        buf[2] = (call_ref_flag ? 0x80 : 0x00) | (call_ref & 0x7F);
+        buf[3] = msg_type;
+        return 4;
+    } else {
+        if (max_len < 5) return -1;
+        buf[0] = Q933_PROTOCOL_DISC;
+        buf[1] = 0x02; /* Length = 2 */
+        buf[2] = (call_ref_flag ? 0x80 : 0x00) | ((call_ref >> 8) & 0x7F);
+        buf[3] = (call_ref & 0xFF);
+        buf[4] = msg_type;
+        return 5;
+    }
 }
 
 /* ============================================================
@@ -92,9 +107,33 @@ int q933_parse_bearer_capability(const u8 *ie_data, size_t ie_len) {
 }
 
 int q933_parse_cause(const u8 *ie_data, size_t ie_len, u8 *location, u8 *cause_value) {
+    return q933_parse_cause_full(ie_data, ie_len, location, cause_value, NULL, 0, NULL);
+}
+
+int q933_parse_cause_full(const u8 *ie_data, size_t ie_len, u8 *location, u8 *cause_value, u8 *diag_buf, size_t max_diag, u8 *diag_len) {
     if (!ie_data || ie_len < 2) return -1;
-    if (location) *location = ie_data[0] & 0x0F;
-    if (cause_value) *cause_value = ie_data[1] & 0x7F;
+    size_t idx = 0;
+    u8 octet3 = ie_data[idx++];
+    if (location) *location = octet3 & 0x0F;
+
+    /* Check for optional Octet 3a (Recommendation field) per Q.850 §6.1 / X.76 Table 18 */
+    if ((octet3 & 0x80) == 0 && idx < ie_len) {
+        /* Bit 8 is 0: Octet 3a is present (ext. bit = 1 per X.76 Fig 19) */
+        u8 octet3a = ie_data[idx++];
+        (void)octet3a;
+    }
+
+    if (idx >= ie_len) return -1;
+    u8 octet4 = ie_data[idx++];
+    if (cause_value) *cause_value = octet4 & 0x7F;
+
+    if (diag_len) *diag_len = 0;
+    if (idx < ie_len && diag_buf && max_diag > 0) {
+        size_t dlen = ie_len - idx;
+        if (dlen > max_diag) dlen = max_diag;
+        memcpy(diag_buf, &ie_data[idx], dlen);
+        if (diag_len) *diag_len = (u8)dlen;
+    }
     return 0;
 }
 
@@ -121,6 +160,10 @@ int q933_parse_dlci_ie(const u8 *ie_data, size_t ie_len, u32 *dlci, u8 *dlci_len
 
     if (dlci) *dlci = d;
     return 0;
+}
+
+int q933_parse_spvc_ie(const u8 *ie_data, size_t ie_len, u32 *dlci, u8 *dlci_len) {
+    return q933_parse_dlci_ie(ie_data, ie_len, dlci, dlci_len);
 }
 
 int q933_parse_llcore_params(const u8 *ie_data, size_t ie_len, q933_llcore_params_t *params) {
@@ -157,6 +200,16 @@ int q933_parse_llcore_params(const u8 *ie_data, size_t ie_len, q933_llcore_param
                 for (u8 m = 0; m < mag; m++) p10 *= 10;
                 params->fwd_cir = mult * p10;
                 params->bwd_cir = params->fwd_cir;
+                idx += 2;
+            }
+        } else if (sub_id == 0x0B) { /* Minimum acceptable throughput per X.36 Table 10-21 Octet Group 5 */
+            if (idx + 2 <= ie_len) {
+                u8 mag = (ie_data[idx] >> 4) & 0x07;
+                u32 mult = ((u32)(ie_data[idx] & 0x0F) << 7) | (ie_data[idx + 1] & 0x7F);
+                u32 p10 = 1;
+                for (u8 m = 0; m < mag; m++) p10 *= 10;
+                params->min_fwd_cir = mult * p10;
+                params->min_bwd_cir = params->min_fwd_cir;
                 idx += 2;
             }
         } else if (sub_id == 0x0D) { /* Bc */
@@ -268,6 +321,98 @@ int q933_build_subaddress(u8 *buf, size_t max_len, u8 ie_id, const u8 *subaddr_d
     return 2 + subaddr_len;
 }
 
+int q933_parse_called_spvc_ie(const u8 *ie_data, size_t ie_len, q933_spvc_ie_t *spvc_ie) {
+    if (!ie_data || !spvc_ie || ie_len < 1) return -1;
+    memset(spvc_ie, 0, sizeof(*spvc_ie));
+    spvc_ie->selection_type = ie_data[0] & 0x07;
+    if (spvc_ie->selection_type == 1 || ie_len < 3) {
+        return 0;
+    }
+    if (ie_len >= 5 && (ie_data[1] & 0x80) == 0 && (ie_data[2] & 0x80) == 0 && (ie_data[3] & 0x80) == 0 && (ie_data[4] & 0x80) != 0) {
+        spvc_ie->dlci = ((u32)(ie_data[1] & 0x3F) << 17) |
+                        ((u32)(ie_data[2] & 0x7F) << 10) |
+                        ((u32)(ie_data[3] & 0x7F) << 3)  |
+                        ((u32)(ie_data[4] >> 4) & 0x07);
+        spvc_ie->dlci_len = 4;
+    } else {
+        spvc_ie->dlci = ((u32)(ie_data[1] & 0x3F) << 4) |
+                        ((u32)(ie_data[2] >> 3) & 0x0F);
+        spvc_ie->dlci_len = 2;
+    }
+    return 0;
+}
+
+int q933_parse_calling_spvc_ie(const u8 *ie_data, size_t ie_len, u32 *calling_dlci, u8 *dlci_len) {
+    if (!ie_data || !calling_dlci || ie_len < 3) return -1;
+    u8 ident = ie_data[0];
+    if (ident != 0x03) return -1;
+    if (ie_len >= 5 && (ie_data[1] & 0x80) == 0 && (ie_data[2] & 0x80) == 0 && (ie_data[3] & 0x80) == 0 && (ie_data[4] & 0x80) != 0) {
+        *calling_dlci = ((u32)(ie_data[1] & 0x3F) << 17) |
+                        ((u32)(ie_data[2] & 0x7F) << 10) |
+                        ((u32)(ie_data[3] & 0x7F) << 3)  |
+                        ((u32)(ie_data[4] >> 4) & 0x07);
+        if (dlci_len) *dlci_len = 4;
+    } else {
+        *calling_dlci = ((u32)(ie_data[1] & 0x3F) << 4) |
+                        ((u32)(ie_data[2] >> 3) & 0x0F);
+        if (dlci_len) *dlci_len = 2;
+    }
+    return 0;
+}
+
+int q933_build_called_spvc_ie(u8 *buf, size_t max_len, u8 selection_type, u32 dlci, u8 dlci_len) {
+    if (!buf) return -1;
+    if (selection_type == 1) {
+        if (max_len < 3) return -1;
+        buf[0] = Q933_IE_CALLED_SPVC;
+        buf[1] = 1;
+        buf[2] = 0x01;
+        return 3;
+    }
+    if (dlci_len == 4) {
+        if (max_len < 7) return -1;
+        buf[0] = Q933_IE_CALLED_SPVC;
+        buf[1] = 5;
+        buf[2] = selection_type & 0x07;
+        buf[3] = (0 << 7) | ((dlci >> 17) & 0x3F);
+        buf[4] = (0 << 7) | ((dlci >> 10) & 0x7F);
+        buf[5] = (0 << 7) | ((dlci >> 3) & 0x7F);
+        buf[6] = (1 << 7) | ((dlci & 0x07) << 4);
+        return 7;
+    } else {
+        if (max_len < 5) return -1;
+        buf[0] = Q933_IE_CALLED_SPVC;
+        buf[1] = 3;
+        buf[2] = selection_type & 0x07;
+        buf[3] = (0 << 7) | ((dlci >> 4) & 0x3F);
+        buf[4] = (1 << 7) | ((dlci & 0x0F) << 3);
+        return 5;
+    }
+}
+
+int q933_build_calling_spvc_ie(u8 *buf, size_t max_len, u32 calling_dlci, u8 dlci_len) {
+    if (!buf) return -1;
+    if (dlci_len == 4) {
+        if (max_len < 7) return -1;
+        buf[0] = Q933_IE_CALLING_SPVC;
+        buf[1] = 5;
+        buf[2] = 0x03;
+        buf[3] = (0 << 7) | ((calling_dlci >> 17) & 0x3F);
+        buf[4] = (0 << 7) | ((calling_dlci >> 10) & 0x7F);
+        buf[5] = (0 << 7) | ((calling_dlci >> 3) & 0x7F);
+        buf[6] = (1 << 7) | ((calling_dlci & 0x07) << 4);
+        return 7;
+    } else {
+        if (max_len < 5) return -1;
+        buf[0] = Q933_IE_CALLING_SPVC;
+        buf[1] = 3;
+        buf[2] = 0x03;
+        buf[3] = (0 << 7) | ((calling_dlci >> 4) & 0x3F);
+        buf[4] = (1 << 7) | ((calling_dlci & 0x0F) << 3);
+        return 5;
+    }
+}
+
 /* ============================================================
  * IE Builders (X.36 §10.6.4 - §10.6.21)
  * ============================================================ */
@@ -282,13 +427,28 @@ int q933_build_bearer_capability(u8 *buf, size_t max_len) {
     return 5;
 }
 
+int q933_build_cause_ex(u8 *buf, size_t max_len, u8 location, u8 cause_value, u8 diag_byte, int has_diag) {
+    if (!buf) return -1;
+    if (has_diag) {
+        if (max_len < 5) return -1;
+        buf[0] = Q933_IE_CAUSE;
+        buf[1] = 0x03; /* Length = 3 octets with diagnostic */
+        buf[2] = 0x80 | (location & 0x0F);
+        buf[3] = 0x80 | (cause_value & 0x7F);
+        buf[4] = diag_byte;
+        return 5;
+    } else {
+        if (max_len < 4) return -1;
+        buf[0] = Q933_IE_CAUSE;
+        buf[1] = 0x02; /* Length = 2 octets */
+        buf[2] = 0x80 | (location & 0x0F);
+        buf[3] = 0x80 | (cause_value & 0x7F);
+        return 4;
+    }
+}
+
 int q933_build_cause(u8 *buf, size_t max_len, u8 location, u8 cause_value) {
-    if (!buf || max_len < 4) return -1;
-    buf[0] = Q933_IE_CAUSE;
-    buf[1] = 0x02; /* Length = 2 octets */
-    buf[2] = 0x80 | (location & 0x0F);
-    buf[3] = 0x80 | (cause_value & 0x7F);
-    return 4;
+    return q933_build_cause_ex(buf, max_len, location, cause_value, 0, 0);
 }
 
 int q933_build_call_state(u8 *buf, size_t max_len, u8 state) {
@@ -319,6 +479,15 @@ int q933_build_dlci_ie(u8 *buf, size_t max_len, u32 dlci, u8 dlci_len) {
         buf[3] = 0x80 | (u8)((dlci & 0x0F) << 3);    /* Ext=1 (bit 8), DLCI bits 3-0 in bits 7-4, Reserved 000 in bits 3-1 */
         return 4;
     }
+}
+
+int q933_build_spvc_ie(u8 *buf, size_t max_len, u8 ie_id, u32 dlci, u8 dlci_len) {
+    if (!buf) return -1;
+    int rc = q933_build_dlci_ie(buf, max_len, dlci, dlci_len);
+    if (rc > 0) {
+        buf[0] = ie_id; /* Replace IE ID with Q933_IE_CALLED_SPVC or Q933_IE_CALLING_SPVC */
+    }
+    return rc;
 }
 
 static void cir_to_mag_mult(u32 cir, u8 *mag_out, u32 *mult_out) {
@@ -616,31 +785,43 @@ int q933_build_release(u8 *buf, size_t max_len, vfr_call_t *call, u8 cause) {
     return offset;
 }
 
-int q933_build_release_complete(u8 *buf, size_t max_len, u16 crv, u8 crv_flag, u8 crv_len, u8 cause) {
+int q933_build_release_complete_ex(u8 *buf, size_t max_len, u16 crv, u8 crv_flag, u8 crv_len, u8 cause, u8 diag_byte, int has_diag) {
     if (!buf) return -1;
     int offset = q933_build_header(buf, max_len, crv, crv_flag, crv_len, Q933_MSG_RELEASE_COMPLETE);
     if (offset < 0) return -1;
 
-    offset += q933_build_cause(&buf[offset], max_len - offset, Q850_LOC_PUBLIC_LOCAL_NET, cause);
+    offset += q933_build_cause_ex(&buf[offset], max_len - offset, Q850_LOC_PUBLIC_LOCAL_NET, cause, diag_byte, has_diag);
     return offset;
 }
 
-int q933_build_status_raw(u8 *buf, size_t max_len, u16 crv, u8 crv_flag, u8 crv_len, u8 state, u8 cause) {
+int q933_build_release_complete(u8 *buf, size_t max_len, u16 crv, u8 crv_flag, u8 crv_len, u8 cause) {
+    return q933_build_release_complete_ex(buf, max_len, crv, crv_flag, crv_len, cause, 0, 0);
+}
+
+int q933_build_status_raw_ex(u8 *buf, size_t max_len, u16 crv, u8 crv_flag, u8 crv_len, u8 state, u8 cause, u8 diag_byte, int has_diag) {
     if (!buf) return -1;
     int offset = q933_build_header(buf, max_len, crv, crv_flag, crv_len, Q933_MSG_STATUS);
     if (offset < 0) return -1;
 
-    offset += q933_build_cause(&buf[offset], max_len - offset, Q850_LOC_PUBLIC_LOCAL_NET, cause);
+    offset += q933_build_cause_ex(&buf[offset], max_len - offset, Q850_LOC_PUBLIC_LOCAL_NET, cause, diag_byte, has_diag);
     offset += q933_build_call_state(&buf[offset], max_len - offset, state);
     return offset;
 }
 
-int q933_build_status(u8 *buf, size_t max_len, vfr_call_t *call, u8 cause) {
+int q933_build_status_raw(u8 *buf, size_t max_len, u16 crv, u8 crv_flag, u8 crv_len, u8 state, u8 cause) {
+    return q933_build_status_raw_ex(buf, max_len, crv, crv_flag, crv_len, state, cause, 0, 0);
+}
+
+int q933_build_status_ex(u8 *buf, size_t max_len, vfr_call_t *call, u8 cause, u8 diag_byte, int has_diag) {
     u16 crv = call ? call->call_ref : 0;
     u8 flag = call ? call->call_ref_flag : 0;
     u8 crv_len = call ? call->call_ref_len : 2;
     u8 state = call ? call->state : 0;
-    return q933_build_status_raw(buf, max_len, crv, flag, crv_len, state, cause);
+    return q933_build_status_raw_ex(buf, max_len, crv, flag, crv_len, state, cause, diag_byte, has_diag);
+}
+
+int q933_build_status(u8 *buf, size_t max_len, vfr_call_t *call, u8 cause) {
+    return q933_build_status_ex(buf, max_len, call, cause, 0, 0);
 }
 
 int q933_build_status_enquiry(u8 *buf, size_t max_len, vfr_call_t *call) {
@@ -882,6 +1063,17 @@ int q933_build_nni_setup(u8 *buf, size_t max_len, vfr_call_t *call, vfr_svc_ctx_
         }
     }
 
+    /* 15. SPVC IEs (ITU-T X.76 Annex A) */
+    if (call->is_spvc) {
+        offset += q933_build_called_spvc_ie(&buf[offset], max_len - offset,
+                                            call->spvc_selection_type ? call->spvc_selection_type : 2,
+                                            call->spvc_target_dlci, 2);
+        if (call->spvc_calling_dlci > 0) {
+            offset += q933_build_calling_spvc_ie(&buf[offset], max_len - offset,
+                                                 call->spvc_calling_dlci, 2);
+        }
+    }
+
     return offset;
 }
 
@@ -941,6 +1133,13 @@ int q933_build_nni_connect(u8 *buf, size_t max_len, vfr_call_t *call) {
             memcpy(&buf[offset], call->uu_data, call->uu_len);
             offset += call->uu_len;
         }
+    }
+
+    /* 7. SPVC Called Party IE in CONNECT (ITU-T X.76 Annex A.4.2.3 - Assigned DLCI) */
+    if (call->is_spvc) {
+        offset += q933_build_called_spvc_ie(&buf[offset], max_len - offset,
+                                            3 /* Assigned DLCI */,
+                                            call->spvc_target_dlci ? call->spvc_target_dlci : call->ingress_dlci, 2);
     }
 
     return offset;

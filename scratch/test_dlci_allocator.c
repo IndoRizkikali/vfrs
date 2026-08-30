@@ -3,9 +3,9 @@
  * Virtual Frame Relay Switch - Phase 1A Core Infrastructure
  */
 
-#include "../vfr.h"
-#include "../svc_signalling/svc_sig_common.h"
-#include "../fr_switching/svc_routing_common.h"
+#include "vfr.h"
+#include "svc/svc_sig_common.h"
+#include "switching/svc_routing_common.h"
 #include <assert.h>
 
 int main(void) {

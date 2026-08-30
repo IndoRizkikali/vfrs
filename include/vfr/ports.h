@@ -86,6 +86,30 @@ struct port_ops_s {
     port_free_fn    free;
 };
 
+/* Dynamic LAPF context node */
+#define PORT_LAPF_HASH_SIZE 64
+
+struct vfr_lapf_node_s {
+    u32                     dlci;
+    void                   *state;
+    struct vfr_lapf_node_s *next;
+};
+typedef struct vfr_lapf_node_s vfr_lapf_node_t;
+
+/* SAP callback types */
+typedef void (*port_dl_ui_cb_fn)(struct vfr_port_s *port, u32 dlci, const u8 *data, size_t len);
+typedef void (*port_dl_xid_cb_fn)(struct vfr_port_s *port, u32 dlci, const u8 *data, size_t len);
+typedef void (*port_dl_l3_cb_fn)(struct vfr_port_s *port, u32 dlci, const u8 *data, size_t len);
+
+struct port_dl_sap_s {
+    u32                     dlci;
+    port_dl_ui_cb_fn        ui_cb;
+    port_dl_xid_cb_fn       xid_cb;
+    port_dl_l3_cb_fn        l3_cb;
+    struct port_dl_sap_s   *next;
+};
+typedef struct port_dl_sap_s port_dl_sap_t;
+
 /* Base port structure */
 struct vfr_port_s {
     char            name[VFR_MAX_NAME_LEN];
@@ -109,10 +133,12 @@ struct vfr_port_s {
     /* Congestion management state pointer */
     void            *cgst_ctx;
 
-    /* LAPF state pointer */
-    void            *lapf_ctxs[16];   /* Pointers to vfr_lapf_state_t */
-    u32             lapf_dlcis[16];  /* DLCI for each LAPF context */
-    int             lapf_ctx_count;
+    /* Dynamic LAPF Context Hash Table */
+    vfr_lapf_node_t *lapf_hash[PORT_LAPF_HASH_SIZE];
+    int             lapf_count;
+
+    /* SAP Handlers */
+    port_dl_sap_t   *sap_list;
 
     /* SVC context pointer */
     void            *svc_ctx;
@@ -123,6 +149,11 @@ struct vfr_port_s {
     /* Port-specific data */
     void            *priv;
 
+    /* FRF.12 Fragmentation */
+    size_t          fragment_size;    /* 0 = disabled, >0 = max fragment payload */
+    u16             frag_seq;         /* 12-bit sequence counter */
+    void            *reasm_ctx;
+
     /* Port-local routing table (Agent lookup caches pointing to Global DLCI Table) */
     struct vfr_dlci_entry_s *dlci_lut[1024];   /* Direct array lookup for 10-bit DLCI */
     struct vfr_dlci_entry_s **dlci_array;      /* Dynamic sorted array for 23-bit DLCI */
@@ -132,10 +163,13 @@ struct vfr_port_s {
 
 static inline void *port_get_lapf_ctx(struct vfr_port_s *port, u32 dlci) {
     if (!port) return NULL;
-    for (int i = 0; i < port->lapf_ctx_count; i++) {
-        if (port->lapf_dlcis[i] == dlci) {
-            return port->lapf_ctxs[i];
+    u32 bucket = dlci % PORT_LAPF_HASH_SIZE;
+    vfr_lapf_node_t *node = port->lapf_hash[bucket];
+    while (node) {
+        if (node->dlci == dlci) {
+            return node->state;
         }
+        node = node->next;
     }
     return NULL;
 }

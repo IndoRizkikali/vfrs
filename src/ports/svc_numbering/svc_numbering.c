@@ -24,12 +24,14 @@ const char *svc_numbering_expand(vfrs_ctx_t *ctx, const char *raw, char *out_buf
     snprintf(dnic_str, sizeof(dnic_str), "%04u", (unsigned int)ctx->dnic);
 
     /* Form SGC string zero-padded to sgclen */
-    int sgclen = (ctx->sgclen > 0 && ctx->sgclen <= 8) ? ctx->sgclen : 1;
-    snprintf(sgc_str, sizeof(sgc_str), "%0*u", sgclen, (unsigned int)ctx->sgc);
+    int sgclen = (ctx->sgclen > 0 && ctx->sgclen <= 8) ? (int)ctx->sgclen : 1;
+    if (sgclen > 8) sgclen = 8;
+    snprintf(sgc_str, sizeof(sgc_str), "%0*u", sgclen & 0x0F, (unsigned int)ctx->sgc);
 
     /* Form SIC string zero-padded to siclen */
-    int siclen = (ctx->siclen > 0 && ctx->siclen <= 8) ? ctx->siclen : 1;
-    snprintf(sic_str, sizeof(sic_str), "%0*u", siclen, (unsigned int)ctx->sic);
+    int siclen = (ctx->siclen > 0 && ctx->siclen <= 8) ? (int)ctx->siclen : 1;
+    if (siclen > 8) siclen = 8;
+    snprintf(sic_str, sizeof(sic_str), "%0*u", siclen & 0x0F, (unsigned int)ctx->sic);
 
     /* Form combined DGE string */
     snprintf(dge_str, sizeof(dge_str), "%s%s%s", dnic_str, sgc_str, sic_str);
@@ -137,10 +139,12 @@ int svc_numbering_is_all_zeros(vfrs_ctx_t *ctx, const char *number) {
     char sic_str[16];
 
     snprintf(dnic_str, sizeof(dnic_str), "%04u", (unsigned int)ctx->dnic);
-    int sgclen = (ctx->sgclen > 0 && ctx->sgclen <= 8) ? ctx->sgclen : 1;
-    int siclen = (ctx->siclen > 0 && ctx->siclen <= 8) ? ctx->siclen : 1;
-    snprintf(sgc_str, sizeof(sgc_str), "%0*u", sgclen, (unsigned int)ctx->sgc);
-    snprintf(sic_str, sizeof(sic_str), "%0*u", siclen, (unsigned int)ctx->sic);
+    int sgclen = (ctx->sgclen > 0 && ctx->sgclen <= 8) ? (int)ctx->sgclen : 1;
+    if (sgclen > 8) sgclen = 8;
+    int siclen = (ctx->siclen > 0 && ctx->siclen <= 8) ? (int)ctx->siclen : 1;
+    if (siclen > 8) siclen = 8;
+    snprintf(sgc_str, sizeof(sgc_str), "%0*u", sgclen & 0x0F, (unsigned int)ctx->sgc);
+    snprintf(sic_str, sizeof(sic_str), "%0*u", siclen & 0x0F, (unsigned int)ctx->sic);
     snprintf(dge_str, sizeof(dge_str), "%s%s%s", dnic_str, sgc_str, sic_str);
 
     size_t prefix_len = strlen(dge_str);

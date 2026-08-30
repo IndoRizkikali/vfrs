@@ -5,6 +5,7 @@
 
 #include "svc_sig_uni.h"
 #include "svc_sig_nni.h"
+#include "svc_spvc.h"
 #include "vfr.h"
 #include "ports/svc_numbering/svc_numbering.h"
 #include "switching/svc_routing_common.h"
@@ -21,36 +22,21 @@ static int send_sig_frame(vfr_port_t *port, const u8 *msg_data, size_t msg_len) 
     if (!port || !msg_data || msg_len == 0) return -1;
 
     if (port_get_lapf_ctx(port, 0)) {
-        return lapf_send_l3(port, 0, msg_data, msg_len);
+        return port_dl_send_data(port, 0, msg_data, msg_len);
     }
 
-    u8 frame_buf[FR_MAX_FRAMESZ];
-    fr_addr_t flags;
-    memset(&flags, 0, sizeof(flags));
-
-    size_t frame_len = fr_build_ui_frame(frame_buf, sizeof(frame_buf), 0, msg_data, msg_len, &flags);
-    if (frame_len == 0) return -1;
-
-    if (port->capture) {
-        pcap_writer_write(port->capture, frame_buf, frame_len);
-    }
-
-    if (port->ops && port->ops->send) {
-        return port->ops->send(port, frame_buf, frame_len);
-    }
-
-    return -1;
+    return port_dl_send_unit_data(port, 0, msg_data, msg_len, 0, 0, 0, 0);
 }
 
-static void send_status_incompatible_state(vfr_port_t *port, vfr_svc_ctx_t *sctx, vfr_call_t *call, u8 cause) {
+static void send_status_incompatible_state(vfr_port_t *port, vfr_svc_ctx_t *sctx, vfr_call_t *call, u8 cause, u8 offending_msg_type) {
     (void)sctx;
     u8 tx_buf[128];
-    int tx_len = q933_build_status(tx_buf, sizeof(tx_buf), call, cause);
+    int tx_len = q933_build_status_ex(tx_buf, sizeof(tx_buf), call, cause, offending_msg_type, 1);
     if (tx_len > 0) send_sig_frame(port, tx_buf, tx_len);
 }
 
 /* Helper to initiate standard clearing procedure (X.36 §10.7.4.2 & Appendix VI) */
-void svc_initiate_clearing_before_active(vfr_port_t *port, vfr_svc_ctx_t *sctx, vfr_call_t *call, u8 cause) {
+void svc_initiate_clearing_before_active_ex(vfr_port_t *port, vfr_svc_ctx_t *sctx, vfr_call_t *call, u8 cause, u8 diag_byte, int has_diag) {
     if (!port || !sctx || !call) return;
 
     LOG_INFO("SVC [Port %s CRV 0x%04X]: Initiating call clearing from state %s with Cause %u (\"%s\")",
@@ -81,7 +67,7 @@ void svc_initiate_clearing_before_active(vfr_port_t *port, vfr_svc_ctx_t *sctx, 
         timer_set(&call->t305, sctx->t305_ms);
     } else if (call->state == SVC_STATE_NULL) {
         /* Send RELEASE COMPLETE, transition to NULL immediately */
-        tx_len = q933_build_release_complete(tx_buf, sizeof(tx_buf), call->call_ref, call->call_ref_flag, call->call_ref_len, cause);
+        tx_len = q933_build_release_complete_ex(tx_buf, sizeof(tx_buf), call->call_ref, call->call_ref_flag, call->call_ref_len, cause, diag_byte, has_diag);
         if (tx_len > 0) {
             send_sig_frame(port, tx_buf, tx_len);
             LOG_INFO("SVC [Port %s CRV 0x%04X]: Sent RELEASE COMPLETE -> Call cleared, State: %s",
@@ -109,6 +95,10 @@ void svc_initiate_clearing_before_active(vfr_port_t *port, vfr_svc_ctx_t *sctx, 
         call->t308_retries = 0;
         timer_set(&call->t308, sctx->t308_ms);
     }
+}
+
+void svc_initiate_clearing_before_active(vfr_port_t *port, vfr_svc_ctx_t *sctx, vfr_call_t *call, u8 cause) {
+    svc_initiate_clearing_before_active_ex(port, sctx, call, cause, 0, 0);
 }
 
 /* Virtual Switch Entity for all-zeros switch self-number (e.g. 510401010000) */
@@ -318,17 +308,34 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
         /* Parse IEs in SETUP */
         size_t offset = 0;
         int bc_valid = -1; /* -1 = missing, 0 = valid, -2 = invalid */
-        while (offset + 2 <= ie_total_len) {
+        int bc_seen = 0;
+        int called_num_seen = 0;
+        while (offset < ie_total_len) {
             u8 ie_id = ie_start[offset];
+            if (ie_id & 0x80) {
+                /* Single-octet IE per Q.931/X.36: consumes exactly 1 octet (no length octet) */
+                offset += 1;
+                continue;
+            }
+
+            if (offset + 1 >= ie_total_len) break;
             u8 ie_len = ie_start[offset + 1];
             if (offset + 2 + ie_len > ie_total_len) break;
             const u8 *ie_data = &ie_start[offset + 2];
 
             if (ie_id == Q933_IE_BEARER_CAPABILITY) {
-                bc_valid = q933_parse_bearer_capability(ie_data, ie_len);
+                /* X.36 §10.10.5.2: Use first instance of unrepeatable IE, ignore subsequent duplicates */
+                if (!bc_seen) {
+                    bc_valid = q933_parse_bearer_capability(ie_data, ie_len);
+                    bc_seen = 1;
+                }
             } else if (ie_id == Q933_IE_CALLED_NUMBER) {
-                q933_parse_number_ie(ie_data, ie_len, call->called_number, sizeof(call->called_number),
-                                     &call->called_number_type, &call->called_number_plan, NULL, NULL);
+                /* X.36 §10.10.5.2: Use first instance of unrepeatable IE, ignore subsequent duplicates */
+                if (!called_num_seen) {
+                    q933_parse_number_ie(ie_data, ie_len, call->called_number, sizeof(call->called_number),
+                                         &call->called_number_type, &call->called_number_plan, NULL, NULL);
+                    called_num_seen = 1;
+                }
             } else if (ie_id == Q933_IE_CALLING_NUMBER) {
                 q933_parse_number_ie(ie_data, ie_len, call->calling_number, sizeof(call->calling_number),
                                      &call->calling_number_type, &call->calling_number_plan,
@@ -371,7 +378,7 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
                 if ((ie_id & 0x10) == 0) {
                     LOG_WARN("SVC [Port %s CRV 0x%04X]: Unrecognized IE 0x%02X with comprehension required (bit 5=0). Rejecting with Cause 99.",
                              port->name, call->call_ref, ie_id);
-                    svc_initiate_clearing_before_active(port, sctx, call, Q850_CAUSE_IE_NONEXISTENT_OR_NOT_IMPL);
+                    svc_initiate_clearing_before_active_ex(port, sctx, call, Q850_CAUSE_IE_NONEXISTENT_OR_NOT_IMPL, ie_id, 1);
                     return 0;
                 } else {
                     LOG_DEBUG("SVC [Port %s CRV 0x%04X]: Ignoring unrecognized IE 0x%02X (comprehension not required)",
@@ -382,14 +389,14 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
             offset += 2 + ie_len;
         }
 
-        /* Check Bearer Capability validity */
+        /* Check Bearer Capability validity (X.36 Annex E diagnostic reporting) */
         if (bc_valid == -1) {
-            LOG_WARN("SVC [Port %s CRV 0x%04X]: Bearer Capability missing in SETUP. Rejecting with Cause 96.", port->name, call->call_ref);
-            svc_initiate_clearing_before_active(port, sctx, call, Q850_CAUSE_MANDATORY_IE_MISSING);
+            LOG_WARN("SVC [Port %s CRV 0x%04X]: Bearer Capability missing in SETUP. Rejecting with Cause 96 (Diag: 0x04).", port->name, call->call_ref);
+            svc_initiate_clearing_before_active_ex(port, sctx, call, Q850_CAUSE_MANDATORY_IE_MISSING, Q933_IE_BEARER_CAPABILITY, 1);
             return 0;
         } else if (bc_valid == -2) {
-            LOG_WARN("SVC [Port %s CRV 0x%04X]: Bearer Capability invalid in SETUP. Rejecting with Cause 100.", port->name, call->call_ref);
-            svc_initiate_clearing_before_active(port, sctx, call, Q850_CAUSE_INVALID_IE_CONTENTS);
+            LOG_WARN("SVC [Port %s CRV 0x%04X]: Bearer Capability invalid in SETUP. Rejecting with Cause 100 (Diag: 0x04).", port->name, call->call_ref);
+            svc_initiate_clearing_before_active_ex(port, sctx, call, Q850_CAUSE_INVALID_IE_CONTENTS, Q933_IE_BEARER_CAPABILITY, 1);
             return 0;
         }
 
@@ -405,8 +412,8 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
 
         /* X.36 §10.10.6.1 bit 3: Check mandatory Called Party Number IE */
         if (call->called_number[0] == '\0') {
-            LOG_WARN("SVC [Port %s CRV 0x%04X]: Mandatory Called Party Number IE missing in SETUP. Rejection with Cause 96.", port->name, call->call_ref);
-            svc_initiate_clearing_before_active(port, sctx, call, Q850_CAUSE_MANDATORY_IE_MISSING);
+            LOG_WARN("SVC [Port %s CRV 0x%04X]: Mandatory Called Party Number IE missing in SETUP. Rejection with Cause 96 (Diag: 0x70).", port->name, call->call_ref);
+            svc_initiate_clearing_before_active_ex(port, sctx, call, Q850_CAUSE_MANDATORY_IE_MISSING, Q933_IE_CALLED_NUMBER, 1);
             return 0;
         }
 
@@ -439,6 +446,14 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
             }
         }
 
+        /* Check Link Layer Core Minimum Acceptable CIR Negotiation (X.36 §10.7.1.3) */
+        if (call->llcore.min_fwd_cir > 0 && call->llcore.fwd_cir < call->llcore.min_fwd_cir) {
+            LOG_WARN("SVC [Port %s CRV 0x%04X]: Requested CIR %u bps below Minimum Acceptable CIR %u bps. Rejecting with Cause 49.",
+                     port->name, call->call_ref, call->llcore.fwd_cir, call->llcore.min_fwd_cir);
+            svc_initiate_clearing_before_active(port, sctx, call, Q850_CAUSE_QOS_UNAVAILABLE);
+            return 0;
+        }
+
         /* DLCI Allocation at Originating UNI (X.36 §10.7.1.4) */
         if (call->ingress_dlci == 0) {
             call->ingress_dlci = svc_dlci_alloc(&sctx->dlci_alloc);
@@ -456,6 +471,11 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
         /* Check for Virtual Switch Self-Number (all-zeros) */
         if (g_vfrs && svc_numbering_is_all_zeros(g_vfrs, call->called_number)) {
             return svc_uni_handle_virtual_switch_call(port, call);
+        }
+
+        /* Check for SPVC Crooked SVC-to-PVC Call */
+        if (g_vfrs && spvc_handle_incoming_setup(g_vfrs, port, call) == 0) {
+            return 0;
         }
 
         /* Hierarchical Multi-Tier Call Routing */
@@ -611,15 +631,20 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
         if (call->state != SVC_STATE_N6_CALL_PRESENT) {
             LOG_WARN("SVC [Port %s CRV 0x%04X]: Received CALL PROCEEDING in incompatible state %s. Returning STATUS Cause 98.",
                      port->name, call->call_ref, q933_get_state_name(call->state));
-            send_status_incompatible_state(port, sctx, call, Q850_CAUSE_MSG_INCOMPAT_WITH_STATE);
+            send_status_incompatible_state(port, sctx, call, Q850_CAUSE_MSG_INCOMPAT_WITH_STATE, hdr.message_type);
             return 0;
         }
 
         u32 resp_dlci = 0;
         int dlci_found = 0;
         size_t off = 0;
-        while (off + 2 <= ie_total_len) {
+        while (off < ie_total_len) {
             u8 ie_id = ie_start[off];
+            if (ie_id & 0x80) {
+                off += 1;
+                continue;
+            }
+            if (off + 1 >= ie_total_len) break;
             u8 ie_len = ie_start[off + 1];
             if (off + 2 + ie_len > ie_total_len) break;
             if (ie_id == Q933_IE_DLCI) {
@@ -632,27 +657,27 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
 
         if (call->state == SVC_STATE_N6_CALL_PRESENT) {
             if (!dlci_found) {
-                LOG_WARN("SVC [Port %s CRV 0x%04X]: Mandatory DLCI IE missing in CALL PROCEEDING. Clearing with Cause 96.",
+                LOG_WARN("SVC [Port %s CRV 0x%04X]: Mandatory DLCI IE missing in CALL PROCEEDING. Clearing with Cause 96 (Diag: 0x19).",
                          port->name, call->call_ref);
-                svc_initiate_clearing_before_active(port, sctx, call, Q850_CAUSE_MANDATORY_IE_MISSING);
+                svc_initiate_clearing_before_active_ex(port, sctx, call, Q850_CAUSE_MANDATORY_IE_MISSING, Q933_IE_DLCI, 1);
                 if (call->peer_port) {
                     vfr_svc_ctx_t *peer_sctx = (vfr_svc_ctx_t *)call->peer_port->svc_ctx;
                     vfr_call_t *peer_call = peer_sctx ? svc_find_call(peer_sctx, call->peer_call_ref, call->peer_call_ref_flag) : NULL;
                     if (peer_call) {
-                        svc_initiate_clearing_before_active(call->peer_port, peer_sctx, peer_call, Q850_CAUSE_MANDATORY_IE_MISSING);
+                        svc_initiate_clearing_before_active_ex(call->peer_port, peer_sctx, peer_call, Q850_CAUSE_MANDATORY_IE_MISSING, Q933_IE_DLCI, 1);
                     }
                 }
                 return 0;
             }
             if (resp_dlci != call->ingress_dlci && resp_dlci != call->egress_dlci) {
-                LOG_WARN("SVC [Port %s CRV 0x%04X]: DLCI %u in CALL PROCEEDING differs from allocated DLCI. Clearing with Cause 100.",
+                LOG_WARN("SVC [Port %s CRV 0x%04X]: DLCI %u in CALL PROCEEDING differs from allocated DLCI. Clearing with Cause 100 (Diag: 0x19).",
                          port->name, call->call_ref, resp_dlci);
-                svc_initiate_clearing_before_active(port, sctx, call, Q850_CAUSE_INVALID_IE_CONTENTS);
+                svc_initiate_clearing_before_active_ex(port, sctx, call, Q850_CAUSE_INVALID_IE_CONTENTS, Q933_IE_DLCI, 1);
                 if (call->peer_port) {
                     vfr_svc_ctx_t *peer_sctx = (vfr_svc_ctx_t *)call->peer_port->svc_ctx;
                     vfr_call_t *peer_call = peer_sctx ? svc_find_call(peer_sctx, call->peer_call_ref, call->peer_call_ref_flag) : NULL;
                     if (peer_call) {
-                        svc_initiate_clearing_before_active(call->peer_port, peer_sctx, peer_call, Q850_CAUSE_INVALID_IE_CONTENTS);
+                        svc_initiate_clearing_before_active_ex(call->peer_port, peer_sctx, peer_call, Q850_CAUSE_INVALID_IE_CONTENTS, Q933_IE_DLCI, 1);
                     }
                 }
                 return 0;
@@ -673,7 +698,7 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
         if (call->state != SVC_STATE_N6_CALL_PRESENT && call->state != SVC_STATE_INCOMING_PROC) {
             LOG_WARN("SVC [Port %s CRV 0x%04X]: Received CONNECT in incompatible state %s. Returning STATUS Cause 98.",
                      port->name, call->call_ref, q933_get_state_name(call->state));
-            send_status_incompatible_state(port, sctx, call, Q850_CAUSE_MSG_INCOMPAT_WITH_STATE);
+            send_status_incompatible_state(port, sctx, call, Q850_CAUSE_MSG_INCOMPAT_WITH_STATE, hdr.message_type);
             return 0;
         }
 
@@ -690,8 +715,14 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
         u8 conn_uu_data[136] = {0};
 
         size_t off = 0;
-        while (off + 2 <= ie_total_len) {
+        while (off < ie_total_len) {
             u8 ie_id = ie_start[off];
+            if (ie_id & 0x80) {
+                /* Single-octet IE: consumes 1 octet */
+                off += 1;
+                continue;
+            }
+            if (off + 1 >= ie_total_len) break;
             u8 ie_len = ie_start[off + 1];
             if (off + 2 + ie_len > ie_total_len) break;
 
@@ -716,7 +747,7 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
                 if ((ie_id & 0x10) == 0) {
                     LOG_WARN("SVC [Port %s CRV 0x%04X]: Unrecognized IE 0x%02X in CONNECT with comprehension required (bit 5=0). Rejecting with Cause 99.",
                              port->name, call->call_ref, ie_id);
-                    svc_initiate_clearing_before_active(port, sctx, call, Q850_CAUSE_IE_NONEXISTENT_OR_NOT_IMPL);
+                    svc_initiate_clearing_before_active_ex(port, sctx, call, Q850_CAUSE_IE_NONEXISTENT_OR_NOT_IMPL, ie_id, 1);
                     return 0;
                 } else {
                     LOG_DEBUG("SVC [Port %s CRV 0x%04X]: Ignoring unrecognized IE 0x%02X in CONNECT (comprehension not required)",
@@ -864,22 +895,41 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
             call->state != SVC_STATE_N12_DISC_IND) {
             LOG_WARN("SVC [Port %s CRV 0x%04X]: Received DISCONNECT in incompatible state %s. Returning STATUS Cause 98.",
                      port->name, call->call_ref, q933_get_state_name(call->state));
-            send_status_incompatible_state(port, sctx, call, Q850_CAUSE_MSG_INCOMPAT_WITH_STATE);
+            send_status_incompatible_state(port, sctx, call, Q850_CAUSE_MSG_INCOMPAT_WITH_STATE, hdr.message_type);
             return 0;
         }
 
-        /* Parse Cause code from DISCONNECT if present */
+        /* Parse Cause code(s) from DISCONNECT if present (X.36 Table 10-5 Note 2) */
         u8 disc_cause = Q850_CAUSE_NORMAL_CLEARING;
+        call->clearing_cause_count = 0;
         size_t off = 0;
-        while (off + 2 <= ie_total_len) {
+        while (off < ie_total_len) {
             u8 ie_id = ie_start[off];
+            if (ie_id & 0x80) {
+                off += 1;
+                continue;
+            }
+            if (off + 1 >= ie_total_len) break;
             u8 ie_len = ie_start[off + 1];
             if (off + 2 + ie_len > ie_total_len) break;
             if (ie_id == Q933_IE_CAUSE && ie_len >= 2) {
-                disc_cause = ie_start[off + 3] & 0x7F;
-                break;
+                u8 loc = 0, cv = 0, dlen = 0;
+                u8 dbuf[32] = {0};
+                if (q933_parse_cause_full(&ie_start[off + 2], ie_len, &loc, &cv, dbuf, sizeof(dbuf), &dlen) == 0) {
+                    if (call->clearing_cause_count < 2) {
+                        u8 idx = call->clearing_cause_count;
+                        call->clearing_causes[idx] = cv;
+                        call->clearing_locations[idx] = loc;
+                        call->clearing_diag_len[idx] = dlen;
+                        if (dlen > 0) memcpy(call->clearing_diags[idx], dbuf, dlen);
+                        call->clearing_cause_count++;
+                    }
+                }
             }
             off += 2 + ie_len;
+        }
+        if (call->clearing_cause_count > 0) {
+            disc_cause = call->clearing_causes[0];
         }
 
         LOG_INFO("SVC [Port %s CRV 0x%04X]: Received DISCONNECT (Cause %u: \"%s\", State: %s). Clearing call.",
@@ -943,18 +993,37 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
     case Q933_MSG_RELEASE: {
         if (!call) return 0;
 
-        /* Parse Cause code from RELEASE if present */
+        /* Parse Cause code(s) from RELEASE if present (X.36 Table 10-5 Note 2) */
         u8 rel_cause = Q850_CAUSE_NORMAL_CLEARING;
+        call->clearing_cause_count = 0;
         size_t off = 0;
-        while (off + 2 <= ie_total_len) {
+        while (off < ie_total_len) {
             u8 ie_id = ie_start[off];
+            if (ie_id & 0x80) {
+                off += 1;
+                continue;
+            }
+            if (off + 1 >= ie_total_len) break;
             u8 ie_len = ie_start[off + 1];
             if (off + 2 + ie_len > ie_total_len) break;
             if (ie_id == Q933_IE_CAUSE && ie_len >= 2) {
-                rel_cause = ie_start[off + 3] & 0x7F;
-                break;
+                u8 loc = 0, cv = 0, dlen = 0;
+                u8 dbuf[32] = {0};
+                if (q933_parse_cause_full(&ie_start[off + 2], ie_len, &loc, &cv, dbuf, sizeof(dbuf), &dlen) == 0) {
+                    if (call->clearing_cause_count < 2) {
+                        u8 idx = call->clearing_cause_count;
+                        call->clearing_causes[idx] = cv;
+                        call->clearing_locations[idx] = loc;
+                        call->clearing_diag_len[idx] = dlen;
+                        if (dlen > 0) memcpy(call->clearing_diags[idx], dbuf, dlen);
+                        call->clearing_cause_count++;
+                    }
+                }
             }
             off += 2 + ie_len;
+        }
+        if (call->clearing_cause_count > 0) {
+            rel_cause = call->clearing_causes[0];
         }
 
         LOG_INFO("SVC [Port %s CRV 0x%04X]: Received RELEASE (Cause %u: \"%s\", State: %s)",
@@ -1056,10 +1125,43 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
         timer_cancel(&call->t308);
         if (g_vfrs) svc_destroy_data_pvcs(g_vfrs, call);
         
-        LOG_INFO("SVC [Port %s CRV 0x%04X]: Received RELEASE COMPLETE (State: %s) -> Call reference cleared to %s",
-                 port->name, call->call_ref, q933_get_state_name(call->state), q933_get_state_name(SVC_STATE_NULL));
+        /* Parse Cause code(s) from RELEASE COMPLETE if present (X.36 Table 10-6 Note 2) */
+        u8 rel_comp_cause = Q850_CAUSE_NORMAL_UNSPECIFIED; /* Default per §10.10.6.1.1 if absent */
+        call->clearing_cause_count = 0;
+        size_t off = 0;
+        while (off < ie_total_len) {
+            u8 ie_id = ie_start[off];
+            if (ie_id & 0x80) {
+                off += 1;
+                continue;
+            }
+            if (off + 1 >= ie_total_len) break;
+            u8 ie_len = ie_start[off + 1];
+            if (off + 2 + ie_len > ie_total_len) break;
+            if (ie_id == Q933_IE_CAUSE && ie_len >= 2) {
+                u8 loc = 0, cv = 0, dlen = 0;
+                u8 dbuf[32] = {0};
+                if (q933_parse_cause_full(&ie_start[off + 2], ie_len, &loc, &cv, dbuf, sizeof(dbuf), &dlen) == 0) {
+                    if (call->clearing_cause_count < 2) {
+                        u8 idx = call->clearing_cause_count;
+                        call->clearing_causes[idx] = cv;
+                        call->clearing_locations[idx] = loc;
+                        call->clearing_diag_len[idx] = dlen;
+                        if (dlen > 0) memcpy(call->clearing_diags[idx], dbuf, dlen);
+                        call->clearing_cause_count++;
+                    }
+                }
+            }
+            off += 2 + ie_len;
+        }
+        if (call->clearing_cause_count > 0) {
+            rel_comp_cause = call->clearing_causes[0];
+        }
 
-        /* Propagate clearing to peer if it exists */
+        LOG_INFO("SVC [Port %s CRV 0x%04X]: Received RELEASE COMPLETE (Cause %u: \"%s\", State: %s) -> Call reference cleared to %s",
+                 port->name, call->call_ref, rel_comp_cause, q850_get_cause_str(rel_comp_cause), q933_get_state_name(call->state), q933_get_state_name(SVC_STATE_NULL));
+
+        /* Propagate clearing to peer if it exists with exact received rejection cause */
         if (call->peer_port) {
             vfr_svc_ctx_t *peer_sctx = (vfr_svc_ctx_t *)call->peer_port->svc_ctx;
             vfr_call_t *peer_call = peer_sctx ? svc_find_call(peer_sctx, call->peer_call_ref, call->peer_call_ref_flag) : NULL;
@@ -1067,11 +1169,11 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
                 if (g_vfrs) svc_destroy_data_pvcs(g_vfrs, peer_call);
                 if (peer_call->state != SVC_STATE_N19_REL_REQ) {
                     u8 peer_tx[128];
-                    int peer_len = q933_build_release(peer_tx, sizeof(peer_tx), peer_call, Q850_CAUSE_NORMAL_CLEARING);
+                    int peer_len = q933_build_release(peer_tx, sizeof(peer_tx), peer_call, rel_comp_cause);
                     if (peer_len > 0) {
                         send_sig_frame(call->peer_port, peer_tx, peer_len);
-                        LOG_INFO("SVC [Port %s CRV 0x%04X]: Propagated RELEASE to peer -> State: %s, T308 started (%u ms)",
-                                 call->peer_port->name, peer_call->call_ref, q933_get_state_name(SVC_STATE_N19_REL_REQ), peer_sctx->t308_ms);
+                        LOG_INFO("SVC [Port %s CRV 0x%04X]: Propagated RELEASE (Cause %u: \"%s\") to peer -> State: %s, T308 started (%u ms)",
+                                 call->peer_port->name, peer_call->call_ref, rel_comp_cause, q850_get_cause_str(rel_comp_cause), q933_get_state_name(SVC_STATE_N19_REL_REQ), peer_sctx->t308_ms);
                     }
                     
                     timer_cancel(&peer_call->t303);
@@ -1113,8 +1215,13 @@ static int svc_uni_process_msg_locked(vfr_port_t *port, const u8 *msg_data, size
         u8 peer_state = 0;
         u8 cause_val = 0;
         size_t offset = 0;
-        while (offset + 2 <= ie_total_len) {
+        while (offset < ie_total_len) {
             u8 ie_id = ie_start[offset];
+            if (ie_id & 0x80) {
+                offset += 1;
+                continue;
+            }
+            if (offset + 1 >= ie_total_len) break;
             u8 ie_len = ie_start[offset + 1];
             if (offset + 2 + ie_len > ie_total_len) break;
             if (ie_id == Q933_IE_CALL_STATE) {
@@ -1254,7 +1361,7 @@ void vfrs_show_svc_calls(vfrs_ctx_t *ctx, FILE *out) {
             vfr_call_t *call = &sctx->calls[c];
             if (!call->in_use) continue;
 
-            char local_dlci_str[16], peer_dest_str[32], cid_str[16];
+            char local_dlci_str[16], peer_dest_str[64], cid_str[16];
             snprintf(local_dlci_str, sizeof(local_dlci_str), "DLCI %u", call->ingress_dlci);
             snprintf(peer_dest_str, sizeof(peer_dest_str), "%s:%u",
                      call->egress_port[0] ? call->egress_port : "-", call->egress_dlci);

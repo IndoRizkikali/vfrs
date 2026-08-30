@@ -1,10 +1,12 @@
 /*
- * svc_routing_common.c - VFRS Two-Tier Routing Engine & DLCI Allocator
+ * svc_routing_common.c - VFRS Digit-by-Digit Analysis Tree & DLCI Allocator
  * Virtual Frame Relay Switch
  */
 
 #include "svc_routing_common.h"
 #include "ports/svc_numbering/svc_numbering.h"
+#include <ctype.h>
+#include <stdlib.h>
 
 /* ============================================================
  * DLCI Range Allocator Implementation
@@ -122,6 +124,96 @@ void svc_dlci_free(vfr_dlci_allocator_t *alloc, u32 dlci) {
 }
 
 /* ============================================================
+ * Digit-by-Digit Analysis Tree Implementation
+ * ============================================================ */
+
+static vfr_digit_node_t *digit_node_create(void) {
+    vfr_digit_node_t *node = calloc(1, sizeof(vfr_digit_node_t));
+    return node;
+}
+
+static void digit_node_free(vfr_digit_node_t *node) {
+    if (!node) return;
+    for (int i = 0; i < 10; i++) {
+        if (node->children[i]) {
+            digit_node_free(node->children[i]);
+            node->children[i] = NULL;
+        }
+    }
+    free(node);
+}
+
+int svc_trie_insert(vfr_digit_node_t **root, const char *digits,
+                     vfr_route_action_t action, const char *egress_port,
+                     const char *transit_net_id, u8 metric, u8 revchg_allow) {
+    if (!root || !digits || digits[0] == '\0') return -1;
+
+    if (!*root) {
+        *root = digit_node_create();
+        if (!*root) return -1;
+    }
+
+    vfr_digit_node_t *curr = *root;
+    for (int i = 0; digits[i] != '\0'; i++) {
+        if (!isdigit((unsigned char)digits[i])) {
+            continue; /* Skip non-digit formatting characters */
+        }
+        int digit = digits[i] - '0';
+        if (!curr->children[digit]) {
+            curr->children[digit] = digit_node_create();
+            if (!curr->children[digit]) return -1;
+        }
+        curr = curr->children[digit];
+    }
+
+    curr->is_terminal = 1;
+    curr->action = action;
+    if (egress_port) {
+        strncpy(curr->target_port_name, egress_port, sizeof(curr->target_port_name) - 1);
+    }
+    if (transit_net_id) {
+        strncpy(curr->transit_net_id, transit_net_id, sizeof(curr->transit_net_id) - 1);
+    }
+    curr->metric = metric > 0 ? metric : 10;
+    curr->revchg_allow = revchg_allow;
+
+    return 0;
+}
+
+const vfr_digit_node_t *svc_trie_lookup(const vfr_digit_node_t *root, const char *digits) {
+    if (!root || !digits) return NULL;
+
+    const vfr_digit_node_t *curr = root;
+    const vfr_digit_node_t *best_match = NULL;
+
+    for (int i = 0; digits[i] != '\0'; i++) {
+        if (curr->is_terminal) {
+            best_match = curr;
+        }
+        if (!isdigit((unsigned char)digits[i])) {
+            continue;
+        }
+        int digit = digits[i] - '0';
+        if (!curr->children[digit]) {
+            break;
+        }
+        curr = curr->children[digit];
+    }
+
+    if (curr && curr->is_terminal) {
+        best_match = curr;
+    }
+
+    return best_match;
+}
+
+void svc_trie_destroy(vfr_digit_node_t **root) {
+    if (!root || !*root) return;
+    digit_node_free(*root);
+    *root = NULL;
+}
+
+/* ============================================================
  * Hierarchical Multi-Tier & Multi-Hop Routing Engine Implementation
  * ============================================================ */
 
@@ -140,6 +232,11 @@ int svc_route_init(vfrs_ctx_t *ctx) {
     ctx->svc_route_count = 0;
     memset(ctx->svc_routes, 0, sizeof(ctx->svc_routes));
     return 0;
+}
+
+void svc_route_destroy(vfrs_ctx_t *ctx) {
+    if (!ctx) return;
+    ctx->svc_route_count = 0;
 }
 
 int svc_route_add_ex(vfrs_ctx_t *ctx, const char *raw_prefix, const char *egress_port,
@@ -189,7 +286,6 @@ int svc_route_add_structural_ex(vfrs_ctx_t *ctx, const char *egress_port,
 
     if (sgc && sgc[0] != '\0') {
         int sgclen = (ctx->sgclen > 0 && ctx->sgclen <= 8) ? ctx->sgclen : 1;
-        /* If sgc is a numeric string and shorter than sgclen, zero-pad it */
         int is_all_digits = 1;
         for (int i = 0; sgc[i]; i++) {
             if (sgc[i] < '0' || sgc[i] > '9') { is_all_digits = 0; break; }
@@ -237,7 +333,7 @@ vfr_port_t *svc_route_lookup_ex(vfrs_ctx_t *ctx, const char *called_number,
     char expanded[SVC_MAX_ADDR_LEN + 1];
     svc_numbering_expand(ctx, called_number, expanded, sizeof(expanded));
 
-    /* Tier 1: Local subscriber table match (when no transit network selection requested) */
+    /* Tier 1: Local subscriber table match */
     if (!transit_net_sel || transit_net_sel[0] == '\0') {
         vfr_port_t *local_port = svc_find_subscriber(ctx, expanded);
         if (local_port) {
@@ -248,80 +344,63 @@ vfr_port_t *svc_route_lookup_ex(vfrs_ctx_t *ctx, const char *called_number,
     /* Tier 2: Transit Network Selection match */
     if (transit_net_sel && transit_net_sel[0] != '\0') {
         int best_tns_len = -1;
-        int best_tns_metric = 255;
-        vfr_port_t *best_tns_port = NULL;
+        int best_tns_idx = -1;
+        u8 best_metric = 255;
 
-        /* Look for explicitly bound transit network routes */
         for (int i = 0; i < ctx->svc_route_count; i++) {
             if (ctx->svc_routes[i].transit_net_id[0] != '\0' &&
                 strcmp(ctx->svc_routes[i].transit_net_id, transit_net_sel) == 0) {
                 size_t plen = strlen(ctx->svc_routes[i].prefix);
                 if (strncmp(expanded, ctx->svc_routes[i].prefix, plen) == 0) {
-                    vfr_port_t *p = vfrs_find_port(ctx, ctx->svc_routes[i].egress_port);
-                    if (p) {
-                        if (!is_network_in_tni_list(transit_net_sel, tni_list)) {
-                            u8 metric = ctx->svc_routes[i].metric ? ctx->svc_routes[i].metric : 10;
-                            if ((int)plen > best_tns_len || ((int)plen == best_tns_len && metric < best_tns_metric)) {
-                                best_tns_len = (int)plen;
-                                best_tns_metric = metric;
-                                best_tns_port = p;
-                            }
-                        }
+                    if ((int)plen > best_tns_len || ((int)plen == best_tns_len && ctx->svc_routes[i].metric < best_metric)) {
+                        best_tns_len = (int)plen;
+                        best_tns_idx = i;
+                        best_metric = ctx->svc_routes[i].metric;
                     }
                 }
             }
         }
-
-        if (best_tns_port) return best_tns_port;
-
-        /* If no explicit route, check NNI ports directly whose network_id matches */
-        for (int p = 0; p < ctx->port_count; p++) {
-            vfr_port_t *port = ctx->ports[p];
-            if (port && port->svc_ctx) {
-                vfr_svc_ctx_t *sctx = (vfr_svc_ctx_t *)port->svc_ctx;
-                const char *net_id = sctx->remote_network_id[0] ? sctx->remote_network_id : sctx->network_id;
-                if (sctx->is_nni && strcmp(net_id, transit_net_sel) == 0) {
-                    if (!is_network_in_tni_list(net_id, tni_list)) {
-                        return port;
-                    }
+        if (best_tns_idx >= 0) {
+            const char *egress = ctx->svc_routes[best_tns_idx].egress_port;
+            for (int p = 0; p < ctx->port_count; p++) {
+                if (ctx->ports[p] && strcmp(ctx->ports[p]->name, egress) == 0) {
+                    return ctx->ports[p];
                 }
             }
         }
     }
 
-    /* Tier 3: Hierarchical Longest Prefix Match (LPM) on NNI prefix route table */
-    int best_match_len = -1;
-    int best_metric = 255;
-    vfr_port_t *best_port = NULL;
+    /* Tier 3: Longest Prefix Match with loop avoidance */
+    int best_len = -1;
+    int best_idx = -1;
+    u8 best_metric = 255;
 
     for (int i = 0; i < ctx->svc_route_count; i++) {
+        if (ctx->svc_routes[i].transit_net_id[0] != '\0' && tni_list &&
+            is_network_in_tni_list(ctx->svc_routes[i].transit_net_id, tni_list)) {
+            continue;
+        }
+
         size_t plen = strlen(ctx->svc_routes[i].prefix);
         if (strncmp(expanded, ctx->svc_routes[i].prefix, plen) == 0) {
-            vfr_port_t *p = vfrs_find_port(ctx, ctx->svc_routes[i].egress_port);
-            if (!p) continue;
-
-            vfr_svc_ctx_t *sctx = (vfr_svc_ctx_t *)p->svc_ctx;
-            /* Multi-hop Loop Detection: Skip route if egress target network ID is already in TNI list */
-            const char *target_net = ctx->svc_routes[i].transit_net_id[0] ? ctx->svc_routes[i].transit_net_id :
-                                     (sctx && sctx->remote_network_id[0] ? sctx->remote_network_id : NULL);
-            if (target_net && is_network_in_tni_list(target_net, tni_list)) {
-                LOG_DEBUG("SVC Routing: Skipping route '%s' -> %s (target network %s in TNI list)",
-                          ctx->svc_routes[i].prefix, p->name, target_net);
-                continue;
-            }
-
-            u8 metric = ctx->svc_routes[i].metric ? ctx->svc_routes[i].metric : 10;
-            if ((int)plen > best_match_len || ((int)plen == best_match_len && metric < best_metric)) {
-                best_match_len = (int)plen;
-                best_metric = metric;
-                best_port = p;
+            if ((int)plen > best_len || ((int)plen == best_len && ctx->svc_routes[i].metric < best_metric)) {
+                best_len = (int)plen;
+                best_idx = i;
+                best_metric = ctx->svc_routes[i].metric;
             }
         }
     }
 
-    if (best_port) return best_port;
+    if (best_idx >= 0) {
+        const char *egress = ctx->svc_routes[best_idx].egress_port;
+        for (int p = 0; p < ctx->port_count; p++) {
+            if (ctx->ports[p] && strcmp(ctx->ports[p]->name, egress) == 0) {
+                return ctx->ports[p];
+            }
+        }
+    }
 
-    return NULL; /* Unroutable / Cause #1 */
+    return NULL;
 }
 
 vfr_port_t *svc_route_lookup(vfrs_ctx_t *ctx, const char *called_number) {

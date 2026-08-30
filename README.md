@@ -1,6 +1,6 @@
 # Virtual Frame Relay Switch (VFRS)
 
-!!! note
+!!! warning
     **Dokumen ini masih berstatus draf!** Perubahan dan pembaruan konten dapat terjadi sewaktu-waktu, seiring dengan kemajuan pengembangan perangkat lunak VFRS.
 
 **RIZKI YANDRI**  
@@ -32,54 +32,60 @@
 ## Daftar Isi / Table of Contents
 
 - [1. Apa Itu VFRS? (About VFRS)](#1-apa-itu-vfrs-about-vfrs)
-- [2. Standards Compliance & Core Capabilities](#2-standards-compliance--core-capabilities)
+- [2. Kepatuhan Standar & Kapabilitas Inti (Standards Compliance & Core Capabilities)](#2-kepatuhan-standar--kapabilitas-inti-standards-compliance--core-capabilities)
   - [2.1 Matriks Standar & Dokumen Spesifikasi Acuan (Primary Standards Matrix)](#21-matriks-standar--dokumen-spesifikasi-acuan-primary-standards-matrix)
   - [2.2 Relasi & Implementasi Berdasarkan Klausul Standar (In-Depth Clause Relations)](#22-relasi--implementasi-berdasarkan-klausul-standar-in-depth-clause-relations)
     - [2.2.1 Lapisan Fisik & Antarmuka DTE/DCE / NNI (ITU-T X.36 §6, X.76 §6)](#221-lapisan-fisik--antarmuka-dtedce--nni-itu-t-x36-6-x76-6)
-    - [2.2.2 Data Link Transfer Control & DL-CORE (ITU-T X.36 §9, X.76 §9, Q.922 Annex A)](#222-data-link-transfer-control--dl-core-itu-t-x36-9-x76-9-q922-annex-a)
+    - [2.2.2 Data Link Transfer Control, DL-CORE & LAPF (ITU-T X.36 §9, X.76 §9, Q.922 Core & Appendix I/VII)](#222-data-link-transfer-control-dl-core--lapf-itu-t-x36-9-x76-9-q922-core--appendix-ivii)
     - [2.2.3 Parameter Layanan & Kualitas Layanan QoS (ITU-T X.36 §8, X.76 §8, X.146)](#223-parameter-layanan--kualitas-layanan-qos-itu-t-x36-8-x76-8-x146)
     - [2.2.4 Persinyalan Panggilan SVC & Call Control (ITU-T X.36 §10, X.76 §10, Q.933, Q.850)](#224-persinyalan-panggilan-svc--call-control-itu-t-x36-10-x76-10-q933-q850)
     - [2.2.5 Pengelolaan PVC & Local Management Interface LMI (ITU-T X.36 §11, X.76 §11, Q.933 Annex A, ANSI T1.617 Annex D, Cisco GoF)](#225-pengelolaan-pvc--local-management-interface-lmi-itu-t-x36-11-x76-11-q933-annex-a-ansi-t1617-annex-d-cisco-gof)
     - [2.2.6 Manajemen Kemacetan & CLLM (ITU-T X.36 §12 / Annex C, X.76 §12, Q.922 Annex A, I.370)](#226-manajemen-kemacetan--cllm-itu-t-x36-12--annex-c-x76-12-q922-annex-a-i370)
     - [2.2.7 Layanan Multicast Frame Relay (FRF.7 / FRF.19, ITU-T X.6, I.233.1)](#227-layanan-multicast-frame-relay-frf7--frf19-itu-t-x6-i2331)
-    - [2.2.8 Rencana Penomoran Internasional & Perutean SVC (ITU-T X.121, E.164, X.124)](#228-rencana-penomoran-internasional--perutean-svc-itu-t-x121-e164-x124)
-    - [2.2.9 Enkapsulasi Pseudowire & Interoperabilitas Modern (RFC 4591, RFC 4349, RFC 2427)](#229-enkapsulasi-pseudowire--interoperabilitas-modern-rfc-4591-rfc-4349-rfc-2427)
+    - [2.2.8 Rencana Penomoran Internasional & Mesin Analisis Digit (ITU-T X.121, E.164, X.124)](#228-rencana-penomoran-internasional--mesin-analisis-digit-itu-t-x121-e164-x124)
+    - [2.2.9 Soft Permanent Virtual Circuits (SPVC per ITU-T X.76 Annex A / ISSMP)](#229-soft-permanent-virtual-circuits-spvc-per-itu-t-x76-annex-a--issmp)
+    - [2.2.10 Segmentasi & Fragmentasi Frame (ITU-T X.36 Annex F & FRF.12)](#2210-segmentasi--fragmentasi-frame-itu-t-x36-annex-f--frf12)
+    - [2.2.11 Enkapsulasi Pseudowire & Interoperabilitas Modern (RFC 4591, RFC 4349, RFC 2427)](#2211-enkapsulasi-pseudowire--interoperabilitas-modern-rfc-4591-rfc-4349-rfc-2427)
   - [2.3 Ringkasan Kemampuan Inti Forwarding Engine](#23-ringkasan-kemampuan-inti-forwarding-engine)
-- [3. High-Level Architecture & Concurrency Model](#3-high-level-architecture--concurrency-model)
+- [3. Arsitektur Tingkat Tinggi & Model Konkurensi (High-Level Architecture & Concurrency Model)](#3-arsitektur-tingkat-tinggi--model-konkurensi-high-level-architecture--concurrency-model)
   - [3.1 Dual-Plane Threading Architecture](#31-dual-plane-threading-architecture)
   - [3.2 Lock-Free SPSC Control-Plane Ring Buffer](#32-lock-free-spsc-control-plane-ring-buffer)
-  - [3.3 Hierarchical Mutex Ordering & Deadlock Prevention](#33-hierarchical-mutex-ordering--deadlock-prevention)
-  - [3.4 Port-Local O(1) DLCI Lookup Caches](#34-port-local-o1-dlci-lookup-caches)
-  - [3.5 Architectural Workflow Diagram](#35-architectural-workflow-diagram)
-- [4. Repository & Codebase Layout](#4-repository--codebase-layout)
-- [5. Build and Runtime Requirements](#5-build-and-runtime-requirements)
-- [6. Build Instructions](#6-build-instructions)
-- [7. Running VFRS](#7-running-vfrs)
+  - [3.3 Queue-Then-Flush Deferred Callback Mechanism](#33-queue-then-flush-deferred-callback-mechanism)
+  - [3.4 Hierarchical Mutex Ordering & Deadlock Prevention](#34-hierarchical-mutex-ordering--deadlock-prevention)
+  - [3.5 Port-Local O(1) DLCI Lookup Caches & Hash Registries](#35-port-local-o1-dlci-lookup-caches--hash-registries)
+  - [3.6 Architectural Workflow Diagram](#36-architectural-workflow-diagram)
+- [4. Layout Repositori & Kode (Repository & Codebase Layout)](#4-layout-repositori--kode-repository--codebase-layout)
+- [5. Persyaratan Build & Runtime (Build and Runtime Requirements)](#5-persyaratan-build--runtime-build-and-runtime-requirements)
+- [6. Petunjuk Build (Build Instructions)](#6-petunjuk-build-build-instructions)
+- [7. Menjalankan VFRS (Running VFRS)](#7-menjalankan-vfrs-running-vfrs)
   - [7.1 Basic Launch](#71-basic-launch)
   - [7.2 Interactive Console Mode](#72-interactive-console-mode)
   - [7.3 Configuration Dry-Run & Semantic Verification](#73-configuration-dry-run--semantic-verification)
-- [8. Command-Line Options](#8-command-line-options)
-- [9. Configuration System Architecture](#9-configuration-system-architecture)
-  - [9.1 Multi-Pass Lexical & Semantic Parser](#91-multi-pass-lexical--semantic-parser)
-  - [9.2 Syntax & Formatting Conventions](#92-syntax--formatting-conventions)
-- [10. Configuration Command Reference](#10-configuration-command-reference)
-  - [10.1 Switch Identity & Global Numbering (`swconfig`)](#101-switch-identity--global-numbering-swconfig)
-  - [10.2 Logging & Rotation (`log_level`, `log_file`, `log_rotation`)](#102-logging--rotation-log_level-log_file-log_rotation)
-  - [10.3 Global Default Parameters (`defaults`)](#103-global-default-parameters-defaults)
-  - [10.4 Interface Definition (`port`)](#104-interface-definition-port)
-  - [10.5 Permanent Virtual Circuits (`pvc`)](#105-permanent-virtual-circuits-pvc)
-  - [10.6 Local Management Interface (`lmi`, `lmi_dte`)](#106-local-management-interface-lmi-lmi_dte)
+- [8. Opsi Baris Perintah (Command-Line Options)](#8-opsi-baris-perintah-command-line-options)
+- [9. Arsitektur Sistem Konfigurasi Modern (Configuration System Architecture)](#9-arsitektur-sistem-konfigurasi-modern-configuration-system-architecture)
+  - [9.1 Pipeline Lexer, AST Parser & Semantic Compiler](#91-pipeline-lexer-ast-parser--semantic-compiler)
+  - [9.2 Strict Schema Validation & Scoped Defaults Cascade](#92-strict-schema-validation--scoped-defaults-cascade)
+  - [9.3 10-Way Radix Trie Digit Analysis Engine](#93-10-way-radix-trie-digit-analysis-engine)
+- [10. Referensi Perintah Konfigurasi (Configuration Command Reference)](#10-referensi-perintah-konfigurasi-configuration-command-reference)
+  - [10.1 Identitas Switch & Dial-Plan Global (`swconfig`)](#101-identitas-switch--dial-plan-global-swconfig)
+  - [10.2 Logging & Rotasi Berkas (`log`)](#102-logging--rotasi-berkas-log)
+  - [10.3 Cascading Parameter Default Global (`default`)](#103-cascading-parameter-default-global-default)
+  - [10.4 Definisi Antarmuka & Transport Driver (`port`)](#104-definisi-antarmuka--transport-driver-port)
+  - [10.5 Permanent Virtual Circuits (`pvc` & `pvc mcast`)](#105-permanent-virtual-circuits-pvc--pvc-mcast)
+  - [10.6 Local Management Interface (`lmi`)](#106-local-management-interface-lmi)
   - [10.7 LAPF Protocol Parameters (`lapf`)](#107-lapf-protocol-parameters-lapf)
-  - [10.8 SVC Interface, Numbering & Routing (`svc_int`, `svc_addr`, `svc_route`)](#108-svc-interface-numbering--routing-svc_int-svc_addr-svc_route)
-  - [10.9 Congestion Management & CLLM (`congestion`, `cllm`)](#109-congestion-management--cllm-congestion-cllm)
-  - [10.10 Multicast Groups & Members (`mcast`, `mcast_member`)](#1010-multicast-groups--members-mcast-mcast_member)
-  - [10.11 Packet Capture (`capture`)](#1011-packet-capture-capture)
+  - [10.8 Persinyalan SVC, Penomoran & Perutean (`svc int`, `svc addr`, `svc route`, `svc mcast`)](#108-persinyalan-svc-penomoran--perutean-svc-int-svc-addr-svc-route-svc-mcast)
+  - [10.9 Soft Permanent Virtual Circuits (`spvc`)](#109-soft-permanent-virtual-circuits-spvc)
+  - [10.10 Protokol Manajemen Internal Switch (`issmp`)](#1010-protokol-manajemen-internal-switch-issmp)
+  - [10.11 Manajemen Kemacetan & CLLM (`cgst`)](#1011-manajemen-kemacetan--cllm-cgst)
+  - [10.12 Perekaman Paket Live PCAP (`capture`)](#1012-perekaman-paket-live-pcap-capture)
 - [11. Interactive Console Commands (VFRS CLI)](#11-interactive-console-commands-vfrs-cli)
 - [12. Testing & Quality Assurance](#12-testing--quality-assurance)
-  - [12.1 C Unit Test Suite (`ie_test.exe`)](#121-c-unit-test-suite-ie_testexe)
-  - [12.2 SVC Protocol Compliance Suite (`svc_compliance_test.py`)](#122-svc-protocol-compliance-suite-svc_compliance_testpy)
-  - [12.3 Functional & Multi-Hop Call Test Suite (`svc_test.py`)](#123-functional--multi-hop-call-test-suite-svc_testpy)
-  - [12.4 High-Throughput Loopback Smoke Test (`run_pipe_loopback_test.sh`)](#124-high-throughput-loopback-smoke-test-run_pipe_loopback_testsh)
+  - [12.1 C Configuration & Digit Analysis Unit Test (`cfg_test.exe`)](#121-c-configuration--digit-analysis-unit-test-cfg_testexe)
+  - [12.2 C Information Element & Protocol Unit Test (`ie_test.exe`)](#122-c-information-element--protocol-unit-test-ie_testexe)
+  - [12.3 SVC Protocol Compliance Suite (`svc_compliance_test.py`)](#123-svc-protocol-compliance-suite-svc_compliance_testpy)
+  - [12.4 Functional & Multi-Hop Call Test Suite (`svc_test.py`)](#124-functional--multi-hop-call-test-suite-svc_testpy)
+  - [12.5 High-Throughput Loopback Smoke Test (`run_pipe_loopback_test.sh`)](#125-high-throughput-loopback-smoke-test-run_pipe_loopback_testsh)
 - [13. Packet Capture & Wireshark Dissection](#13-packet-capture--wireshark-dissection)
 - [14. Troubleshooting & FAQs](#14-troubleshooting--faqs)
 - [15. Academic Project & Development Information](#15-academic-project--development-information)
@@ -98,14 +104,18 @@ Frame Relay merupakan salah satu tonggak terpenting dalam sejarah teknologi jari
 
 VFRS menghadirkan implementasi perangkat lunak mandiri (*standalone*) yang mengintegrasikan:
 
-1. **Dukungan Dua Mode Virtual Circuit Penuh**: Baik sirkuit permanen (**PVC**) maupun sirkuit dinamis berbasis persinyalan panggilan (**SVC** via Q.933/X.36/X.76).
+1. **Dukungan Tiga Mode Virtual Circuit Penuh**:
+   - **PVC** (*Permanent Virtual Circuits*): Sirkuit permanen lokal dan inter-switch dengan traffic policing tiga tingkat.
+   - **SVC** (*Switched Virtual Circuits*): Sirkuit dinamis berbasis persinyalan panggilan Layer 3 (ITU-T Q.933 / X.36 / X.76) dengan mesin status U0–U22 / N0–N22 lengkap.
+   - **SPVC** (*Soft Permanent Virtual Circuits*): Sirkuit hibrida yang menghubungkan access PVC lokal melintasi jaringan inti SVC NNI dengan mekanisme *auto-dial* dan *restoral* asinkron otomatis.
 2. **Kepatuhan Persinyalan Lintas Batas (UNI & NNI)**: Mengimplementasikan peran DCE dan DTE secara simultan pada antarmuka *User-to-Network* (ITU-T X.36) dan *Network-to-Network* (ITU-T X.76).
-3. **Arsitektur Concurrency Generasi Baru**: Menggunakan model *two-plane execution* (Fast-Path Data Plane dan Slow-Path Control Plane) yang sepenuhnya bebas *deadlock* dengan *lock-free SPSC queues* dan struktur data *port-local cache* berkecepatan $O(1)$.
-4. **Multiprotokol Transport L2/L3**: Mengemulasikan jalur komunikasi Frame Relay di atas _named pipes_ Windows/POSIX, _raw socket_ UDP/TCP, serial COM/tty fisik/virtual, hingga terowongan *pseudowire* L2TPv3 (RFC 4591 / RFC 4349).
+3. **Arsitektur Concurrency Generasi Baru**: Menggunakan model *two-plane execution* (Fast-Path Data Plane dan Slow-Path Control Plane) yang sepenuhnya bebas *deadlock* dengan *lock-free SPSC queues*, pola *queue-then-flush deferred callbacks*, dan struktur data *port-local cache* berkecepatan $O(1)$.
+4. **Sistem Konfigurasi & Analisis Digit Modern**: Dilengkapi dengan streaming tokenizer/lexer, parser AST rekursif, validasi skema bertipe ketat, dan mesin analisis digit 10-way Radix Trie ($\mathcal{O}(K)$) untuk perutean rencana penomoran ITU-T X.121 dan E.164.
+5. **Multiprotokol Transport L2/L3**: Mengemulasikan jalur komunikasi Frame Relay di atas _named pipes_ Windows/POSIX, _raw socket_ UDP/TCP, serial COM/tty fisik/virtual, hingga terowongan *pseudowire* L2TPv3 (RFC 4591 / RFC 4349).
 
 ---
 
-## 2. Standards Compliance & Core Capabilities
+## 2. Kepatuhan Standar & Kapabilitas Inti (Standards Compliance & Core Capabilities)
 
 VFRS dirancang dengan kepatuhan penuh terhadap kumpulan standar formal Frame Relay internasional. Struktur protokol, format frame, mesin persinyalan panggilan (*call control state machine*), dan manajemen kemacetan diimplementasikan secara ketat berdasarkan klausul-klausul spesifik berikut:
 
@@ -113,17 +123,18 @@ VFRS dirancang dengan kepatuhan penuh terhadap kumpulan standar formal Frame Rel
 
 | Standar / Spesifikasi | Judul Resmi Dokumen Standar & Edisi Publikasi | Ruang Lingkup & Klausul Kunci yang Diimplementasikan pada VFRS |
 | :--- | :--- | :--- |
-| **ITU-T Recommendation X.36** | *"Interface between Data Terminal Equipment (DTE) and Data Circuit-terminating Equipment (DCE) for public data networks providing frame relay data transmission service by dedicated circuit"* (02/2003) | **UNI Data Link, SVC Call Control, LMI & Congestion**:<br>&bull; Klausul 6: *Description of the DTE/DCE interface (physical layer)*<br>&bull; Klausul 7: *Network capabilities* (Priorities, Service classes, Reverse charging, CUG, TNS, Fragmentation)<br>&bull; Klausul 8: *Service parameters and service quality* (AR §8.2.1, Bc §8.2.2, Be §8.2.3, CIR §8.2.4, Tc §8.2.5, N203 §8.2.6, FTP/FDP/Service Class §8.2.7)<br>&bull; Klausul 9: *Data link transfer control* (Frame format §9.2, 2/3/4-octet DLCI §9.3, FCS CRC-16 §9.5, Flag 0x7E)<br>&bull; Klausul 10: *Call connection control* (Signaling DLCI 0 §10.2, Messages §10.5 [Tabel 10-1 s.d. 10-11], Information Elements §10.6 [Gambar 10-2 s.d. 10-22, Tabel 10-12 s.d. 10-25], Call FSM U0–U22/N0–N22 §10.7/§10.10, Timers T301–T322 §10.11)<br>&bull; Klausul 11: *PVC management procedures* (Status Enquiry/Status, LIV, PVC Status, N391–N393, T391–T392, Bidirectional §11.5)<br>&bull; Klausul 12: *Congestion control* (Region I/II/III, FECN, BECN, DE bit, Traffic policing, User rate adaptation)<br>&bull; Annex A: *Support of closed user group optional user facility*<br>&bull; Annex B: *Support of reverse charging and reverse charging acceptance*<br>&bull; Annex C: *Consolidated Link Layer Management (CLLM)* (XID frame pada DLCI 1007)<br>&bull; Annex D: *Transit network selection optional user facility*<br>&bull; Annex E: *Support of the network service access point (NSAP) addressing*<br>&bull; Annex F: *DTE/DCE fragmentation*<br>&bull; Annex G: *PVC status reporting enhancements* (Segmented Full Status)<br>&bull; Annex H: *Support of dynamic PVC configuration* |
-| **ITU-T Recommendation X.76** | *"Network-to-network interface between public networks providing PVC and/or SVC frame relay data transmission service"* (02/2003) | **NNI Inter-Switch Data Link, Signaling & Congestion**:<br>&bull; Klausul 6: *Description of the network-to-network physical layer interface*<br>&bull; Klausul 8: *Service parameters and service quality* (AR, CIR, Bc, Be, Tc, N203, FTP, FDP, Service Class)<br>&bull; Klausul 9: *Data link transfer control* (NNI framing, DLCI translation, Q.922 Annex A core attributes)<br>&bull; Klausul 10: *Frame relay SVC signalling* (Signaling channel DLCI 0/1015, Transit Net ID, Call ID, NNI FSM, Timers T303/T308/T310/T316/T317/T322 §10.8)<br>&bull; Klausul 11: *Additional procedures for PVCs using unnumbered information frames* (Bidirectional LMI polling pada DLCI 0)<br>&bull; Klausul 12: *Congestion control* (NNI congestion handling, FECN/BECN transport, DE bit policing per I.370)<br>&bull; Annex A: *Transit network selection facility*<br>&bull; Annex B: *Number identification supplementary services*<br>&bull; Annex C: *PVC status reporting enhancements* (Segmented Full Status di NNI)<br>&bull; Appendix I: *Network congestion scenarios*<br>&bull; Appendix II: *Signalling scenarios for call establishment and clearing* |
-| **ITU-T Recommendation Q.922** | *"ISDN data link layer specification for frame mode bearer services"* (02/1992) | **LAPF Protocol Stack & DL-CORE**:<br>&bull; Klausul 2: *Frame structure for peer-to-peer communication* (Flag `0x7E`, FCS CRC-16, Address field, HDLC zero-bit insertion/extraction)<br>&bull; Klausul 3: *Elements of procedures and formats of fields* (SABME, DISC, DM, UA, FRMR, I-frame, RR, RNR, REJ, UI, XID)<br>&bull; Klausul 5: *Procedures of the data link layer* (Sliding window parameter $k$, T200/T203, N200/N201/N202)<br>&bull; Annex A: *Core aspects of Recommendation Q.922 for use with frame relaying bearer service (DL-CORE)*<br>&bull; Annex A.7: *Consolidated link layer management (CLLM) procedures* (DLCI 1007 XID frame format)<br>&bull; Appendix I: *Responses to network congestion* (Dynamic window size algorithm $V(k)$, step size $N_w$, slow-start mechanism)<br>&bull; Appendix II: *Automatic negotiation of data link layer parameters* |
-| **ITU-T Recommendation Q.933** | *"ISDN Digital subscriber Signalling System No. 1 (DSS1) – Signalling specifications for frame mode switched and permanent virtual connection control and status monitoring"* (02/2003) | **SVC Layer 3 Signaling & PVC Status Monitoring**:<br>&bull; Klausul 4: *General message format and information elements coding* (Protocol discriminator `0x08`, Call reference, Message types, Information Elements [0x04 Bearer Cap, 0x08 Cause, 0x14 Call State, 0x18 Chan ID, 0x1E Progress, 0x48 LLCORE, 0x49 LL Protocol, 0x4C Connected, 0x6C Calling, 0x70 Called, 0x78 TNS, 0x79 Restart])<br>&bull; Klausul 5: *Call control procedures for basic call* (Call setup, proceed, connect, disconnect, release, restart)<br>&bull; Annex A: *Signalling procedures for frame mode permanent virtual connections (PVC) status monitoring* (Q.933A LMI pada DLCI 0, Report Type `0x51`, Link Integrity `0x53`, PVC Status `0x57`, Codeset 0, T391/T392, N391–N393)<br>&bull; Annex D: *Protocol Implementation Conformance Statement (PICS) proforma for Annex A* |
+| **ITU-T Recommendation X.36** | *"Interface between Data Terminal Equipment (DTE) and Data Circuit-terminating Equipment (DCE) for public data networks providing frame relay data transmission service by dedicated circuit"* (02/2003) | **UNI Data Link, SVC Call Control, LMI & Congestion**:<br>&bull; Klausul 6: *Description of the DTE/DCE interface (physical layer)*<br>&bull; Klausul 7: *Network capabilities* (Priorities, Service classes, Reverse charging, CUG, TNS, Fragmentation)<br>&bull; Klausul 8: *Service parameters and service quality* (AR §8.2.1, Bc §8.2.2, Be §8.2.3, CIR §8.2.4, Tc §8.2.5, N203 §8.2.6, FTP/FDP/Service Class §8.2.7)<br>&bull; Klausul 9: *Data link transfer control* (Frame format §9.2, 2/3/4-octet DLCI §9.3, FCS CRC-16 §9.5, Flag 0x7E)<br>&bull; Klausul 10: *Call connection control* (Signaling DLCI 0 §10.2, Messages §10.5 [Tabel 10-1 s.d. 10-11], Information Elements §10.6 [Gambar 10-2 s.d. 10-22, Tabel 10-12 s.d. 10-25], Call FSM U0–U22/N0–N22 §10.7/§10.10, Timers T301–T322 §10.11)<br>&bull; Klausul 11: *PVC management procedures* (Status Enquiry/Status, LIV, PVC Status, N391–N393, T391–T392, Bidirectional §11.5)<br>&bull; Klausul 12: *Congestion control* (Region I/II/III, FECN, BECN, DE bit, Traffic policing, User rate adaptation)<br>&bull; Annex A: *Support of closed user group optional user facility*<br>&bull; Annex B: *Support of reverse charging and reverse charging acceptance*<br>&bull; Annex C: *Consolidated Link Layer Management (CLLM)* (XID frame pada DLCI 1007)<br>&bull; Annex D: *Transit network selection optional user facility*<br>&bull; Annex E: *Support of the network service access point (NSAP) addressing*<br>&bull; Annex F: *DTE/DCE fragmentation* (FRF.12 compliant segmenter/reassembler)<br>&bull; Annex G: *PVC status reporting enhancements* (Segmented Full Status)<br>&bull; Annex H: *Support of dynamic PVC configuration*<br>&bull; Appendix III: *Loopback detection via transmit/receive sequence verification*<br>&bull; Appendix VII: *Dynamic initial window size calculation $k = 2 + (T_{td} \times R_u) / (4 \times L_d)$* |
+| **ITU-T Recommendation X.76** | *"Network-to-network interface between public networks providing PVC and/or SVC frame relay data transmission service"* (02/2003) | **NNI Inter-Switch Data Link, Signaling & Congestion**:<br>&bull; Klausul 6: *Description of the network-to-network physical layer interface*<br>&bull; Klausul 8: *Service parameters and service quality* (AR, CIR, Bc, Be, Tc, N203, FTP, FDP, Service Class)<br>&bull; Klausul 9: *Data link transfer control* (NNI framing, DLCI translation, Q.922 Annex A core attributes)<br>&bull; Klausul 10: *Frame relay SVC signalling* (Signaling channel DLCI 0/1015, Transit Net ID, Call ID, NNI FSM, Table IV.1 exact state validation, Timers T303/T308/T310/T316/T317/T322 §10.8)<br>&bull; Klausul 11: *Additional procedures for PVCs using unnumbered information frames* (Bidirectional LMI polling pada DLCI 0)<br>&bull; Klausul 12: *Congestion control* (NNI congestion handling, FECN/BECN transport, DE bit policing per I.370)<br>&bull; Annex A: *Transit network selection facility & Soft PVC (SPVC) cross-connect support*<br>&bull; Annex B: *Number identification supplementary services & Cause IE diagnostics*<br>&bull; Annex C: *PVC status reporting enhancements* (Segmented Full Status di NNI)<br>&bull; Appendix I: *Network congestion scenarios*<br>&bull; Appendix II: *Signalling scenarios for call establishment and clearing* |
+| **ITU-T Recommendation Q.922** | *"ISDN data link layer specification for frame mode bearer services"* (02/1992) | **LAPF Protocol Stack & DL-CORE / DL-CONTROL**:<br>&bull; Klausul 2: *Frame structure for peer-to-peer communication* (Flag `0x7E`, FCS CRC-16, Address field, HDLC zero-bit insertion/extraction)<br>&bull; Klausul 3: *Elements of procedures and formats of fields* (SABME, DISC, DM, UA, FRMR, I-frame, RR, RNR, REJ, UI, XID)<br>&bull; Klausul 5: *Procedures of the data link layer* (Sliding window parameter $k$, T200/T203, N200/N201/N202)<br>&bull; Annex A: *Core aspects of Recommendation Q.922 for use with frame relaying bearer service (DL-CORE)*<br>&bull; Annex A.7: *Consolidated link layer management (CLLM) procedures* (DLCI 1007 XID frame format)<br>&bull; Appendix I: *Responses to network congestion* (Dynamic window size algorithm $V(k)$, BECN scaling $0.625 \times V(k)$, T200/REJ loss scaling $0.25 \times V(k)$, step size $N_w = 5$ recovery mechanism)<br>&bull; Appendix II: *Automatic negotiation of data link layer parameters via XID (GI 0x80 / 0x0F)* |
+| **ITU-T Recommendation Q.933** | *"ISDN Digital subscriber Signalling System No. 1 (DSS1) – Signalling specifications for frame mode switched and permanent virtual connection control and status monitoring"* (02/2003) | **SVC Layer 3 Signaling & PVC Status Monitoring**:<br>&bull; Klausul 4: *General message format and information elements coding* (Protocol discriminator `0x08`, 1-octet/2-octet/global Call Reference, Message types, Single-octet vs Variable-length IE stepping, Duplicate mandatory IE retention §10.10.5.2, Sub-IE 0x0B Minimum Acceptable CIR, Cause IE diagnostics in Octet 5 for Causes 96, 98, 99, 100, 101)<br>&bull; Klausul 5: *Call control procedures for basic call* (Call setup, proceed, connect, disconnect, release, restart)<br>&bull; Annex A: *Signalling procedures for frame mode permanent virtual connections (PVC) status monitoring* (Q.933A LMI pada DLCI 0, Report Type `0x51`, Link Integrity `0x53`, PVC Status `0x57`, Codeset 0, T391/T392, N391–N393)<br>&bull; Annex D: *Protocol Implementation Conformance Statement (PICS) proforma for Annex A* |
 | **ANSI T1.617 + Annex D** | *"American National Standard for Telecommunications – ISDN – DSS1 – Signaling System for Frame Mode Bearer Services"* (1991) | **ANSI LMI Standard**:<br>&bull; Klausul 3 & 4: Format pesan persinyalan dan Information Elements<br>&bull; *Annex D: Additional Procedures for Frame Relaying Permanent Virtual Connections Using Unnumbered Information Frames* (DLCI 0, UI frame, enkapsulasi **Codeset 5**, Report Type `0x01`, Link Integrity `0x03`, PVC Status `0x07`, T391, T392, N391–N393) |
 | **Vendor Consortium (Gang of Four)** | *"Frame Relay Specification with Extensions Based on Proposed T1S1 Standards by cisco Systems, Digital Equipment Corporation, Northern Telecom, StrataCom"* (ConneXions 5-3, 03/1991) | **Cisco / Gang of Four (GoF) LMI**:<br>&bull; Signaling pada **DLCI 1023** menggunakan UI frame (Protocol discriminator `0x09`)<br>&bull; Information Elements pada **Codeset 0**: Report Type (`0x01`), Link Integrity (`0x03`), PVC Status (`0x07`), Multicast (`0x09`) |
 | **Frame Relay Forum FRF.7 / FRF.19** | *"Frame Relay PVC Multicast Service and Protocol Description"* (10/1994) | **Multicast Group Replication**:<br>&bull; Klausul 2: Definisi layanan Point-to-Multipoint pada Frame Relay PVC<br>&bull; Klausul 3: Model replikasi frame One-Way (Root $\rightarrow$ Leaves), Two-Way (Root $\leftrightarrow$ Leaves), dan N-Way (Full-Mesh Multipoint-to-Multipoint dengan split-horizon) |
+| **Frame Relay Forum FRF.12 / ITU-T X.36 Annex F** | *"Frame Relay Fragmentation Implementation Agreement"* (12/2000) & *"DTE/DCE fragmentation"* | **Segmentasi & Rekonstruksi Frame (FRF.12)**:<br>&bull; End-to-End & UNI/NNI fragmentation untuk mengurangi latensi dan jitter transmisi frame besar |
 | **ITU-T Recommendation X.6** | *"Multicast service definition"* (08/1997 / 1993) | **Prinsip Layanan Multicast Data Network**:<br>&bull; Pemetaan grup multicast, integritas transfer data, dan kendali topologi multipoint |
-| **ITU-T Recommendation X.121** | *"International numbering plan for public data networks"* (10/2000) | **Rencana Penomoran Jaringan Data Internasional**:<br>&bull; Struktur International Data Number (IDN): DNIC 4-digit (DCC 3-digit + ND 1-digit) + NTN hingga 10-digit<br>&bull; Format penomoran jaringan privat: PNIC, System Group Code (SGC), System Identification Code (SIC) |
-| **ITU-T Recommendation E.164 & X.124** | *"The international public telecommunication numbering plan"* (05/1997) & *"Arrangements for the interworking of the E.164 and X.121 numbering plans for frame relay and ATM networks"* (1999) | **Penomoran Telekomunikasi Publik & Interworking E.164/X.121**:<br>&bull; Perutean nomor berbasis E.164 dan konversi/aliasing nomor X.121 / E.164 pada antarmuka SVC |
-| **ITU-T Recommendation Q.850** | *"Usage of cause and location in the Digital Subscriber Signalling System No. 1 and the Signalling System No. 7 ISDN user part"* (05/1998) | **Kode Penyebab Pelepasan Panggilan (Cause Values)**:<br>&bull; Cause #1 (*Unallocated number*), #16 (*Normal clearing*), #17 (*User busy*), #34 (*No circuit available*), #41 (*Temporary failure*), #47 (*Resources unavailable*), #49 (*QoS unavailable*), #65 (*Bearer cap not implemented*), #96 (*Mandatory IE missing*), #100 (*Invalid IE contents*), #102 (*Recovery on timer expiry*) |
+| **ITU-T Recommendation X.121** | *"International numbering plan for public data networks"* (10/2000) | **Rencana Penomoran Jaringan Data Internasional**:<br>&bull; Struktur International Data Number (IDN): DNIC 4-digit (DCC 3-digit + ND 1-digit) + NTN hingga 10-digit<br>&bull; Format penomoran jaringan privat: PNIC, System Group Code (SGC), System Identification Code (SIC), Internal Network Digits (IND)<br>&bull; 10-Way Radix Trie Stage-by-Stage Digit Analysis Engine ($\mathcal{O}(K)$ lookup) |
+| **ITU-T Recommendation E.164 & X.124** | *"The international public telecommunication numbering plan"* (05/1997) & *"Arrangements for the interworking of the E.164 and X.121 numbering plans for frame relay and ATM networks"* (1999) | **Penomoran Telekomunikasi Publik & Interworking E.164/X.121**:<br>&bull; Perutean nomor berbasis Country Code (CC), National Destination Code (NDC), dan Subscriber Number (SN)<br>&bull; Konversi/aliasing otomatis antara prefiks E.164 dan X.121 pada antarmuka SVC |
+| **ITU-T Recommendation Q.850** | *"Usage of cause and location in the Digital Subscriber Signalling System No. 1 and the Signalling System No. 7 ISDN user part"* (05/1998) | **Kode Penyebab Pelepasan Panggilan (Cause Values & Diagnostics)**:<br>&bull; Cause #1 (*Unallocated number*), #16 (*Normal clearing*), #17 (*User busy*), #21 (*Call rejected*), #29 (*Facility rejected*), #34 (*No circuit available*), #39 (*Permanent connection out of service*), #41 (*Temporary failure*), #47 (*Resources unavailable*), #49 (*QoS unavailable*), #65 (*Bearer cap not implemented*), #88 (*Incompatible destination*), #96 (*Mandatory IE missing*), #98 (*Message incompatible with state*), #99 (*IE non-existent*), #100 (*Invalid IE contents*), #101 (*Message incompatible with state*), #102 (*Recovery on timer expiry*)<br>&bull; Lokasi pengkodean (User, Private net, Public net, Transit net) dan Octet 3a Recommendation field |
 | **ITU-T Recommendation I.122 & I.233.1 / I.233.2** | *"Framework for frame mode bearer services"* (03/1993) & *"Frame mode bearer services: ISDN frame relaying / frame switching bearer service"* (1991) | **Arsitektur Dasar Frame Mode Bearer Services**:<br>&bull; Prinsip pemisahan data plane (DL-CORE) dan control plane, multiplexing statistik virtual circuit |
 | **ITU-T Recommendation I.370 & I.372** | *"Congestion management for the ISDN frame relaying bearer service"* (1991) & *"Frame relaying bearer service network-to-network interface requirements"* (03/1993) | **Prinsip Pengelolaan Kemacetan & Kebutuhan NNI**:<br>&bull; Klasifikasi kemacetan ringan (*mild*) vs berat (*severe*), aksi penandaan FECN/BECN, pembuangan frame DE, penegakan laju transmisi |
 | **ITU-T Recommendation X.146** | *"Performance objectives and quality of service classes applicable to frame relay"* (10/2000) | **Metrik Kualitas Layanan (QoS) Frame Relay**:<br>&bull; Definisi kelas layanan (*Service Classes 0–3*), prioritas transfer (FTP), dan prioritas discard (FDP) |
@@ -140,7 +151,7 @@ VFRS dirancang dengan kepatuhan penuh terhadap kumpulan standar formal Frame Rel
   - Mengatur karakteristik antarmuka fisik, penetapan laju akses fisik (*Access Rate* / AR), dan penentuan status kesiapan antarmuka (*operational phases* per X.21, X.21 bis, V.35, G.703, G.704, I.430, I.431).
   - **Implementasi VFRS**: Mengabstraksikan physical layer ke dalam berbagai driver transport modular (`port_udp.c`, `port_tcp.c`, `port_serial.c`, `port_pipe.c`, `port_l2tpv3.c`). Pada antarmuka serial fisik, parameter Access Rate (AR) per X.36 §8.2.1 diturunkan secara otomatis dari *baud rate* perangkat.
 
-#### 2.2.2 Data Link Transfer Control & DL-CORE (ITU-T X.36 §9, X.76 §9, Q.922 Annex A)
+#### 2.2.2 Data Link Transfer Control, DL-CORE & LAPF (ITU-T X.36 §9, X.76 §9, Q.922 Core & Appendix I/VII)
 - **ITU-T X.36 Klausul 9 (*Data link transfer control*)** dan **ITU-T X.76 Klausul 9 (*Data link transfer control*)**:
   - **§9.2 *Frame format***: Menetapkan struktur kanonik frame `[Flag][Address][Information][FCS][Flag]`. VFRS mengimplementasikan pemeriksaan flag pembuka/penutup `0x7E` serta teknik bit-stuffing/unstuffing 5-bit `1` berturut-turut per Q.922 §2.2–§2.3.
   - **§9.3 *Address field formats***:
@@ -149,7 +160,17 @@ VFRS dirancang dengan kepatuhan penuh terhadap kumpulan standar formal Frame Rel
     - Format 4-oktet extended (23-bit DLCI, $0 \dots 8,388,607$) per Gambar 9-2 / X.36.
     - Penanganan semantik bit kendali alamat: bit **C/R** (*Command/Response*), bit **FECN** (*Forward Explicit Congestion Notification*), bit **BECN** (*Backward Explicit Congestion Notification*), bit **DE** (*Discard Eligibility*), dan bit **EA** (*Extension Address*).
   - **§9.5 *Frame Check Sequence (FCS) field***: Validasi dan komputasi CRC-16 standar polinomial $x^{16} + x^{12} + x^5 + 1$ (CCITT CRC-16) pada setiap frame yang diterima dan dikirim.
-  - **ITU-T Q.922 Annex A (*Core aspects of Recommendation Q.922 for use with frame relaying bearer service (DL-CORE)*)**: VFRS mengimplementasikan seluruh fungsi inti DL-CORE pada *fast-path switching core* (`fr_frame.c`, `fr_switch.c`) tanpa membebani thread kontrol.
+  - **Pembangun Frame DL-CORE Terpusat (`port_dl_build_frame()`) & Primitif Data Link Terpadu**:
+    - Seluruh subsistem switch (SVC, LMI, CLLM, SPVC) menggunakan primitif data link terpadu (`port_dl_send_unit_data()`, `port_dl_send_data()`, `port_dl_send_xid()`, `port_dl_establish_req()`, `port_dl_release_req()`).
+    - Bit **FECN**, **BECN**, dan **DE** selalu dipertahankan secara utuh melintasi inti pensaklaran.
+  - **Dynamic Per-Port LAPF Registry & Dynamic Windowing ($V(k)$)**:
+    - Setiap port memiliki tabel *hash* dinamis 64-slot (`PORT_LAPF_HASH_SIZE 64`) yang mendukung alokasi LAPF pada DLCI 10-bit maupun 23-bit secara instan dalam kompleksitas $O(1)$.
+    - **ITU-T X.36 Appendix VII**: Komputasi ukuran jendela awal dinamis:
+      $$k = 2 + \frac{T_{td} \times R_u}{4 \times L_d}$$
+    - **ITU-T Q.922 Appendix I (*Dynamic Window Congestion Response*)**:
+      - Saat menerima notifikasi **BECN**, jendela kerja dipangkas: $V(k) \leftarrow \max(\lfloor 0.625 \times V(k) \rfloor, 1)$.
+      - Saat terjadi kehilangan paket (**T200 timeout** atau penerimaan **REJ**), jendela kerja dipangkas drastis: $V(k) \leftarrow \max(\lfloor 0.25 \times V(k) \rfloor, 1)$.
+      - Pemulihan bertahap (*step recovery*): Menaikkan $V(k) \leftarrow V(k) + 1$ setiap menerima $N_w = 5$ frame terkonfirmasi hingga mencapai batas ternegosiasi $k$.
 
 #### 2.2.3 Parameter Layanan & Kualitas Layanan QoS (ITU-T X.36 §8, X.76 §8, X.146)
 - **ITU-T X.36 Klausul 8 (*Service parameters and service quality*)** dan **ITU-T X.76 Klausul 8 (*Service parameters and service quality*)**:
@@ -182,44 +203,42 @@ Persinyalan Switched Virtual Circuit (SVC) pada VFRS mengimplementasikan seluruh
 2. **Format Umum Pesan & Pengkodean Information Element (ITU-T X.36 §10.6, Gambar 10-2 s.d. 10-22, Tabel 10-12 s.d. 10-25)**:
    - Setiap pesan persinyalan pada DLCI 0 (UNI) dan DLCI 0/1015 (NNI) memuat **3 elemen wajib pertama** (Gambar 10-2):
      - **Protocol Discriminator** (§10.6.1 / Gambar 10-3): Nilai biner `0000 1000` (`0x08`) per ITU-T Q.933 / X.36.
-     - **Call Reference Information Element** (§10.6.2 / Gambar 10-4): Panjang 3 oktet (Field length `0x02`), memuat *Call Reference Flag* (`0` = inisiator pesan, `1` = penerima pesan) dan 15-bit *Call Reference Value* (CRV). Nilai CRV `0x0000` dicadangkan untuk *Global Call Reference*.
+     - **Call Reference Information Element** (§10.6.2 / Gambar 10-4): Mendukung panjang 1-oktet (`data[1] == 0x01`), 2-oktet (`data[1] == 0x02`, 15-bit CRV), dan Global CRV `0x0000` per ITU-T Q.933 §4.3 & Q.931 §4.3.
      - **Message Type** (§10.6.3 / Tabel 10-12): 1 oktet kode tipe pesan (`SETUP` `0x05`, `CALL PROCEEDING` `0x02`, `CONNECT` `0x07`, `DISCONNECT` `0x45`, `RELEASE` `0x4D`, `RELEASE COMPLETE` `0x5A`, `RESTART` `0x46`, `RESTART ACKNOWLEDGE` `0x4E`, `STATUS` `0x7D`, `STATUS ENQUIRY` `0x75`).
-   - **18 Information Elements (IE) Variabel Lengkap yang Diimplementasikan VFRS (`svc_sig_iel.c`, `svc_sig_iep.c`)**:
-     1. **Bearer Capability IE** (§10.6.4 / Gambar 10-5, Tabel 10-13, Identifier `0x04`): Menetapkan transfer capability Unrestricted digital info, Frame mode, dan User L2 protocol ITU-T Q.922 Core.
-     2. **Call State IE** (§10.6.5 / Gambar 10-6, Tabel 10-14, Identifier `0x14`): Status panggilan numerik saat ini.
-     3. **Called Party Number IE** (§10.6.6 / Gambar 10-7, Tabel 10-15, Identifier `0x70`): Tipe/skema penomoran (International / Unknown, X.121 / E.164) dan digit alamat tujuan.
+   - **Penguraian & Pembentukan Information Element (IE) Tingkat Lanjut**:
+     1. **Bearer Capability IE** (§10.6.4 / Gambar 10-5, Tabel 10-13, Identifier `0x04`): Menetapkan transfer mode Frame mode dan L2 protocol ITU-T Q.922 Core.
+     2. **Call State IE** (§10.6.5 / Gambar 10-6, Tabel 10-14, Identifier `0x14`): Status numerik saat ini (U0–U22 / N0–N22).
+     3. **Called Party Number IE** (§10.6.6 / Gambar 10-7, Tabel 10-15, Identifier `0x70`): Tipe/skema penomoran (X.121 / E.164) dan digit alamat.
      4. **Called Party Subaddress IE** (§10.6.7 / Gambar 10-8, Identifier `0x71`): Subaddress NSAP / user-specified terminal tujuan.
-     5. **Calling Party Number IE** (§10.6.8 / Gambar 10-9, Tabel 10-16, Identifier `0x6C`): Digit alamat pemanggil beserta *Presentation indicator* dan *Screening indicator* (User-provided verified / Network-provided).
+     5. **Calling Party Number IE** (§10.6.8 / Gambar 10-9, Tabel 10-16, Identifier `0x6C`): Digit pemanggil beserta *Presentation indicator* dan *Screening indicator*.
      6. **Calling Party Subaddress IE** (§10.6.9 / Gambar 10-10, Identifier `0x6D`): Subaddress terminal pemanggil.
-     7. **Cause IE** (§10.6.10 / Gambar 10-11, Tabel 10-17, Identifier `0x08`): Lokasi dan kode penyebab pelepasan per ITU-T Q.850.
+     7. **Cause IE & Diagnostic Field** (§10.6.10 / Gambar 10-11, Tabel 10-17, Identifier `0x08`):
+        - Mendukung **Octet 3a** (*Recommendation Field*, Bit 8 = 0) per ITU-T X.76 §10.5.11 / Gambar 19 dan ITU-T Q.850 §6.1.
+        - Menyertakan **Octet 5 Diagnostic Field** yang mengidentifikasi pengenal IE penyebab kesalahan untuk Cause 96 (*Mandatory IE missing*), Cause 99 (*IE non-existent*), Cause 100 (*Invalid IE contents*), serta Message Type penyebab kesalahan untuk Cause 98 / 101 (*Message incompatible with call state*) per ITU-T X.36 Annex E dan ITU-T Q.850.
+        - Mendukung parsing dan propagasi **Multiple Cause IEs** dalam pesan clearing.
+        - **Propagasi Kode Penyebab Lintas Call Leg**: Mempertahankan kode penolakan spesifik dari remote DTE (misal Cause 88 *Incompatible destination*, Cause 17 *User busy*, Cause 21 *Call rejected*, Cause 34 *No circuit available*) ke pihak pemanggil asal.
      8. **Closed User Group IE** (§10.6.11 / Gambar 10-12, Identifier `0x47`): Fasilitas CUG interlock code dan outgoing access per Annex A.
      9. **Connected Number IE** (§10.6.12 / Gambar 10-13, Tabel 10-18, Identifier `0x4C`): Alamat aktual terminal yang menjawab panggilan.
      10. **Connected Subaddress IE** (§10.6.13 / Gambar 10-14, Identifier `0x4D`): Subaddress pihak yang terhubung.
      11. **Data Link Connection Identifier (DLCI) IE** (§10.6.14 / Gambar 10-15, Tabel 10-19, Identifier `0x19`): Field *Pref./Excl.* (Exclusive), panjang DLCI (2/3/4 oktet), dan nilai numerik DLCI yang dialokasikan.
-     12. **Link Layer Core Parameters IE** (§10.6.15 / Gambar 10-16, Tabel 10-20, Identifier `0x48`): Parameter QoS forward/backward: FMIF, Throughput (CIR), Minimum throughput, $B_c$, dan $B_e$.
+     12. **Link Layer Core Parameters IE** (§10.6.15 / Gambar 10-16, Tabel 10-20, Identifier `0x48`):
+         - Negosiasi parameter forward/backward: FMIF, Throughput (CIR), $B_c$, $B_e$.
+         - Mendukung **Sub-IE 0x0B Minimum Acceptable CIR**: Memvalidasi batas throughput minimum. Jika switch/jaringan tidak mampu memenuhi nilai minimum yang diminta, panggilan ditolak dengan Cause 49 (*Quality of service unavailable*) per ITU-T X.36 §10.7.1.3.
      13. **Link Layer Protocol Parameters IE** (§10.6.16 / Gambar 10-17, Tabel 10-21, Identifier `0x49`): Parameter LAPF DL-CONTROL (T200, N200, k).
      14. **Low Layer Compatibility IE** (§10.6.17 / Gambar 10-18, Tabel 10-22, Identifier `0x7C`): Kompatibilitas end-to-end layer bawah.
      15. **Priority and Service Class Parameters IE** (§10.6.18 / Gambar 10-19, Tabel 10-23, Identifier `0x6A`): Nilai FTP ($0\dots 15$), FDP ($0\dots 7$), dan Service Class ($0\dots 3$).
      16. **Reverse Charge Indication IE** (§10.6.19 / Gambar 10-20, Tabel 10-24, Identifier `0x4A`): Pengaturan pembebanan biaya pulsa per Annex B.
      17. **Transit Network Selection IE** (§10.6.20 / Gambar 10-21, Tabel 10-25, Identifier `0x78`): Identifikasi jaringan transit per Annex D.
      18. **User-User IE** (§10.6.21 / Gambar 10-22, Identifier `0x7E`): Data transparan user-to-user (hingga 131 oktet).
+   - **Ketahanan Parsing IE (Single-Octet vs Variable-Length & Duplicate Retention)**:
+     - Differentiating single-octet IEs (Bit 8 = 1, konsumsi 1 oktet tanpa field panjang) dari variable-length IEs (Bit 8 = 0) untuk mencegah desinkronisasi batas buffer pesan.
+     - Penegakan **ITU-T X.36 §10.10.5.2**: Mempertahankan instans pertama dari mandatory unrepeatable IE (*Bearer Capability*, *Called Party Number*) dan mengabaikan instans duplikat berikutnya.
 
-3. **Status Panggilan (*Call States*) per ITU-T X.36 §10.7 / §10.10**:
-   - `U0 / N0: NULL` &ndash; Tidak ada koneksi panggilan aktif.
-   - `U1 / N1: CALL INITIATED` &ndash; SETUP telah dikirim, menunggu respons `CALL PROCEEDING`.
-   - `U2 / N2: OVERLAP SENDING` &ndash; Pengiriman digit tambahan.
-   - `U3 / N3: OUTGOING CALL PROCEEDING` &ndash; Panggilan sedang diproses di jaringan, menunggu `CONNECT`.
-   - `U4 / N4: CALL DELIVERED` &ndash; Panggilan telah sampai di terminal tujuan.
-   - `U6 / N6: CALL PRESENT` &ndash; SETUP diterima dari jaringan oleh called DTE.
-   - `U7 / N7: CALL RECEIVED` &ndash; Konfirmasi penerimaan panggilan di sisi penerima.
-   - `U8 / N8: CONNECT REQUEST` &ndash; Permintaan koneksi terkirim.
-   - `U9 / N9: INCOMING CALL PROCEEDING` &ndash; Sisi penerima sedang memproses panggilan.
-   - `U10 / N10: ACTIVE` &ndash; Sirkuit SVC aktif dua arah, data plane terhubung penuh.
-   - `U11 / N11: DISCONNECT REQUEST` &ndash; Inisiasi pemutusan sirkuit terkirim.
-   - `U12 / N12: DISCONNECT INDICATION` &ndash; Indikasi pemutusan diterima dari remote node.
-   - `U19 / N19: RELEASE REQUEST` &ndash; Inisiasi pelepasan kanal, menunggu `RELEASE COMPLETE`.
-   - `U21 / N21: RESTART REQUEST` &ndash; Permintaan restart antarmuka terkirim dengan Global CRV.
-   - `U22 / N22: RESTART` &ndash; Antarmuka sedang dalam proses restart pembersihan sirkuit.
+3. **Status Panggilan (*Call States*) & Validasi NNI Tabel IV.1/X.76**:
+   - Status Lengkap: `U0/N0: NULL`, `U1/N1: CALL INITIATED`, `U2/N2: OVERLAP SENDING`, `U3/N3: OUTGOING CALL PROCEEDING`, `U4/N4: CALL DELIVERED`, `U6/N6: CALL PRESENT`, `U7/N7: CALL RECEIVED`, `U8/N8: CONNECT REQUEST`, `U9/N9: INCOMING CALL PROCEEDING`, `U10/N10: ACTIVE`, `U11/N11: DISCONNECT REQUEST`, `U12/N12: DISCONNECT INDICATION`, `U19/N19: RELEASE REQUEST`, `U21/N21: RESTART REQUEST`, `U22/N22: RESTART`.
+   - **Validasi Transisi NNI Ketat (ITU-T X.76 Tabel IV.1)**:
+     - `CALL PROCEEDING` hanya diterima pada status `NN6 (Call Present)`. Jika diterima pada status lain, switch merespons dengan pesan `STATUS` memuat Cause 98 (*Message not compatible with call state*) dan mempertahankan status panggilan saat ini.
+     - `CONNECT` hanya diterima pada status `NN6 (Call Present)` atau `NN9 (Call Proceeding Received)`.
 
 4. **Pewaktu Persinyalan (*Signalling Timers*) per ITU-T X.36 §10.11 & ITU-T X.76 §10.8**:
    - **T301**: Pewaktu tunggu respons `CONNECT` setelah `CALL DELIVERED` (180s).
@@ -246,6 +265,7 @@ Persinyalan Switched Virtual Circuit (SVC) pada VFRS mengimplementasikan seluruh
   - **Klausul Khusus Lanjutan**:
     - **ITU-T X.36 §11.5 & X.76 §11.4**: Prosedur LMI Dua Arah (*Bidirectional Polling*) untuk antarmuka NNI dan interkoneksi private network.
     - **ITU-T X.36 Annex G & X.76 Annex C**: Prosedur *Segmented Full Status* (menggunakan Report Type *Full Status Continued*) ketika jumlah entri PVC melebihi ukuran satu frame LMI.
+    - **ITU-T X.36 Appendix III (*Loopback Detection*)**: Deteksi loopback fisik berbasis pencocokan nomor urut kirim/terima LMI secara otomatis pada modul Q.933A, ANSI, dan Cisco GoF.
 
 #### 2.2.6 Manajemen Kemacetan & CLLM (ITU-T X.36 §12 / Annex C, X.76 §12, Q.922 Annex A, I.370)
 - **ITU-T X.36 Klausul 12 (*Congestion control*)**, **ITU-T X.76 Klausul 12 (*Congestion control*)**, dan **ITU-T Recommendation I.370 (*Congestion management for the ISDN frame relaying bearer service*)**:
@@ -265,14 +285,30 @@ Persinyalan Switched Virtual Circuit (SVC) pada VFRS mengimplementasikan seluruh
   - **Mode N-Way** (Full-Mesh Multipoint-to-Multipoint): Replikasi frame penuh ke seluruh anggota grup selain pengirim frame (*split-horizon frame distribution*).
   - Integrasi dengan *Traffic Policing*: Setiap grup multicast dikaitkan dengan alokasi token bucket CIR, Bc, dan Be tersendiri (`pvc_mcast_uni.c`, `pvc_mcast_nni.c`).
 
-#### 2.2.8 Rencana Penomoran Internasional & Perutean SVC (ITU-T X.121, E.164, X.124)
+#### 2.2.8 Rencana Penomoran Internasional & Mesin Analisis Digit (ITU-T X.121, E.164, X.124)
 - **ITU-T Recommendation X.121 (*International numbering plan for public data networks*)**:
   - Menguraikan struktur International Data Number (IDN) berbasis **DNIC** (*Data Network Identification Code*, 4 digit) yang terdiri atas **DCC** (*Data Country Code*, 3 digit) dan **ND** (*Network Digit*, 1 digit), diikuti oleh nomor terminal pelanggan (**NTN**).
-  - Mendukung struktur penomoran jaringan privat: **PNIC** (*Private Network Identification Code*), **SGC** (*System Group Code*), dan **SIC** (*System Identification Code*).
-  - VFRS menyediakan fitur makro mnemonik ekspansi (`D`=DNIC, `G`=SGC, `E`=SIC) dan mesin *Longest Prefix Match* (LPM) untuk penentuan port keluar NNI secara otomatis.
-- **ITU-T Recommendation E.164 & X.124**: Mendukung pendaftaran alias penomoran telepon global E.164 dan konversi otomatis antara prefiks E.164 dan X.121.
+  - Mendukung struktur penomoran jaringan privat: **PNIC** (*Private Network Identification Code*), **SGC** (*System Group Code*), **SIC** (*System Identification Code*), dan digit internal jaringan tak terbatas (**IND** / *Internal Network Digits*).
+  - **Mesin Analisis Digit 10-Way Radix Trie ($\mathcal{O}(K)$)**:
+    - Pohon *Radix Trie* (`vfr_digit_node_t`) untuk evaluasi nomor tahap demi tahap (*stage-by-stage digit analysis*).
+    - Pencocokan prefiks terpanjang (*Longest Prefix Match* / LPM) instan untuk perutean panggilan keluar NNI dan *Transit Network Selection* (TNS).
+  - **Alokasi Penomoran Pelanggan Otomatis (*Autonumbering*)**:
+    - Mendukung alokasi sekuensial otomatis dengan *multi-prefix rollover* dinamis dan reservasi nomor sistem (angka 0 semua).
+- **ITU-T Recommendation E.164 & X.124**: Mendukung pendaftaran alias penomoran telepon global E.164 (Country Code + National Destination Code + Subscriber Number) dan konversi otomatis antara prefiks E.164 dan X.121.
 
-#### 2.2.9 Enkapsulasi Pseudowire & Interoperabilitas Modern (RFC 4591, RFC 4349, RFC 2427)
+#### 2.2.9 Soft Permanent Virtual Circuits (SPVC per ITU-T X.76 Annex A / ISSMP)
+- **ITU-T Recommendation X.76 Annex A & ISSMP (*Inter-Switch Signaling and Management Protocol*)**:
+  - Menghubungkan access PVC lokal pada antarmuka ingress melintasi jaringan inti SVC berbasis persinyalan NNI dinamis menuju access PVC di antarmuka tujuan.
+  - **Notifikasi Status PVC Asinkron (`spvc_notify_pvc_status_change()`)**:
+    - Saat access PVC lokal mengalami gangguan (*Down*), switch secara otomatis melepaskan koneksi SVC NNI inti seketika dengan Cause 39 (*Permanent connection out of service*) per X.76 Annex A.4.5.3.
+    - Saat access PVC kembali aktif (*Up*), switch secara otomatis menginisiasi panggilan penyambungan ulang (*auto-dial / restoral*) ke node tujuan.
+
+#### 2.2.10 Segmentasi & Fragmentasi Frame (ITU-T X.36 Annex F & FRF.12)
+- **ITU-T Recommendation X.36 Annex F & FRF.12 (*Frame Relay Fragmentation Implementation Agreement*)**:
+  - Mendukung fragmentasi frame besar menjadi segmen-segmen kecil pada antarmuka UNI/NNI dengan penambahan header fragmentasi FRF.12 (bit $B$ *Begin*, bit $E$ *End*, sequence counter $C$).
+  - Mencegah penundaan (*delay jitter*) pada sirkuit berprioritas tinggi saat frame data besar sedang ditransmisikan pada link berkecepatan rendah.
+
+#### 2.2.11 Enkapsulasi Pseudowire & Interoperabilitas Modern (RFC 4591, RFC 4349, RFC 2427)
 - **IETF RFC 4591 (*Frame Relay over Layer 2 Tunneling Protocol - Version 3*)** & **RFC 4349 (*HDLC over L2TPv3*)**:
   - Mendukung enkapsulasi terowongan Layer-2 pseudowire (PWE3) untuk melewatkan trafik sirkuit Frame Relay dan HDLC antar-switch melalui jaringan paket berbasis IP/Ethernet.
 - **IETF RFC 2427 / RFC 1490 (*Multiprotocol Interconnect over Frame Relay*)**:
@@ -290,18 +326,20 @@ Persinyalan Switched Virtual Circuit (SVC) pada VFRS mengimplementasikan seluruh
   - Mode raw payload tanpa flag/FCS untuk komunikasi langsung dengan soket Dynamips Cisco.
 - **Address Field Rewriting**: Penulisan ulang DLCI ingress ke egress secara *in-place* dengan propagasi bit FECN, BECN, DE, dan C/R.
 - **Permanent Virtual Circuits (PVC)**: Deklarasi sirkuit dua arah instan hanya dengan 1 baris konfigurasi, isolasi tabel DLCI per antarmuka, dan integrasi *Traffic Policing* (CIR/Bc/Be/FTP/FDP/Service Class).
-- **Switched Virtual Circuits (SVC / Q.933)**: Call State Machine penuh (U0–U22), alokator rentang dinamis DLCI 23-bit, perutean prefiks X.121/E.164 LPM, dan prosedur restart antarmuka X.36/X.76 §10.6.
-- **Local Management Interface (LMI)**: Tiga varian protokol (`q933a`, `ansi`, `cisco`), peran DCE dan DTE polling, Segmented Full Status (Annex G / Annex C), dan notifikasi status asinkron.
-- **Link Access Procedure for Frame Relay (LAPF / Q.922)**: Pengelolaan kanal persinyalan andal pada DLCI 0 dan DLCI 1015 (SABME, DISC, I-frame, RR, RNR, REJ, sliding window $k$, T200/T203).
+- **Switched Virtual Circuits (SVC / Q.933)**: Call State Machine penuh (U0–U22 / N0–N22), alokator rentang dinamis DLCI 23-bit, perutean prefiks X.121/E.164 via 10-way Radix Trie, dan prosedur restart antarmuka X.36/X.76 §10.6.
+- **Soft Permanent Virtual Circuits (SPVC)**: Pemetaan otomatis PVC-to-SVC-to-PVC dengan manajemen status asinkron dan auto-teardown / auto-redial.
+- **Local Management Interface (LMI)**: Tiga varian protokol (`q933a`, `ansi`, `cisco`), peran DCE dan DTE polling, Segmented Full Status (Annex G / Annex C), loopback detection (Appendix III), dan notifikasi status asinkron.
+- **Link Access Procedure for Frame Relay (LAPF / Q.922)**: Registry hash 64-slot per port, windowing dinamis $V(k)$ per Q.922 Appendix I & X.36 Appendix VII, pengelolaan kanal persinyalan andal pada DLCI 0 dan DLCI 1015 (SABME, DISC, I-frame, RR, RNR, REJ, XID).
 - **Congestion Management & CLLM**: Deteksi ambang batas frame-rate dan write error, penandaan FECN/BECN otomatis, token bucket 3-tier policing dengan penandaan DE bit, dan transmisi pesan berkala CLLM XID pada DLCI 1007 per X.36 Annex C.
 - **Multicast Frame Replication (FRF.7)**: Mode One-Way (Root $\rightarrow$ Members), Two-Way (Root $\leftrightarrow$ Members), dan N-Way (Full-Mesh Multipoint-to-Multipoint dengan split-horizon).
 - **Transport Drivers & Layer-2 Emulation**: Named Pipes Windows/POSIX, raw UDP sockets (symmetric/client/server), raw TCP streams (dengan auto-reconnect), serial COM/tty fisik/virtual, dan terowongan L2TPv3 pseudowire.
 - **Packet Capture & Live Observability**: Perekam PCAP standar (`LINKTYPE_FRELAY`, DLT 107) granular per-antarmuka atau global switch trace.
 
+---Observability**: Perekam PCAP standar (`LINKTYPE_FRELAY`, DLT 107) granular per-antarmuka atau global switch trace.
+
 ---
 
-
-## 3. High-Level Architecture & Concurrency Model
+## 3. Arsitektur Tingkat Tinggi & Model Konkurensi (High-Level Architecture & Concurrency Model)
 
 VFRS dirancang dengan arsitektur konkuren tingkat lanjut untuk menjamin throughput pensaklaran data plane maksimal tanpa terganggu oleh komputasi persinyalan control plane yang kompleks.
 
@@ -322,7 +360,7 @@ VFRS dirancang dengan arsitektur konkuren tingkat lanjut untuk menjamin throughp
 │ • Local DLCI Lookup Cache (O(1))│  [DLCI 0, 1007, 1015]   │ • LMI Timers & Polling Engine   │
 │ • CRC-16 / FCS Validation       │                         │ • Congestion & CLLM Generator   │
 │ • Traffic Policing / TokenBucket│                         │ • Periodic 100ms Ticks          │
-│ • Fast DLCI Rewrite & Egress    │                         │ • Dynamic PVC/SVC Table Updater │
+│ • Fast DLCI Rewrite & Egress    │                         │ • Dynamic PVC/SVC/SPVC Updater  │
 └─────────────────────────────────┘                         └─────────────────────────────────┘
 ```
 
@@ -335,27 +373,34 @@ VFRS dirancang dengan arsitektur konkuren tingkat lanjut untuk menjamin throughp
      - Jika frame adalah **Control Plane Frame (DLCI 0, 1007, 1015, atau frame non-UI)**: Frame dimasukkan ke dalam antrean SPSC (*Single-Producer Single-Consumer*) tanpa blocking, sehingga Thread 1 dapat segera melanjutkan pemrosesan paket data berikutnya.
 2. **Slow-Path Thread (Thread 2 - Control Plane)**:
    - Menjalankan loop pemrosesan latar belakang (`run_slow_path_thread`).
-   - Mengambil (*pop*) frame kontrol dari antrean SPSC dan mendistribusikannya ke subsistem LAPF, Q.933 SVC signaling, LMI handler, atau CLLM parser.
-   - Menjalankan pembaruan pewaktu periodik (*timer tick 100ms*) untuk seluruh port (`lmi_poll_timer`, `cgst_poll_timer`, `lapf_poll_timer`, `svc_poll_timers`).
+   - Mengambil (*pop*) frame kontrol dari antrean SPSC dan mendistribusikannya ke subsistem LAPF, Q.933 SVC signaling, LMI handler, SPVC manager, atau CLLM generator.
+   - Menjalankan pembaruan pewaktu periodik (*timer tick 100ms*) untuk seluruh port (`lmi_poll_timer`, `cgst_poll_timer`, `lapf_poll_timer`, `svc_poll_timers`, `spvc_poll_timer`).
 
 ### 3.2 Lock-Free SPSC Control-Plane Ring Buffer
 Komunikasi antara Thread 1 dan Thread 2 menggunakan antrean sirkular *Single-Producer Single-Consumer* (`vfr_spsc_queue_t`).
 - Menggunakan operasi atomik dan *hardware memory barriers* (`MemoryBarrier()` pada Windows, `__sync_synchronize()` pada GCC) untuk menyinkronkan pointer `head` dan `tail`.
 - Thread 1 tidak pernah terblokir (*zero lock contention*) saat memasukkan frame persinyalan ke antrean.
 
-### 3.3 Hierarchical Mutex Ordering & Deadlock Prevention
+### 3.3 Queue-Then-Flush Deferred Callback Mechanism
+Untuk menghindari *deadlock* dan inversi prioritas saat pemrosesan frame LAPF memicu *event* Layer 3 / SVC (seperti `DL-ESTABLISH` atau `DL-RELEASE` indication), VFRS menerapkan pola **Queue-Then-Flush**:
+- Selama pemrosesan frame di `lapf_handle_frame()`, callback tidak dipanggil langsung saat memegang `port->mutex`.
+- Callback dan payload L3 dimasukkan ke dalam larik lokal pada stack (`lapf_deferred_cb_t deferred[LAPF_MAX_DEFERRED]`).
+- Setelah kunci `port->mutex` dilepas secara aman, fungsi `lapf_flush_deferred()` mengeksekusi callback L3 di luar batas penguncian tanpa risiko *deadlock*.
+
+### 3.4 Hierarchical Mutex Ordering & Deadlock Prevention
 Untuk mencegah kondisi *deadlock* (seperti *AB-BA Lock Order Inversion*), VFRS menetapkan dan menegakkan urutan akuisisi kunci mutex global secara ketat:
 
-$$\text{LOCK\_LEVEL\_PORT} \longrightarrow \text{LOCK\_LEVEL\_PVC} \longrightarrow \text{LOCK\_LEVEL\_DLCI} \longrightarrow \text{LOCK\_LEVEL\_MCAST} \longrightarrow \text{LOCK\_LEVEL\_SVC}$$
+$$\text{LOCK\_LEVEL\_PORT} \longrightarrow \text{LOCK\_LEVEL\_PVC} \longrightarrow \text{LOCK\_LEVEL\_DLCI} \longrightarrow \text{LOCK\_LEVEL\_MCAST} \longrightarrow \text{LOCK\_LEVEL\_SVC} \longrightarrow \text{LOCK\_LEVEL\_SPVC}$$
 
 Pada mode kompilasi Debug (`make debug`), makro `ASSERT_LOCK_ORDER` secara otomatis memverifikasi hierarki bitmap kunci pada setiap *thread-local storage* (TLS) dan segera mengeluarkan peringatan tegas jika terjadi pelanggaran aturan penguncian.
 
-### 3.4 Port-Local O(1) DLCI Lookup Caches
+### 3.5 Port-Local O(1) DLCI Lookup Caches & Hash Registries
 Alih-alih melakukan pemindaian linier $O(N)$ pada tabel *hash* global saat paket melintas, setiap struktur `vfr_port_t` memiliki struktur cache lokal:
 - `dlci_lut[1024]`: Larik penunjuk (*direct pointer array*) langsung untuk seluruh DLCI standar 10-bit ($0 \dots 1023$). Akses pencarian berlangsung instan dalam $O(1)$ waktu konstan tanpa kunci mutex.
 - `dlci_array`: Larik dinamis yang selalu terurut (*sorted dynamic array*) untuk DLCI 23-bit, diakses menggunakan pencarian biner (*binary search*) berkecapatan tinggi $O(\log N)$.
+- `lapf_hash[64]`: Tabel *hash* berantai dinamis per-port (`PORT_LAPF_HASH_SIZE 64`) untuk pemetaan instan $O(1)$ konteks protokol LAPF pada DLCI 10-bit maupun 23-bit.
 
-### 3.5 Architectural Workflow Diagram
+### 3.6 Architectural Workflow Diagram
 
 ```mermaid
 flowchart TD
@@ -379,14 +424,16 @@ flowchart TD
 
     subgraph SlowPath ["Slow-Path (Thread 2: Control Plane)"]
         spscPop["SPSC Frame Consumer"]
-        lapf["LAPF Layer 2 State Machine (Q.922 Core)"]
+        lapf["LAPF Layer 2 State Machine (Q.922 Core / App I/VII)"]
+        deferred["Queue-Then-Flush Deferred L3 Dispatcher"]
         l3Parser["Q.933 L3 Message Parser & Builder"]
         callFSM["SVC Call State Machine (X.36 / X.76 Clause 10)"]
-        routeLPM["X.121 Longest Prefix Match (LPM) Routing"]
+        radixTrie["10-Way Radix Trie Stage-by-Stage Digit Analysis"]
         allocator["Dynamic DLCI Range Allocator"]
+        spvcEngine["SPVC Engine (X.76 Annex A / ISSMP)"]
         lmiEngine["LMI Engine (Q.933A / ANSI / Cisco)"]
         cllmEngine["Congestion & CLLM Engine (DLCI 1007 XID)"]
-        timers["Timer Engine (T303/T310/T391/T392/T200/T203)"]
+        timers["Timer Engine (T303/T310/T391/T392/T200/T203/T308)"]
     end
 
     portIn --> poll
@@ -405,40 +452,46 @@ flowchart TD
     spscPop --> lmiEngine
     spscPop --> cllmEngine
 
-    lapf --> l3Parser
+    lapf --> deferred
+    deferred --> l3Parser
     l3Parser --> callFSM
-    callFSM --> routeLPM
+    callFSM --> radixTrie
     callFSM --> allocator
     allocator -. "Installs Active VC" .-> lookup
+    spvcEngine -. "Auto-Dial / Teardown" .-> callFSM
 
     timers -. "100ms Ticks" .-> lmiEngine
     timers -. "100ms Ticks" .-> lapf
     timers -. "100ms Ticks" .-> callFSM
     timers -. "100ms Ticks" .-> cllmEngine
+    timers -. "100ms Ticks" .-> spvcEngine
 ```
 
 ---
 
-## 4. Repository & Codebase Layout
+## 4. Layout Repositori & Kode (Repository & Codebase Layout)
 
 ```
 vfr_switch/
 ├── Makefile                               # Build automation file (MSYS2 UCRT64 / MinGW / GCC)
-├── README.md                              # Dokumentasi teknis utama ini
-├── readme-draft-v1.md                     # Draf dokumentasi awal
+├── README.md                              # Dokumentasi teknis komprehensif ini
+├── readme-draft-v1.md                     # Draf dokumentasi historis
 │
-├── bin/                                   # Direktori keluaran berkas biner & pustaka statis
+├── bin/                                   # Direktori biner hasil kompilasi & pustaka
 │   ├── vfrs.exe                           # Executable utama VFRS switch
 │   ├── libvfrs.a                          # Pustaka statis modular switch core
 │   └── tests/
-│       └── ie_test.exe                    # Biner unit test C untuk Q.933 IE
+│       ├── cfg_test.exe                   # Unit test C konfigurasi & Radix Trie digit analysis
+│       └── ie_test.exe                    # Unit test C parser & builder Q.933 IE lengkap
 │
 ├── build/                                 # Objek kompilasi perantara (.o) & dependensi (.d)
 │
-├── confs/                                 # Contoh berkas konfigurasi siap pakai
-│   ├── example_config.conf                # Berkas konfigurasi referensi lengkap
-│   ├── example_config-legacy.conf         # Contoh konfigurasi format legacy
+├── confs/                                 # Berkas konfigurasi referensi & pengujian
+│   ├── example_config.conf                # Berkas konfigurasi referensi modern lengkap
+│   ├── example_config_new.conf            # Contoh sintaks spesifikasi konfigurasi terkini
+│   ├── example_config-legacy.conf         # Contoh konfigurasi format kompatibilitas legacy
 │   ├── test_config_pvc-1.conf             # Konfigurasi uji coba PVC
+│   ├── vfrs_config_guide.conf             # Panduan detail konfigurasi per-parameter
 │   └── vfrsTestSvc.conf                   # Konfigurasi pengujian SVC komprehensif
 │
 ├── docs/                                  # Dokumentasi arsitektur mendalam & analisis
@@ -446,6 +499,7 @@ vfr_switch/
 │   ├── vfrs_svc_architecture.md           # Arsitektur detail SVC Q.933 / X.36 Clause 10
 │   ├── vfrs_capacity_analysis.md          # Analisis kapasitas tabel & pensaklaran skala besar
 │   ├── optimization_walkthrough.md        # Catatan optimasi 4 fase arsitektur
+│   ├── X.36_Clause_10.5_to_10.6_tables_and_figures.html # Tabel & gambar resmi ITU-T X.36
 │   └── img/                               # Aset grafis & logo institusi
 │       ├── logo_politala.png              # Logo Politeknik Negeri Tanah Laut
 │       └── logo_trkj.png                  # Logo TRKJ Politala
@@ -453,28 +507,37 @@ vfr_switch/
 ├── include/                               # Master umbrella & public C header files
 │   ├── vfr.h                              # Master public header & context definition
 │   └── vfr/
-│       ├── config.h                       # Antarmuka parser konfigurasi
+│       ├── cfg_ast.h                      # Struktur Abstract Syntax Tree (AST) konfigurasi
+│       ├── cfg_lexer.h                    # Antarmuka streaming tokenizer & lexer
+│       ├── cfg_schema.h                   # Validator skema bertipe ketat & cascading defaults
+│       ├── config.h                       # Antarmuka parser konfigurasi compiler
 │       ├── congestion.h                   # Subsistem manajemen kemacetan & CLLM
 │       ├── export.h                       # Simbol export/import API makro
-│       ├── lapf.h                         # Antarmuka LAPF (Q.922 Core)
+│       ├── fragment.h                     # Header fragmentasi FRF.12 / X.36 Annex F
+│       ├── lapf.h                         # Antarmuka LAPF (Q.922 Core) & DL primitives
 │       ├── logger.h                       # Sistem logging & rotasi berkas log
-│       ├── pcap.h                         # Perekam berkas tangkapan PCAP
+│       ├── pcap.h                         # Perekam berkas tangkapan PCAP DLT 107
 │       ├── platform.h                     # Abstraksi cross-platform (Windows/POSIX)
 │       ├── ports.h                        # Antarmuka driver transport port
 │       ├── pvc.h                          # Tabel DLCI, PVC, LMI, & Multicast
-│       ├── svc.h                          # Framework Switched Virtual Circuit
+│       ├── svc.h                          # Framework Switched Virtual Circuit & SPVC
 │       ├── switching.h                    # Switching core, frame parser, & CRC-16
 │       └── types.h                        # Definisi tipe dasar, konstanta, & antrean SPSC
 │
 ├── src/                                   # Implementasi kode sumber C
-│   ├── main.c                             # Entry point, CLI args, multi-pass parser, console loop
+│   ├── main.c                             # Entry point, CLI args, single-pass pipeline runner, console CLI
 │   ├── core/
-│   │   ├── config.c                       # Lexical tokenizer & config parser helpers
+│   │   ├── cfg_lexer.c                    # Streaming tokenizer / lexer dengan line-continuation & string parsing
+│   │   ├── cfg_schema.c                   # Validator skema numerik/rate/time bertipe ketat & defaults cascade
+│   │   ├── cfg_parser.c                   # Parser rekursif berbasis tata bahasa AST
+│   │   ├── cfg_compiler.c                 # Semantic AST compiler & runtime state binder
+│   │   ├── config.c                       # Helper konfigurasi kompatibilitas
 │   │   └── logger.c                       # Thread-safe logger dengan rotasi otomatis
 │   ├── switching/
 │   │   ├── fr_frame.c                     # Frame parsing, CRC-16 FCS, HDLC bit-stuffing
 │   │   ├── fr_switch.c                    # Frame forwarding core, DLCI rewrite, show commands
-│   │   └── svc_routing_common.c           # Perutean prefiks X.121/E.164 & LPM table
+│   │   ├── fr_fragment.c                  # Segmenter & reassembler frame FRF.12 / X.36 Annex F
+│   │   └── svc_routing_common.c           # Mesin analisis digit 10-way Radix Trie & perutean LPM X.121/E.164
 │   ├── ports/
 │   │   ├── port_common.c                  # Base port abstractions & local cache routing tables
 │   │   ├── port_queue.c                   # Lock-free SPSC signaling queue implementation
@@ -483,11 +546,11 @@ vfr_switch/
 │   │   ├── port_serial.c                  # Driver transport port serial RS-232 / COM
 │   │   ├── port_pipe.c                    # Driver transport named pipe Windows / POSIX
 │   │   ├── lapf/
-│   │   │   └── port_lapf.c                # Implementasi mesin status LAPF Q.922 Core
+│   │   │   └── port_lapf.c                # Implementasi mesin status LAPF Q.922 Core & DL-CORE primitives
 │   │   ├── pcap/
 │   │   │   └── port_pcap.c                # Implementasi perekam Libpcap DLT 107
 │   │   └── svc_numbering/
-│   │       └── svc_numbering.c            # Rencana penomoran subscriber & mnemonic expansion
+│   │       └── svc_numbering.c            # Rencana penomoran subscriber, autoprefix & sequential autonumber
 │   ├── pvc/
 │   │   ├── pvc_lmi_common.c               # Inisialisasi & pemroses timer LMI bersama
 │   │   ├── pvc_lmi_ansi.c                 # Mesin LMI ANSI T1.617 Annex D
@@ -503,10 +566,12 @@ vfr_switch/
 │       ├── svc_sig_iel.c                  # Pembuat Information Element (IE) Q.933 Layer 3
 │       ├── svc_sig_iep.c                  # Pengurai Information Element (IE) Q.933 Layer 3
 │       ├── svc_sig_uni.c                  # Alur persinyalan SVC UNI (X.36 Clause 10)
-│       └── svc_sig_nni.c                  # Alur persinyalan SVC NNI (X.76 Clause 10)
+│       ├── svc_sig_nni.c                  # Alur persinyalan SVC NNI (X.76 Clause 10)
+│       └── svc_spvc.c                     # Pengelola Soft PVC (SPVC), monitoring status PVC & auto-dial
 │
 └── tests/                                 # Berkas pengujian unit, fungsional, & kepatuhan
-    ├── ie_test.c                          # Unit test C parser & builder Q.933 IE
+    ├── cfg_test.c                         # Unit test C parser konfigurasi, skema, & Radix Trie
+    ├── ie_test.c                          # Unit test C parser & builder Q.933 IE (22 skenario)
     ├── svc_compliance_test.py             # Uji kepatuhan protokol SVC Q.933/X.36 berbasis Python
     ├── svc_test.py                        # Uji fungsional panggilan SVC end-to-end multi-fitur
     ├── loopback_test.py                   # Uji loopback named pipe berkecepatan tinggi
@@ -515,7 +580,7 @@ vfr_switch/
 
 ---
 
-## 5. Build and Runtime Requirements
+## 5. Persyaratan Build & Runtime (Build and Runtime Requirements)
 
 ### 5.1 Toolchain Kompilasi
 - **Kompiler C**: `gcc` (mendukung standar C99 atau C11 dengan ekstensi GNU).
@@ -533,7 +598,7 @@ Pada sistem Windows, VFRS secara otomatis mengaitkan (*link*) pustaka statis:
 
 ---
 
-## 6. Build Instructions
+## 6. Petunjuk Build (Build Instructions)
 
 Buka terminal (MSYS2 UCRT64 di Windows atau terminal shell di Linux), arahkan ke direktori proyek `vfr_switch`, lalu jalankan target `make`:
 
@@ -559,7 +624,7 @@ make static-lib
 Hasil berkas arsip akan tersimpan di `bin/libvfrs.a`.
 
 ### 6.4 Menjalankan Seluruh Rangkaian Pengujian
-Membangun biner test C dan menjalankan rangkaian pengujian unit, fungsional, dan kepatuhan SVC secara otomatis:
+Membangun biner test C dan menjalankan seluruh rangkaian pengujian konfigurasi, unit testing IE, fungsional, dan kepatuhan SVC secara otomatis:
 ```bash
 make test
 ```
@@ -572,12 +637,10 @@ make check
 ### 6.6 Membersihkan Objek Kompilasi
 ```bash
 make clean      # Menghapus direktori build/, bin/, dan berkas konfigurasi sementara test
-make distclean  # Menghapus seluruh artefak build, berkas log (*.log), dan rekaman (*.pcap)
-```
 
 ---
 
-## 7. Running VFRS
+## 7. Menjalankan VFRS (Running VFRS)
 
 ### 7.1 Basic Launch
 Menjalankan switch dengan berkas konfigurasi tertentu dalam mode *daemon* / *background switching*:
@@ -602,7 +665,7 @@ Output akan menampilkan ringkasan jumlah port yang terdefinisi, rute SVC, grup m
 
 ---
 
-## 8. Command-Line Options
+## 8. Opsi Baris Perintah (Command-Line Options)
 
 ```
 VFRS - Virtual Frame Relay Switch
@@ -619,387 +682,573 @@ Options:
 
 ---
 
-## 9. Configuration System Architecture
+## 9. Arsitektur Sistem Konfigurasi Modern (Configuration System Architecture)
 
-### 9.1 Multi-Pass Lexical & Semantic Parser
-Untuk menyelesaikan masalah dependensi silang antar-pernyataan (misalnya: definisi parameter default global harus diketahui sebelum port dibuat, dan port harus terdaftar sebelum PVC atau rute SVC merujuk ke port tersebut), konfigurasi VFRS diproses dalam **Tiga Pass Analisis**:
+VFRS menggunakan arsitektur parser konfigurasi generasi baru yang mengadopsi prinsip perancangan kompilator modern (*compiler pipeline*) berbasis aliran tunggal (*single-pass streaming pipeline*), validasi skema bertipe ketat (*strict typed schema validation*), dan pohon sintaks abstrak (*Abstract Syntax Tree* / AST).
 
-1. **Pass 1 (Global Defaults & Identities)**:
-   - Memproses pernyataan identitas switch (`swconfig`), tingkat log (`log_level`), berkas log (`log_file`), rotasi log (`log_rotation`), dan nilai parameter default global (`defaults`).
-2. **Pass 2 (Interfaces, Circuits, Signaling & Capture)**:
-   - Memproses antarmuka fisik/virtual (`port`), sirkuit permanen (`pvc`), LMI (`lmi`, `lmi_dte`), LAPF (`lapf`), multicast (`mcast`, `mcast_member`), SVC (`svc_int`, `svc_addr`, `svc_route`), deteksi kemacetan (`congestion`), dan perekam paket (`capture`).
-3. **Pass 3 (CLLM Overrides & Semantic Cross-Validation)**:
-   - Memproses konfigurasi transmisi CLLM (`cllm`) untuk memastikan nilai *override* eksplisit diterapkan dengan benar di atas pengaturan kemacetan dasar.
-   - Menjalankan fungsi `vfrs_validate_config()` untuk memeriksa konsistensi semantik (memastikan seluruh PVC, grup multicast, dan rute merujuk ke nama port yang valid).
+```
+┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+│ Streaming Lexer │──────►│  AST Parser     │──────►│ Schema & Scoped │──────►│ Semantic        │
+│  (cfg_lexer.c)  │       │ (cfg_parser.c)  │       │ Cascade Validator│      │ Compiler        │
+│ • Line-continua.│       │ • Grammar rules │       │  (cfg_schema.c) │       │ (cfg_compiler.c)│
+│ • Quoted String │       │ • AST Node Gen  │       │ • Rate/Time/Bool│       │ • Runtime State │
+│ • key=val tokens│       │ • Error Recovery│       │ • Defaults Tree │       │ • Radix Trie Gen│
+└─────────────────┘       └─────────────────┘       └─────────────────┘       └─────────────────┘
+```
 
-### 9.2 Syntax & Formatting Conventions
-- **Komentar**: Baris yang diawali dengan tanda pagar (`#`) diabaikan oleh parser.
-- **Pemisah Token**: Token dipisahkan oleh spasi atau tabulasi (*whitespace*).
-- **String Bertanda Petik**: Mendukung token string yang diapit tanda petik ganda (`"..."`).
-- **Penyambungan Baris**: Karakter garis miring terbalik (`\`) di akhir baris memungkinkan pernyataan konfigurasi panjang disambung ke baris berikutnya.
-- **Konvensi Penamaan Port**:
-  - `uni<Group>/<Index>`: Antarmuka *User-to-Network Interface* per ITU-T X.36 (VFRS bertindak sebagai DCE). Contoh: `uni0/0`, `uni1/0`.
-  - `nni<Group>/<Index>`: Antarmuka *Network-to-Network Interface* per ITU-T X.76 (VFRS bertindak sebagai DCE dan DTE simultan). Contoh: `nni0/0`, `nni1/0`.
-  - `Group` dan `Index` bernilai $0 \dots 255$.
+### 9.1 Pipeline Lexer, AST Parser & Semantic Compiler
+1. **Streaming Tokenizer & Lexer (`cfg_lexer.c`, `include/vfr/cfg_lexer.h`)**:
+   - Memproses berkas atau string konfigurasi dalam aliran terpadu tanpa batasan ukuran baris statis.
+   - Mendukung penyambungan baris menggunakan karakter *backslash* (`\`).
+   - Mengabaikan komentar `#` secara bersih dan mempertahankan koordinat baris serta kolom untuk pelaporan kesalahan yang presisi.
+   - Mengurai string berkuotasi (`"..."`) dengan dukungan *escape sequence* (`\n`, `\t`, `\"`, `\\`).
+   - Mengidentifikasi pasangan atribut `key=val` secara otomatis.
+2. **Recursive Descent AST Parser (`cfg_parser.c`, `include/vfr/cfg_ast.h`)**:
+   - Mengurai baris pernyataan ke dalam struktur pohon sintaks abstrak (*Abstract Syntax Tree* / AST) bertipe: `CFG_STMT_SWCONFIG`, `CFG_STMT_LOG`, `CFG_STMT_DEFAULT`, `CFG_STMT_PORT`, `CFG_STMT_PVC`, `CFG_STMT_LMI`, `CFG_STMT_LAPF`, `CFG_STMT_SVC_INT`, `CFG_STMT_SVC_ADDR`, `CFG_STMT_SVC_ROUTE`, `CFG_STMT_SPVC`, `CFG_STMT_CGST`, `CFG_STMT_CAPTURE`.
+3. **Semantic AST Compiler (`cfg_compiler.c`)**:
+   - Mengompilasi seluruh node AST secara aman ke dalam struktur runtime switch (`vfrs_ctx_t`, `vfr_port_t`, `vfr_pvc_entry_t`, `vfr_call_t`).
+   - Menyinkronkan dependensi antar-objek secara otomatis tanpa memerlukan iterasi pass parsing manual berulang.
+
+### 9.2 Strict Schema Validation & Scoped Defaults Cascade
+1. **Validator Skema Bertipe Ketat (`cfg_schema.c`, `include/vfr/cfg_schema.h`)**:
+   - **Parser Laju Data (`cfg_parse_rate`)**: Mendukung satuan kecepatan `bps`, `k`/`K` ($1.000$), `m`/`M` ($1.000.000$), dan `g`/`G` ($1.000.000.000$). Contoh: `64k` $\rightarrow$ 64.000 bps, `2M` $\rightarrow$ 2.000.000 bps.
+   - **Parser Durasi Waktu (`cfg_parse_time_ms`)**: Mendukung satuan milidetik `ms` dan detik `s`/`sec` termasuk bilangan desimal. Contoh: `1.5s` $\rightarrow$ 1500 ms, `500ms` $\rightarrow$ 500 ms.
+   - **Parser Boolean (`cfg_parse_bool`)**: Mendukung berbagai format konvensi: `true`/`false`, `enable`/`disable`, `allow`/`deny`, `1`/`0`.
+   - **Pengecekan Rentang Numerik**: Memvalidasi batas bawah dan batas atas secara ketat pada seluruh parameter integer (`u8`, `u16`, `u32`).
+2. **Cascading Scoped Defaults (`vfr_scoped_defaults_t`)**:
+   - Menetapkan hierarki nilai default bertingkat menggunakan pernyataan `default <scope>`:
+     - `default interface`: Parameter port fisik (AR, bit DLCI, status pcap).
+     - `default lapf`: Parameter jendela geser $k$, timer T200/T203, batas retransmisi N200/N201.
+     - `default lmi-dce` & `default lmi-dte`: Timer dan counter verifikasi link LMI.
+     - `default pvc`: Batas lalu lintas token bucket (CIR, Bc, Be) dan kelas QoS.
+     - `default svc`: Parameter default QoS dan timer persinyalan panggilan SVC (T301 s.d. T322).
+     - `default svc uni` & `default svc nni`: Parameter timer khusus untuk antarmuka UNI atau NNI.
+
+### 9.3 10-Way Radix Trie Digit Analysis Engine
+Untuk mendukung rencana penomoran internasional **ITU-T X.121** dan **ITU-T E.164**, VFRS mengimplementasikan mesin analisis digit berbasis struktur data **10-Way Radix Tree** (`vfr_digit_node_t` di `src/switching/svc_routing_common.c`):
+- Menyediakan evaluasi digit tahap demi tahap (*stage-by-stage digit analysis*) dengan kompleksitas waktu optimal $\mathcal{O}(K)$ (di mana $K$ adalah panjang digit nomor telepon/data).
+- **Longest Prefix Match (LPM)**: Menemukan rute keluar NNI yang paling spesifik secara instan.
+- **Dukungan Struktur Penomoran Fleksibel**:
+  - Penomoran Publik X.121: `DNIC (4 digit)` + `NTN (hingga 10 digit)`.
+  - Penomoran Privat X.121: `DNIC` + `SGC` + `SIC` + `IND (Internal Network Digits)`.
+  - Penomoran E.164: `Country Code (CC)` + `National Destination Code (NDC)` + `Subscriber Number (SN)`.
+- **Alokasi Penomoran Otomatis (*Autonumbering*)**:
+  - Alokasi nomor pelanggan secara sekuensial dengan kemampuan *multi-prefix rollover* dinamis dan identifikasi nomor sistem (angka 0 semua).
 
 ---
 
-## 10. Configuration Command Reference
+## 10. Referensi Perintah Konfigurasi (Configuration Command Reference)
 
-### 10.1 Switch Identity & Global Numbering (`swconfig`)
-Mengatur identitas instans switch dan parameter rencana penomoran internasional ITU-T X.121 untuk persinyalan dan perutean SVC NNI.
+> [!IMPORTANT]
+> **Tata Bahasa Konfigurasi Otoritatif**: Parser konfigurasi modern VFRS (`cfg_parser.c` / `cfg_schema.c`) mengimplementasikan tata bahasa formal modern seperti yang didefinisikan secara otoritatif pada [**`confs/example_config_new.conf`**](file:///c:/Users/rizki/Programming/vfrns/vfr_switch/confs/example_config_new.conf) dan [**`confs/vfrs_config_guide.conf`**](file:///c:/Users/rizki/Programming/vfrns/vfr_switch/confs/vfrs_config_guide.conf). Format konfigurasi *legacy* (seperti sintaksis pada berkas `example_config-legacy.conf`) saat ini **sepenuhnya tidak didukung** (*completely unsupported*). Seluruh parameter dan fungsionalitas di bawah ini divalidasi ketat terhadap skema parser modern. Rujukan teknis mendalam per baris perintah konfigurasi juga dapat dilihat pada [**`docs/CONFIGURATION_REFERENCE.md`**](file:///c:/Users/rizki/Programming/vfrns/vfr_switch/docs/CONFIGURATION_REFERENCE.md).
+
+### 10.1 Identitas Switch & Dial-Plan Global (`swconfig`)
+Mengatur identitas instans switch dan parameter rencana penomoran internasional (**ITU-T X.121** atau **ITU-T E.164**) yang menjadi acuan pengalamatan SVC dan perutean panggilan multi-tier antar-switch NNI.
 
 ```ini
-swconfig swid=<id> [dcc=<nnn>] [nd=<num>|none] [dnic=<nnnn>] [pnic=<num>|none] \
-         [sgclen=<n>] [sgc=<num>] [siclen=<n>] [sic=<num>] [subnumlen=<n>]
+# Format Rencana Penomoran ITU-T X.121 (Maksimum 14 Digit):
+swconfig swid=<string> nspf=x121 {dcc=<nnn> [nd={<n> | none}] | dnic=<nnnn>} \
+         [pnic={<number> | none}] [ind=<number>] sgclen={<n> | none} [sgc=<number>] \
+         siclen={<n> | none} [sic=<number>] sublen=<n>
+
+# Format Rencana Penomoran ITU-T E.164 (Maksimum 15 Digit):
+swconfig swid=<string> nspf=e164 cc=<number> {[ic=<number>] | [ndc=<number> [area=<number>]]} \
+         [ind=<number>] sgclen={<n> | none} [sgc=<number>] siclen={<n> | none} [sic=<number>] \
+         sublen=<n>
 ```
 
-- `swid=<string>`: Identifikasi unik switch pada antarmuka konsol dan berkas log (default: `"vfrs0"`).
-- `dcc=<nnn>`: *Data Country Code* 3-digit per ITU-T X.121 (default: `100`).
-- `nd=<num>|none`: *Network Digit* 1-digit setelah DCC (default: `none`).
-- `dnic=<nnnn>`: *Data Network Identification Code* 4-digit (menggantikan DCC + ND jika dikonfigurasi bersama, default: `1000`).
-- `pnic=<num>|none`: *Private Data Network Identification Code* setelah DNIC/DCC (default: `none`).
-- `sgclen=<n>`: Panjang *System Group Code* (SGC / KKS) dalam digit, $1 \dots 4$ (default: `1`).
-- `sgc=<num>`: Nilai SGC (otomatis di-*zero-padding* di depan jika panjang digit kurang dari `sgclen`).
-- `siclen=<n>`: Panjang *System Identification Code* (SIC / KIS) dalam digit, $1 \dots 4$ (default: `1`).
-- `sic=<num>`: Nilai SIC (otomatis di-*zero-padding* di depan jika panjang digit kurang dari `siclen`).
-- `subnumlen=<n>`: Panjang nomor pelanggan/terminal untuk alokasi penomoran otomatis pada antarmuka UNI, $1 \dots 6$ (default: `4`).
+#### Penjelasan Parameter `swconfig`:
+- `swid=<string>`: Pengenal unik instans switch pada konsol CLI dan berkas log, maksimum 32 karakter (default: `"vfrs0"`).
+- `nspf=x121|e164`: Jenis rencana penomoran utama yang digunakan switch (*Numbering Plan Selection*, default: `x121`).
+- **Parameter Khusus X.121 (Maksimum 14 Digit per ITU-T X.121)**:
+  - `dcc=<nnn>`: *Data Country Code* (3 digit angka, contoh: `510` untuk Indonesia, default: `100`).
+  - `nd={<n> | none}`: *Network Digit* / National Digit setelah DCC, 1 digit angka 0–9 (default: `0`).
+  - `dnic=<nnnn>`: *Data Network Identification Code* 4-digit (gabungan DCC + ND). Jika dikonfigurasi, nilainya otomatis menggantikan konfigurasi `dcc` dan `nd` (default: `1000`).
+  - `pnic={<number> | none}`: *Private Data Network Identification Code* setelah DNIC/DCC (0 sampai 6 digit, default: `none`).
+  - `ind=<number>`: *Internal Network Digits* (panjang fleksibel tanpa batas statis, digunakan untuk partisi dan perutean internal jaringan operator).
+  - `sgclen={<n> | none}`: Panjang digit Kode Kelompok Sistem (KKS / *System Group Code*), $1 \dots 4$ digit (default: `1`).
+  - `sgc=<number>`: Nilai SGC milik instans switch ini ($1 \dots 4$ digit, default: `1`). Jika panjang nilai `sgc` kurang dari `sgclen`, nilai otomatis di-*zero-padded* di depan (misal: `sgc=1` dengan `sgclen=2` menghasilkan `01`).
+  - `siclen={<n> | none}`: Panjang digit Kode Identifikasi Sistem (KIS / *System Identification Code*), $1 \dots 4$ digit (default: `1`).
+  - `sic=<number>`: Nilai SIC milik instans switch ini ($1 \dots 4$ digit, default: `1`). Otomatis di-*zero-padded* di depan jika kurang dari `siclen` (misal: `sic=1` dengan `siclen=2` menghasilkan `01`).
+  - `sublen=<n>` / `subnumlen=<n>`: Panjang nomor pelanggan/terminal yang dialokasikan secara otomatis pada antarmuka UNI. Nilai default dihitung otomatis:
+    $$\text{sublen} = 14 - (\text{panjang DNIC} + \text{PNIC} + \text{IND} + \text{SGC} + \text{SIC})$$
+- **Parameter Khusus E.164 (Maksimum 15 Digit per ITU-T E.164)**:
+  - `cc=<number>`: *Country Code*, 1–3 digit angka (contoh: `62` untuk Indonesia).
+  - `ic=<number>`: *International Identification Code*, 1–4 digit.
+  - `ndc=<number>`: *National Destination Code* (kode tujuan nasional).
+  - `area=<number>`: Kode area geografis regional/lokal.
+  - `sublen=<n>`: Panjang nomor terminal pelanggan otomatis ($15 - \text{panjang prefiks}$).
+- **Nomor Sistem Otomatis Switch (*Reserved System Address*)**:
+  Instans VFRS secara otomatis mengalokasikan nomor sistem internal berupa:
+  $$\text{DNIC} + \text{SGC} + \text{SIC} + \underbrace{00\dots0}_{\text{sublen digit}}$$
+  *(Contoh: untuk `DNIC=5104`, `SGC=01`, `SIC=01`, `sublen=4` $\rightarrow$ `510401010000`)*. Nomor ini dapat diakses dari seluruh port UNI dan NNI untuk keperluan persinyalan, diagnostik, dan manajemen switch.
 
 *Contoh:*
 ```ini
-swconfig swid=vfrsA dnic=5104 pnic=none sgclen=2 sgc=1 siclen=2 sic=1 subnumlen=4
+swconfig swid=vfrsA nspf=x121 dnic=5104 sgclen=2 sgc=01 siclen=2 sic=01 sublen=4
 ```
 
 ---
 
-### 10.2 Logging & Rotation (`log_level`, `log_file`, `log_rotation`)
-Mengatur keluaran log sistem ke layar konsol dan berkas teks serta kebijakan rotasi berkas otomatis.
+### 10.2 Logging & Rotasi Berkas (`log`)
+Mengontrol tingkat diagnostik konsol, penulisan berkas log teks di disk, dan kebijakan rotasi arsip otomatis.
 
 ```ini
-log_level [con=<level>] [txt=<level>]
-log_file <path>
-log_rotation [size=<mb>] [files=<n>]
+log level con={trace | debug | info | warn | error} txt={trace | debug | info | warn | error}
+log file <log-file-path>
+log rotation size=<megabytes> files=<jumlah-arsip>
 ```
 
-- `<level>`: `trace`, `debug`, `info`, `warn`, `error`.
-- `con=<level>`: Tingkat log yang dicetak ke layar konsol (default: `info`).
-- `txt=<level>`: Tingkat log yang ditulis ke berkas log (default: `debug`).
-- `log_file <path>`: Alamat berkas log di disk. Jika tidak ditentukan, log berkas dinonaktifkan.
-- `size=<mb>`: Batas ukuran berkas log dalam Megabytes sebelum dirotasi (default: `10` MB).
-- `files=<n>`: Jumlah maksimum riwayat berkas rotasi log yang dipertahankan (default: `5` berkas).
+#### Penjelasan Parameter `log`:
+- `log level con={...} txt={...}`: Mengatur tingkat keparahan pesan log:
+  - `con={...}`: Tingkat log yang dicetak ke layar konsol secara real-time (default: `info`).
+  - `txt={...}`: Tingkat log yang disimpan ke dalam berkas teks log (default: `info`).
+  - Pilihan level: `trace`, `debug`, `info`, `warn`, `error`.
+- `log file <path>`: Jalur berkas penyimpanan log (default: `vfrs.log`). Jika tidak dikonfigurasi, penulisan log berkas dinonaktifkan.
+- `log rotation size=<megabytes> files=<jumlah-arsip>`: Mengatur kebijakan rotasi otomatis:
+  - `size=<number>`: Batas ukuran maksimum per berkas log dalam Megabytes sebelum dirotasi (default: `10` MB).
+  - `files=<number>`: Jumlah maksimum riwayat berkas arsip rotasi log yang dipertahankan di disk (default: `5` berkas).
 
 *Contoh:*
 ```ini
-log_level con=info txt=debug
-log_file logs/vfrsA.log
-log_rotation size=10 files=5
+log level con=info txt=debug
+log file "logs/vfrsA.log"
+log rotation size=10 files=5
 ```
 
 ---
 
-### 10.3 Global Default Parameters (`defaults`)
-Menetapkan nilai default global sebelum didefinisikan per-antarmuka individual. Pernyataan `defaults` harus ditempatkan di awal berkas konfigurasi (Pass 1).
+### 10.3 Cascading Parameter Default Global (`default`)
+Menetapkan nilai default bertingkat (*scoped cascade*) untuk parameter antarmuka, timer protokol, dan kualitas layanan (QoS). Pernyataan `default` harus ditempatkan sebelum definisi antarmuka individual untuk memastikan nilai terwariskan dengan benar.
 
 ```ini
-defaults [lapf_k=<n>] [lapf_n200=<n>] [lapf_n201=<n>] [lapf_t200=<s>] [lapf_t203=<s>] \
-         [lmi_t392=<s>] [lmi_n392=<n>] [lmi_n393=<n>] \
-         [lmi_dte_t391=<s>] [lmi_dte_n391=<n>] [lmi_dte_n392=<n>] [lmi_dte_n393=<n>] \
-         [svc_uni_t303=<s>] [svc_uni_t305=<s>] [svc_uni_t308=<s>] [svc_uni_t310=<s>] \
-         [svc_uni_t301=<s>] [svc_uni_t316=<s>] [svc_uni_t317=<s>] [svc_uni_t322=<s>] \
-         [svc_nni_t303=<s>] [svc_nni_t308=<s>] [svc_nni_t310=<s>] [svc_nni_t301=<s>] \
-         [svc_nni_t316=<s>] [svc_nni_t317=<s>] [svc_nni_t322=<s>] \
-         [ar=<bps>] [svc_default_cir=<bps>] [svc_default_bc=<bits>] [svc_default_be=<bits>] \
-         [svc_default_fmif=<octets>] [svc_default_ftp=<0-15>] [svc_default_fdp=<0-7>] \
-         [svc_default_svc_class=<0-3>]
+default interface dlcibit={10 | 23} ar=<bps>
+default lapf k=<n> n200=<n> n201=<n> t200=<s> t203=<s>
+default lmi-dce n392=<n> n393=<n> t392=<s>
+default lmi-dte n391=<n> n392=<n> n393=<n> t391=<s>
+default pvc cir=<bps> bc=<bits> be=<bits> ftp=<0-15> fdp=<0-7> class=<0-3>
+default svc cir=<bps> bc=<bits> be=<bits> fmif=<octets> ftp=<0-15> fdp=<0-7> class=<0-3> \
+            {revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}}
+default svc mcast cir=<bps> bc=<bits> be=<bits> fmif=<octets> ftp=<0-15> fdp=<0-7> class=<0-3> \
+            {revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}}
+default svc uni t303=<s> t305=<s> t308=<s> t310=<s> t301=<s> t316=<s> t317=<s> t322=<s>
+default svc nni t303=<s> t305=<s> t308=<s> t310=<s> t301=<s> t316=<s> t317=<s> t322=<s>
 ```
 
-- **LAPF Defaults (ITU-T Q.922 §5.9)**:
-  - `lapf_k=<1-127>`: Ukuran jendela transmisi *sliding window* (default: `8`).
-  - `lapf_n200=<n>`: Batas pengulangan transmisi ulang frame (default: `3`).
-  - `lapf_n201=<n>`: Panjang maksimum field informasi I-frame dalam oktet (default: `260`).
-  - `lapf_t200=<s>`: Pewaktu transmisi ulang dalam detik (default: `2`s).
-  - `lapf_t203=<s>`: Pewaktu pemantauan link idle dalam detik (default: `30`s).
-- **LMI DCE Defaults (ITU-T X.36 §11.6 / X.76 §11.7)**:
-  - `lmi_t392=<s>`: Pewaktu verifikasi polling DCE dalam detik, $5 \dots 30\text{s}$ (default: `15`s).
-  - `lmi_n392=<n>`: Ambang batas error event count, $1 \dots 10$ (default: `3`).
-  - `lmi_n393=<n>`: Jendela event yang dipantau, $1 \dots 10$ (default: `4`).
-- **LMI DTE Polling Defaults (ITU-T X.36 §11.5 / X.76 §11.4)**:
-  - `lmi_dte_t391=<s>`: Interval pengiriman polling status DTE dalam detik, $5 \dots 30\text{s}$ (default: `10`s).
-  - `lmi_dte_n391=<n>`: Siklus pengiriman Full Status enquiry DTE, $1 \dots 255$ (default: `6`).
-  - `lmi_dte_n392=<n>`: Ambang batas error event count DTE, $1 \dots 10$ (default: `3`).
-  - `lmi_dte_n393=<n>`: Jendela event yang dipantau DTE, $1 \dots 10$ (default: `4`).
-- **Parameter Layanan & Kualitas Layanan (QoS per ITU-T X.36 §8.2 / §8.3 & X.146)**:
-  - `ar=<bps>` / `access_rate=<bps>`: Laju akses fisik dasar seluruh port (default: `64000` bps).
-  - `svc_default_cir=<bps>`: Laju data terjamin default saat DTE tidak menyertakan IE LLCORE (default: `32000` bps).
-  - `svc_default_bc=<bits>`: Committed burst size default (default: `32000` bits).
-  - `svc_default_be=<bits>`: Excess burst size default (default: `0` bits).
-  - `svc_default_fmif=<octets>`: Ukuran frame maksimum default untuk SVC (default: `1600` oktet).
-  - `svc_default_ftp=<0-15>`: *Frame Transfer Priority* default (default: `8`).
-  - `svc_default_fdp=<0-7>`: *Frame Discard Priority* default (default: `4`).
-  - `svc_default_svc_class=<0-3>` / `svc_default_srvcls=<0-3>`: Kelas layanan default (default: `1`).
+#### Penjelasan Parameter `default`:
+- **`default interface` (Parameter Fisik Antarmuka)**:
+  - `dlcibit={10 | 23}`: Mode kapasitas panjang bit DLCI (10-bit standar maks DLCI 1023, 23-bit extended maks DLCI 8.388.607).
+  - `ar=<bps>`: Laju akses fisik dasar antarmuka (*Physical Access Rate*, default: `64000` bps).
+- **`default lapf` (Parameter Link Layer LAPF ITU-T Q.922 §5.9)**:
+  - `k=<1-127>`: Ukuran jendela *sliding window* I-frame (default: `8`).
+  - `n200=<n>`: Batas pengulangan transmisi ulang frame sebelum link dinyatakan reset (default: `3`).
+  - `n201=<n>`: Ukuran maksimum payload I-frame dalam oktet (default: `260` oktet).
+  - `t200=<s>`: Pewaktu transmisi ulang I-frame (*Retransmission timer*, default: `2s`).
+  - `t203=<s>`: Pewaktu pemantauan link idle (*Link idle timer*, default: `30s`).
+- **`default lmi-dce` (Parameter Sisi Jaringan LMI ITU-T X.36 §11.6 / X.76 §11.7)**:
+  - `t392=<s>`: Pewaktu verifikasi penerimaan polling DCE ($5 \dots 30\text{s}$, default: `15s`).
+  - `n392=<n>`: Ambang batas kejadian error (*Error threshold*, $1 \dots 10$, default: `3`).
+  - `n393=<n>`: Jendela kejadian yang dipantau (*Monitored events window*, $1 \dots 10$, default: `4`).
+- **`default lmi-dte` (Parameter Sisi Terminal LMI ITU-T X.36 §11.5 / X.76 §11.4)**:
+  - `t391=<s>`: Interval pengiriman polling status DTE ($5 \dots 30\text{s}$, default: `10s`).
+  - `n391=<n>`: Siklus penghitung pengiriman Full Status enquiry DTE ($1 \dots 255$, default: `6`).
+  - `n392=<n>`: Ambang batas kejadian error DTE ($1 \dots 10$, default: `3`).
+  - `n393=<n>`: Jendela kejadian yang dipantau DTE ($1 \dots 10$, default: `4`).
+- **`default pvc` (Kualitas Layanan Sirkuit Permanen ITU-T X.36 §8.2 / §8.3 & X.146)**:
+  - `cir=<bps>`: Committed Information Rate default (default: `32000` bps).
+  - `bc=<bits>`: Committed burst size default (default: `32000` bits).
+  - `be=<bits>`: Excess burst size default (default: `0` bits).
+  - `ftp=<0-15>`: Frame Transfer Priority default (default: `8`).
+  - `fdp=<0-7>`: Frame Discard Priority default (default: `4`).
+  - `class=<0-3>`: Kelas layanan default (default: `1`).
+- **`default svc` & `default svc mcast` (QoS & Fasilitas SVC Dinamis)**:
+  - `cir=<bps>`: CIR default saat DTE tidak menyertakan IE LLCORE (default: `32000` bps).
+  - `bc=<bits>` / `be=<bits>`: Committed burst / excess burst size default (default: `32000` / `0`).
+  - `fmif=<octets>`: *Maximum Frame Information Field Size* untuk SVC (default: `1600` oktet).
+  - `ftp=<0-15>` / `fdp=<0-7>` / `class=<0-3>`: Prioritas transfer, pembuangan, dan kelas layanan per ITU-T X.146.
+  - `revchg={allow | deny}`: Izin umum penerimaan panggilan beban balik (*Reverse Charging* per ITU-T X.36 Annex B).
+  - `ogrevchg={allow | deny}`: Izin panggilan keluar beban balik.
+  - `icrevchg={allow | deny}`: Izin panggilan masuk beban balik.
+- **`default svc uni` & `default svc nni` (Pewaktu Persinyalan Panggilan Layer 3)**:
+  - `t303=<s>`: SETUP sent, awaiting response ($4\text{s}$).
+  - `t305=<s>`: DISCONNECT sent, awaiting RELEASE ($30\text{s}$).
+  - `t308=<s>`: RELEASE sent, awaiting RELEASE COMPLETE ($4\text{s}$).
+  - `t310=<s>`: Awaiting CONNECT after CALL PROCEEDING ($35\text{s}$ UNI / $40\text{s}$ NNI).
+  - `t301=<s>`: Alerting received, awaiting CONNECT ($180\text{s}$).
+  - `t316=<s>`: RESTART sent ($120\text{s}$).
+  - `t317=<s>`: RESTART received, internal clearing watchdog ($10\text{s}$ UNI / $20\text{s}$ NNI).
+  - `t322=<s>`: STATUS ENQUIRY sent ($4\text{s}$).
 
 *Contoh:*
 ```ini
-defaults lapf_t200=2 lapf_n200=3 lapf_k=8 lapf_n201=260 lapf_t203=30 \
-         lmi_t392=15 lmi_n392=3 lmi_n393=4 lmi_dte_t391=10 lmi_dte_n391=6 \
-         ar=64000 svc_default_cir=32000 svc_default_bc=32000 svc_default_be=0 \
-         svc_default_fmif=1600 svc_default_ftp=8 svc_default_fdp=4 svc_default_svc_class=1
+default interface dlcibit=10 ar=64000
+default lapf k=8 n200=3 n201=260 t200=2s t203=30s
+default lmi-dce n392=3 n393=4 t392=15s
+default lmi-dte n391=6 n392=3 n393=4 t391=10s
+default pvc cir=32000 bc=32000 be=0 ftp=8 fdp=4 class=1
+default svc cir=32000 bc=32000 be=0 fmif=1600 ftp=8 fdp=4 class=1 revchg=allow
 ```
 
 ---
 
-### 10.4 Interface Definition (`port`)
+### 10.4 Definisi Antarmuka & Transport Driver (`port`)
 Mendefinisikan antarmuka fisik, soket jaringan UDP/TCP, *named pipes*, port serial, atau terowongan L2TPv3.
 
 ```ini
-# Format Sintaks Antarmuka:
-port <port_name> <transport_type> [transport_args...] [dlcibit=<10|23>] [pcap=<1|true|yes|filename>]
+# Named Pipes (Windows IPC / Linux FIFO):
+port <port-name> {pipe-client | pipe-server} <pipe-name> [dlcibit={10 | 23}] [ar=<bps>]
+
+# Terowongan L2TPv3 Pseudowire (RFC 4591 / RFC 4349):
+port <port-name> l2tpv3fr [<local-host>] <remote-host> <base-vcid> [dlcibit={10 | 23}] [ar=<bps>]
+port <port-name> l2tpv3hdlc [<local-host>] <remote-host> <vcid> [dlcibit={10 | 23}] [ar=<bps>]
+
+# Port Serial Fisik & Virtual:
+port <port-name> serial <serial-device> [baud=<number>] [dlcibit={10 | 23}] [ar=<bps>]
+
+# Aliran Koneksi TCP:
+port <port-name> tcp [<local-host>] <local-port> <remote-host> <remote-port> [dlcibit={10 | 23}] [ar=<bps>]
+port <port-name> tcp-client <remote-host> <remote-port> [dlcibit={10 | 23}] [ar=<bps>]
+port <port-name> tcp-server [<bind-ip>] <local-port> [dlcibit={10 | 23}] [ar=<bps>]
+
+# Soket Jaringan UDP:
+port <port-name> udp [<local-host>] <local-port> <remote-host> <remote-port> [dlcibit={10 | 23}] [ar=<bps>]
+port <port-name> udp-client <remote-host> <remote-port> [dlcibit={10 | 23}] [ar=<bps>]
+port <port-name> udp-server [<bind-ip>] <local-port> [dlcibit={10 | 23}] [ar=<bps>]
 ```
 
-#### 1. UDP Sockets
-- **Simetris 4-Tuple**: `port <name> udp <lhost> <lport> <rhost> <rport> [opsi...]`
-- **UDP Client**: `port <name> udp-client <rhost> <rport> [opsi...]`
-- **UDP Server**: `port <name> udp-server [<lhost>] <lport> [opsi...]`
-
-#### 2. TCP Streams
-- **Simetris 4-Tuple**: `port <name> tcp <lhost> <lport> <rhost> <rport> [opsi...]`
-- **TCP Client**: `port <name> tcp-client <rhost> <rport> [opsi...]`
-- **TCP Server**: `port <name> tcp-server [<lhost>] <lport> [opsi...]`
-
-#### 3. Named Pipes (Windows IPC / Linux FIFO)
-- **Pipe Server**: `port <name> pipe-server <pipename> [opsi...]`
-- **Pipe Client**: `port <name> pipe-client <pipename> [opsi...]`
-
-#### 4. Serial COM / TTY Fisik & Virtual
-- `port <name> serial <device> <baudrate> [opsi...]`
-  *(Access Rate $AR$ otomatis diturunkan dari nilai baudrate serial)*.
-
-#### 5. L2TPv3 Pseudowire Tunnels (RFC 4591 / RFC 4349)
-- **Frame Relay Mode**: `port <name> l2tpv3-fr [<lhost>] <rhost> <vcid> [opsi...]`
-- **HDLC Mode**: `port <name> l2tpv3-hdlc [<lhost>] <rhost> <vcid> [opsi...]`
-
-#### Parameter Tambahan Port:
-- `dlcibit=<10|23>`: Mengatur kapasitas panjang bit DLCI (default: `10` bit untuk DLCI $0 \dots 1023$; opsi: `23` bit untuk DLCI $0 \dots 8,388,607$ per ITU-T X.36 Gambar 9-2).
-- `pcap=<1|true|yes|filename>`: Mengaktifkan perekaman paket PCAP DLT 107 secara otomatis. Jika diatur `1`/`true`/`yes`, nama berkas otomatis menjadi `<port_name>.pcap` (karakter `/` diganti `_`, misal: `uni0_0.pcap`).
+#### Karakteristik & Ketentuan Transport:
+- **Batasan Kapasitas Antarmuka**:
+  - Format penamaan: `uni<X>/<Y>` (DCE sisi jaringan) dan `nni<X>/<Y>` (STE simetris).
+  - Skala maksimum: 65.536 port per tipe antarmuka (total 131.072 port per instans switch).
+- **Framing & Kompatibilitas Emulator**:
+  - Transport TCP dan Named Pipe menggunakan enkapsulasi **4-byte big-endian length prefix**, kompatibel penuh dengan DynaMIPS / GNS3.
+- **Mode Soket TCP/UDP**:
+  - `tcp`/`udp`: Mode berpasangan simetris (kedua ujung mendengarkan dan mengirim).
+  - `tcp-client`/`udp-client`: Mode klien dengan *auto-reconnection exponential backoff* ($1\text{s} \dots 60\text{s}$).
+  - `tcp-server`/`udp-server`: Mode server dengan opsi `TCP_NODELAY` dan `SO_KEEPALIVE` aktif secara otomatis.
+- **Port Serial**:
+  - Laju akses fisik ($AR$) otomatis diturunkan (*auto-derived*) dari nilai baudrate serial (mendukung hingga 8.192.000 bps).
+- **Rentang Alokasi Alamat DLCI (10-bit vs 23-bit per ITU-T X.36)**:
+  - `0`: *Reserved* untuk LMI (UI-frame) dan Persinyalan SVC (I-frame).
+  - `1 - 15`: *Reserved for future use*.
+  - `16 - 991`: *User data virtual circuits* (PVC dan SVC dinamis).
+  - `992 - 1007`: *Layer 2 management* (CLLM pada DLCI 1007).
+  - `1008 - 1022`: *Reserved for future use*.
+  - `1023`: *Reserved* untuk Cisco / Gang of Four LMI.
+  - `1024 - 8.388.607`: *Extended user virtual circuits* (hanya pada antarmuka dengan `dlcibit=23`).
 
 *Contoh:*
 ```ini
-port uni0/0 udp 127.0.0.1 10000 127.0.0.1 10001 dlcibit=23 pcap=1
-port uni0/1 udp 127.0.0.1 10002 127.0.0.1 10003 dlcibit=23
+port uni0/0 udp 127.0.0.1 10000 127.0.0.1 10001 dlcibit=23 ar=2M
+port uni0/1 udp 127.0.0.1 10002 127.0.0.1 10003 dlcibit=23 ar=2M
 port uni1/0 pipe-server \\.\pipe\vfr_uni10
 port uni1/1 pipe-client \\.\pipe\vfr_uni10
-port uni2/0 serial COM3 115200
-port nni0/0 udp 127.0.0.1 20000 127.0.0.1 20001
+port uni2/0 serial COM3 baud=115200
+port nni0/0 udp 127.0.0.1 20000 127.0.0.1 20001 ar=10M
 ```
 
 ---
 
-### 10.5 Permanent Virtual Circuits (`pvc`)
-Mendefinisikan pemetaan sirkuit permanen dua arah (*bidirectional PVC*) antara dua endpoint port dan DLCI.
+### 10.5 Permanent Virtual Circuits (`pvc` & `pvc mcast`)
+Mendefinisikan pemetaan sirkuit permanen point-to-point dan grup replikasi frame multicast per **FRF.7** / **ITU-T X.6**.
 
 ```ini
-pvc <port1> <dlci1> <port2> <dlci2> [cir=<bps>] [bc=<bits>] [be=<bits>] \
-    [ftp=<0-15>] [fdp=<0-7>] [srvcls=<0-3>]
+# Sirkuit Point-to-Point PVC:
+pvc <port-name-1> <dlci-1> <port-name-2> <dlci-2> [cir=<bps>] [bc=<bits>] [be=<bits>] \
+    [ftp=<0-15>] [fdp=<0-7>] [class=<0-3>]
+
+# Sirkuit Multicast PVC:
+pvc mcast <group-name> [cir=<bps>] [bc=<bits>] [be=<bits>] [ftp=<0-15>] [fdp=<0-7>] [class=<0-3>]
+pvc mcast group <group-name> <source-port-name> <source-dlci> [oneway | twoway | nway]
+pvc mcast member <group-name> <member-port-name> <member-dlci> [cir=<bps>] [bc=<bits>] [be=<bits>] \
+    [ftp=<0-15>] [fdp=<0-7>] [class=<0-3>]
 ```
 
+#### Penjelasan Parameter `pvc` & `pvc mcast`:
+- `<port-name-1> <dlci-1> <port-name-2> <dlci-2>`: Endpoint pemetaan dua arah antara dua pasangan port dan nomor DLCI.
 - `cir=<bps>`: *Committed Information Rate* dalam bit per detik (mengaktifkan *traffic policing token bucket*).
 - `bc=<bits>`: *Committed Burst size* dalam bit ($T_c = B_c / \text{CIR}$).
 - `be=<bits>`: *Excess Burst size* dalam bit (frame yang melebihi $B_c$ ditandai bit DE per ITU-T X.36 §8.2).
 - `ftp=<0-15>`: *Frame Transfer Priority* (nilai lebih tinggi = prioritas transfer lebih tinggi).
 - `fdp=<0-7>`: *Frame Discard Priority* (nilai lebih tinggi = dibuang paling akhir saat buffer penuh).
-- `srvcls=<0-3>`: Kelas layanan per Tabel 7-1 ITU-T X.36.
+- `class=<0-3>` / `srvcls=<0-3>`: Kelas layanan per Tabel 7-1 ITU-T X.36 / ITU-T X.146.
+- **Multicast Group Statements**:
+  - `pvc mcast <group-name>`: Mendefinisikan grup multicast dan batas QoS global grup.
+  - `pvc mcast group <group-name> <source-port> <source-dlci> [oneway | twoway | nway]`: Menentukan port dan DLCI akar (*root*) serta model replikasi:
+    - `oneway`: Replikasi satu arah dari akar ke daun (*Point-to-Multipoint*).
+    - `twoway`: Replikasi dua arah (daun dapat merespons ke akar).
+    - `nway`: Komunikasi multipoint-to-multipoint penuh (*Full-Mesh* dengan aturan *split-horizon*).
+  - `pvc mcast member <group-name> <member-port> <member-dlci>`: Mendaftarkan port dan DLCI anggota daun (*leaf*) ke dalam grup multicast.
+- **Three-Tier Token Bucket Traffic Policing (ITU-T X.36 §8.2)**:
+  - Lalu lintas *Committed* (dalam batas $B_c$): Diteruskan utuh (*passthrough*).
+  - Lalu lintas *Excess* (melebihi $B_c$ hingga $B_c + B_e$): Diteruskan dengan penandaan bit **DE = 1**.
+  - Lalu lintas di luar $B_c + B_e$: Diberi prioritas terendah dan langsung dibuang (*dropped*) saat terjadi kemacetan buffer.
+- **Aturan Endpoint Multicast**:
+  - Sebuah pasangan `(port, dlci)` hanya boleh menjadi anggota dari satu grup multicast dan tidak boleh bertabrakan dengan titik masuk PVC biasa.
+  - Pengirim tidak akan pernah menerima duplikat frame-nya sendiri (*split-horizon*).
+- **Semantik Bit Keaktifan LMI Multicast**:
+  - `oneway` / `twoway` Root: Status aktif jika minimal satu daun operasional.
+  - `oneway` Leaf: Status aktif saat konektivitas point-to-point dan multicast ke root terpenuhi.
+  - `twoway` Leaf: Status aktif saat koneksi ke root aktif.
+  - `nway` Member: Status aktif saat minimal satu anggota lain dalam mesh aktif.
 
 *Contoh:*
 ```ini
-pvc uni0/0 100 uni0/1 200
-pvc uni0/0 101 uni0/1 201 cir=64000 bc=64000 be=32000 ftp=8 fdp=4 srvcls=1
-pvc uni0/0 110 nni0/0 210
+pvc uni0/0 100 uni0/1 200 cir=64000
+pvc uni0/0 101 uni0/1 201 cir=32000 bc=32000 be=0 ftp=8 fdp=4 class=1
+pvc mcast bcast1 cir=64000
+pvc mcast group bcast1 uni0/0 1019 oneway
+pvc mcast member bcast1 uni0/1 1020
 ```
 
 ---
 
-### 10.6 Local Management Interface (`lmi`, `lmi_dte`)
-Mengonfigurasi protokol pengelolaan status PVC Local Management Interface (LMI).
+### 10.6 Local Management Interface (`lmi`)
+Mengonfigurasi protokol pengelolaan status PVC Local Management Interface (LMI) untuk sisi jaringan (DCE) maupun terminal pengguna (DTE).
 
 ```ini
-# 1. Konfigurasi Sisi DCE (Network Provider):
-lmi <port_name> [q933a|ansi|cisco|none] [t392=<s>] [n392=<n>] [n393=<n>] [async=<true|false>]
+# Sisi Jaringan (DCE):
+lmi <port-name> [dce] [ansi | cisco | none | q933a] [t392=<s>] [n392=<n>] [n393=<n>] [async={true | false}]
 
-# 2. Konfigurasi Sisi DTE (User Polling / Bidirectional):
-lmi_dte <port_name> [t391=<s>] [n391=<n>] [n392=<n>] [n393=<n>]
+# Sisi Terminal Pengguna (DTE):
+lmi <port-name> dte [ansi | cisco | q933a] [t391=<s>] [n391=<n>] [n392=<n>] [n393=<n>] [async={true | false}]
 ```
 
-- `q933a`: ITU-T Q.933 Annex A / X.36 & X.76 Klausul 11 (DLCI 0, default).
-- `ansi`: ANSI T1.617 Annex D (DLCI 0, enkapsulasi Codeset 5).
-- `cisco`: Cisco / Gang of Four LMI (DLCI 1023, Codeset 0).
-- `none`: Menonaktifkan protokol LMI pada antarmuka tersebut.
-- `t392=<s>`: Pewaktu verifikasi penerimaan polling DCE ($5 \dots 30\text{s}$, default: 15s).
-- `n392=<n>`: Ambang batas error event count ($1 \dots 10$, default: 3).
-- `n393=<n>`: Jendela event yang dipantau ($1 \dots 10$, default: 4).
-- `async=true`: Mengizinkan DCE mengirim pesan STATUS asinkron tanpa menunggu polling.
-- `lmi_dte`: Mengaktifkan polling sisi DTE. Pada port bertipe `nni*/*`, polling DTE otomatis diaktifkan per ITU-T X.76 §11.4 (*Bidirectional LMI*).
+#### Penjelasan Parameter `lmi`:
+- **Tipe Protokol LMI**:
+  - `q933a`: ITU-T Q.933 Annex A / X.36 & X.76 Klausul 11 (Protocol Discriminator `0x08`, Codeset 0, DLCI 0, default).
+  - `ansi`: ANSI T1.617 Annex D (Protocol Discriminator `0x08`, enkapsulasi Codeset 5, DLCI 0).
+  - `cisco`: Cisco / Gang of Four LMI (Protocol Discriminator `0x09`, Codeset 0, DLCI 1023).
+  - `none`: Menonaktifkan protokol LMI pada antarmuka tersebut secara eksplisit.
+- **Parameter Sisi DCE (Jaringan)**:
+  - `t392=<s>`: Pewaktu verifikasi penerimaan polling DCE ($5 \dots 30\text{s}$, default: `15s`).
+  - `n392=<n>`: Ambang batas kejadian error (*Error threshold*, $1 \dots 10$, default: `3`).
+  - `n393=<n>`: Jendela kejadian yang dipantau (*Monitored events window*, $1 \dots 10$, default: `4`).
+  - `async={true | false}`: Mengizinkan pengiriman pesan STATUS asinkron tanpa menunggu polling.
+- **Parameter Sisi DTE (Pengguna / Bidirectional)**:
+  - `dte`: Mengaktifkan mode polling sisi DTE (LMI bidirectional).
+  - `t391=<s>`: Interval pengiriman polling status DTE ($5 \dots 30\text{s}$, default: `10s`).
+  - `n391=<n>`: Siklus pengiriman Full Status enquiry DTE ($1 \dots 255$, default: `6`).
+- **Ketentuan Bidirectional LMI**:
+  - Pada seluruh antarmuka NNI (`nni*/*`), polling DTE otomatis diaktifkan dan diwajibkan per ITU-T X.76 §11.4 (*Bidirectional LMI*).
 
 *Contoh:*
 ```ini
-lmi uni0/0 q933a t392=15 n392=3 n393=4
+lmi uni0/0 dce q933a t392=15s n392=3 n393=4
 lmi uni0/1 ansi
 lmi uni0/2 cisco
-lmi_dte uni0/0 t391=10 n391=6
+lmi uni0/0 dte q933a t391=10s n391=6
 ```
 
 ---
 
 ### 10.7 LAPF Protocol Parameters (`lapf`)
-Mengonfigurasi parameter kanal kendali data link LAPF ITU-T Q.922 pada antarmuka tertentu.
+Mengonfigurasi parameter kanal kendali data link LAPF ITU-T Q.922 per antarmuka.
 
 ```ini
-lapf <port_name> [k=<n>] [n200=<n>] [n201=<n>] [t200=<s>] [t203=<s>] [dlci=<n>] [role=active|on]
+lapf <port-name> [sabme={active | passive | bidirectional}] [xid={active | passive | disable}] \
+     [k=<n>] [n200=<n>] [n201=<n>] [t200=<s>] [t203=<s>]
 ```
 
-- `k=<n>`: Ukuran jendela *sliding window* ($1 \dots 127$, default: 8).
-- `n200=<n>`: Jumlah pengulangan transmisi ulang maksimum (default: 3).
-- `n201=<n>`: Ukuran payload I-frame maksimum dalam oktet (default: 260).
-- `t200=<s>`: Pewaktu transmisi ulang dalam detik (default: 2s).
-- `t203=<s>`: Pewaktu link idle dalam detik (default: 30s).
-- `dlci=<n>`: Nomor DLCI LAPF yang dikonfigurasi (default: 0 untuk UNI, 1015 untuk NNI).
-- `role=active|on`: Segera memicu inisiasi koneksi link LAPF (`SABME`) saat switch start.
+#### Penjelasan Parameter `lapf`:
+- `sabme={active | passive | bidirectional}`: Mode inisiasi pembentukan link LAPF saat switch start (`active` memicu pengiriman frame SABME segera).
+- `xid={active | passive | disable}`: Mode pertukaran frame XID untuk negosiasi parameter data link (Group ID `0x80`).
+- `k=<n>`: Ukuran jendela transmisi *sliding window* ($1 \dots 127$, default: `8`).
+- `n200=<n>`: Jumlah maksimum retransmisi sebelum link dinyatakan reset (default: `3`).
+- `n201=<n>`: Ukuran payload I-frame maksimum dalam oktet (default: `260` oktet).
+- `t200=<s>`: Pewaktu transmisi ulang I-frame (*Retransmission timer*, default: `2s`).
+- `t203=<s>`: Pewaktu pemantauan link idle keepalive (*Link idle timer*, default: `30s`).
 
 *Contoh:*
 ```ini
-lapf uni0/0 k=16 t200=1 n200=5
-lapf nni0/0 dlci=1015 role=active
+lapf uni0/0 k=8 n200=3 n201=260 t200=2s t203=30s
+lapf nni0/0 sabme=active k=16
 ```
 
 ---
 
-### 10.8 SVC Interface, Numbering & Routing (`svc_int`, `svc_addr`, `svc_route`)
+### 10.8 Persinyalan SVC, Penomoran & Perutean (`svc int`, `svc addr`, `svc route`, `svc mcast`)
 Mengaktifkan dan mengatur layanan sirkuit dinamis Switched Virtual Circuit per **ITU-T X.36 Klausul 10**, **ITU-T X.76 Klausul 10**, dan **ITU-T Recommendation Q.933**.
 
-#### 1. Inisialisasi Kanal SVC (`svc_int`)
+#### 1. Inisialisasi Antarmuka SVC (`svc int`)
 ```ini
-svc_int <port_name> [dlci_low=<n>] [dlci_high=<n>] [crv_len=1|2|0] [is_nni=1|0] [type=nni|uni] \
-        [dlci_side=high|desc|low|asc] [alloc_dir=desc|asc] [net_id=<str>] [rem_net_id=<str>] \
-        [t301=<s>] [t303=<s>] [t305=<s>] [t308=<s>] [t310=<s>] [t316=<s>] [t317=<s>] [t322=<s>] \
-        [default_cir=<bps>] [default_bc=<bits>] [default_be=<bits>] [default_fmif=<octets>] \
-        [default_ftp=<0-15>] [default_fdp=<0-7>] [default_svc_class=<0-3>]
+svc int <port-name> [dlci_low=<number>] [dlci_high=<number>] \
+        [t303=<s>] [t305=<s>] [t308=<s>] [t310=<s>] [t301=<s>] [t316=<s>] [t317=<s>] [t322=<s>] \
+        [cirdef=<bps>] [bcdef=<bits>] [bedef=<bits>] [fmifdef=<octets>] \
+        [ftpdef=<0-15>] [fdpdef=<0-7>] [clsdef=<0-3>] \
+        [revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}]
 ```
-- `dlci_low=<n>`: Batas bawah pool alokasi DLCI dinamis SVC (default: `512`).
-- `dlci_high=<n>`: Batas atas pool alokasi DLCI dinamis SVC (default: `991`).
-- `crv_len=<1|2|0>`: Panjang Call Reference Value (default: `2` oktet / 15-bit).
-- `alloc_dir=asc|desc`: Arah alokasi nomor DLCI (UNI default: *ascending*, NNI default: *descending*).
-- `net_id=<str>` / `rem_net_id=<str>`: Identifikasi jaringan lokal dan remote pada NNI per ITU-T X.76 §10.
-- *Catatan*: Mengonfigurasi `svc_int` secara otomatis menginisialisasi kanal persinyalan LAPF pada DLCI 0 (atau DLCI 1015 pada NNI).
+- `dlci_low=<number>`: Nilai DLCI terendah pool alokasi dinamis SVC (default: `512`).
+- `dlci_high=<number>`: Nilai DLCI tertinggi pool alokasi dinamis SVC (default: `991`).
+- `cirdef=<bps>`, `bcdef=<bits>`, `bedef=<bits>`, `fmifdef=<octets>`: Nilai default parameter QoS bila DTE tidak menyertakan IE LLCORE.
+- `ftpdef=<0-15>`, `fdpdef=<0-7>`, `clsdef=<0-3>`: Prioritas transfer, pembuangan, dan kelas layanan default.
+- `revchg={allow | deny}`: Kebijakan penerimaan reverse charging (*incoming* & *outgoing*).
+- `t301` s.d. `t322`: Override pewaktu persinyalan panggilan Layer 3 pada antarmuka ini.
 
-#### 2. Registrasi Nomor Pelanggan (`svc_addr`)
+#### 2. Registrasi Nomor Pelanggan (`svc addr`)
 ```ini
-# Format 1: Mode Manual (dengan dukungan makro mnemonik D=DNIC, G=SGC, E=SIC per ITU-T X.121):
-svc_addr <port_name> manual [x121|e164] <primary_number> [alias=x121|e164,<alias_number>] \
-         [rev_charge_acc=<0|1>] [rev_charge_prev=<0|1>]
+# Format 1: Mode Manual (Nomor penuh ditentukan secara eksplisit):
+svc addr <port-name> manual [x121 | e164] <primary-full-number> \
+         [alias [x121 | e164] <alias-full-number> [revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}]]
 
-# Format 2: Mode Semi-Otomatis Autoprefix (DNIC + SGC + SIC ditambahkan otomatis):
-svc_addr <port_name> autoprefix <primary_sub_number> [alias=x121|e164,<alias_number>] \
-         [rev_charge_acc=<0|1>] [rev_charge_prev=<0|1>]
+# Format 2: Mode Autoprefix (Nomor terminal lokal otomatis digabung dengan prefiks switch):
+svc addr <port-name> autoprefix [x121 | e164] <primary-subscriber-number> \
+         [alias [x121 | e164] <alias-full-number> [revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}]]
 
-# Format 3: Format Ringkas Kompatibel:
-svc_addr <port_name> [x121|e164] <primary_number> [alias=...]
+# Format 3: Mode Autonumber (Alokasi nomor terminal sekuensial otomatis):
+svc addr <port-name> autonumber [x121 | e164] {global | group | global-reverse | group-reverse} \
+         [alias [x121 | e164] <alias-full-number> [revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}]]
 ```
-- `rev_charge_acc=<0|1>`: *Reverse Charge Acceptance* per ITU-T X.36 Annex B (`1` = menerima panggilan berbayar balik, default: `1`).
-- `rev_charge_prev=<0|1>`: *Reverse Charge Prevention* per ITU-T X.36 Annex B (`1` = menolak permintaan beban balik, default: `0`).
+- `manual`: Mode pengalamatan manual penuh (mendukung makro mnemonik `D`=DNIC, `G`=SGC, `E`=SIC, misal: `DGE0001` $\rightarrow$ `510401010001`).
+- `autoprefix`: Menyisipkan prefiks switch (`DNIC + SGC + SIC`) di depan nomor terminal secara otomatis.
+- `autonumber`: Alokasi sekuensial otomatis dengan *multi-prefix rollover* (`global`, `group`, dll.).
+- `alias`: Mendaftarkan nomor alias sekunder (misal alias E.164 untuk nomor primer X.121).
+- **Penolakan Nomor Tak Terdaftar**: Panggilan yang ditujukan ke nomor yang tidak terdaftar akan langsung ditolak dengan pesan `RELEASE COMPLETE` ber-Cause IE `#1: Unallocated number` atau Cause `#3: No route to destination` per ITU-T Q.850.
 
-#### 3. Perutean Panggilan Keluar SVC NNI (`svc_route`)
+#### 3. Tabel Perutean Panggilan SVC NNI (`svc route`)
 ```ini
-# Format 1: Perutean Struktural X.121:
-svc_route <egress_port> x121 dnic=<dnic> [sgc=<sgc>] [sic=<sic>] [tns=<tns>] [metric=<m>]
+# Format 1: Rute Struktural X.121:
+svc route <port-name> x121 {dcc=<nnn> [nd={<n> | none}] | dnic=<nnnn>} [pnic={<number> | none}] \
+          [ind=<number>] sgclen={<n> | none} [sgc=<number>] siclen={<n> | none} [sic=<number>] \
+          [revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}]
 
-# Format 2: Perutean Longest Prefix Match (LPM):
-svc_route <egress_port> [x121|e164] prefix=<prefix> [tns=<tns>] [metric=<m>]
+# Format 2: Rute Struktural E.164:
+svc route <port-name> e164 cc=<number> {[ic=<number>] | [ndc=<number> [area=<number>]]} \
+          [ind=<number>] sgclen={<n> | none} [sgc=<number>] siclen={<n> | none} [sic=<number>] \
+          [revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}]
 
-# Format 3: Format Parameter Berpasangan:
-svc_route prefix=<prefix> port=<egress_port> [tns=<tns>] [metric=<m>]
-
-# Format 4: Format Ringkas Posisi:
-svc_route <prefix> <egress_port> [tns=<tns>] [metric=<m>]
+# Format 3: Rute Prefix / Regex Longest Prefix Match (LPM):
+svc route <port-name> prefix {x121 | e164} <prefix-regex> \
+          [revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}]
 ```
-- `tns=<str>`: *Transit Network Selection* identifier per ITU-T X.36 Annex D / X.76 Annex A.
-- `metric=<m>` / `cost=<m>`: Bobot metrik perutean (default: `10`, nilai lebih rendah = rute prioritas utama).
+- `<port-name>`: Antarmuka keluar NNI untuk rute panggilan tersebut.
+- `prefix`: Rute prefiks berbasis 10-way Radix Trie dengan pencocokan terpanjang (*Longest Prefix Match* / LPM).
+
+#### 4. Layanan Konferensi & Multicast SVC (`svc mcast`)
+```ini
+svc mcast <group-name> conference [x121 | e164] <conference-full-number>
+svc mcast <group-name> subaddress <subaddressing-number>
+svc mcast <group-name> confsubadd [x121 | e164] <conference-full-number> <subaddressing-number>
+svc mcast <group-name> source {x121 | e164} {<source-full-number> | <port-name>} [subaddr=<subaddressing-number>] [oneway | twoway | nway]
+svc mcast <group-name> member {x121 | e164} {<member-full-number> | <port-name>} [subaddr=<subaddressing-number>]
+```
 
 *Contoh Lengkap SVC:*
 ```ini
-svc_int uni0/0 dlci_low=512 dlci_high=991 default_cir=64000
-svc_int uni0/1 dlci_low=512 dlci_high=991
-svc_int nni0/0 dlci_low=512 dlci_high=991
+svc int uni0/0 dlci_low=512 dlci_high=991 revchg=allow
+svc int uni0/1 dlci_low=512 dlci_high=991 revchg=allow
 
-svc_addr uni0/0 manual x121 DGE0001 alias=e164,628110001 rev_charge_acc=1
-svc_addr uni0/1 autoprefix 0002 alias=e164,628110002
+svc addr uni0/0 manual x121 510401010001 alias e164 628110001
+svc addr uni0/1 autoprefix x121 0002 alias e164 628110002
+svc addr uni0/2 autonumber x121 group
 
-svc_route nni0/0 x121 dnic=5105 sgc=01 sic=01 metric=10
-svc_route nni0/0 e164 prefix=62812 metric=10
+svc route nni0/0 x121 dnic=5104 sgc=02
+svc route nni0/1 e164 cc=60
+svc route nni0/0 prefix x121 510402
 ```
 
 ---
 
-### 10.9 Congestion Management & CLLM (`congestion`, `cllm`)
+### 10.9 Soft Permanent Virtual Circuits (`spvc`)
+Mendefinisikan pemetaan sirkuit permanen hibrida (*Soft PVC*) yang menghubungkan sirkuit access PVC lokal melintasi jaringan inti SVC NNI per **ITU-T X.76 Annex A** & **ISSMP**.
+
+```ini
+spvc pvc-link <port-name-1> <local-dlci> [lspvcid=<local-correlator-id>] <dest-vfrs-number> \
+     tgt={specific | correlator} {tdlci=<target-dlci> | tspvcid=<target-correlator-id>} \
+     [cir=<bps>] [bc=<bits>] [be=<bits>] [ftp=<0-15>] [fdp=<0-7>] [class=<0-3>] \
+     [revchg={allow | deny} | {ogrevchg={allow | deny} [icrevchg={allow | deny}]}]
+```
+
+#### Penjelasan Parameter `spvc`:
+- `pvc-link <port> <dlci>`: Antarmuka dan DLCI access PVC lokal yang dipantau statusnya.
+- `lspvcid=<id>`: Correlator ID lokal untuk identifikasi sesi SPVC.
+- `<dest-vfrs-number>`: Nomor tujuan remote switch / STE perutean NNI.
+- `tgt={specific | correlator}`: Target pengikatan remote DLCI spesifik (`tdlci`) atau berbasis correlator (`tspvcid`).
+- `tdlci=<target-dlci>`: Nomor DLCI tujuan pada remote switch.
+- `tspvcid=<target-correlator-id>`: Target correlator ID pada remote switch.
+- `cir=<bps>`, `bc=<bits>`, `be=<bits>`, `ftp=<0-15>`, `fdp=<0-7>`, `class=<0-3>`: Parameter negosiasi QoS untuk kanal SVC inti.
+- `retry=<s>`: Interval pengulangan *auto-dial* saat koneksi terputus (default: `5s`).
+
+*Contoh:*
+```ini
+spvc pvc-link uni0/0 100 510402010001 tgt=specific tdlci=200 cir=64000 bc=64000 be=0 class=1
+```
+
+---
+
+### 10.10 Protokol Manajemen Internal Switch (`issmp`)
+Mengonfigurasi protokol **ISSMP** (*Inter-Switch Signaling & Management Protocol*) untuk koordinasi topologi, perutean dinamis, dan persinyalan antar-switch virtual dalam jaringan VFRNS.
+
+```ini
+issmp <port-name> {enable | disable} as=<number> isic=<number> cost=<number> [pw=<string>]
+```
+
+> [!WARNING]
+> **Status Implementasi ISSMP**: Saat ini modul protokol ISSMP masih berstatus *draft / reserved specification* (mengacu pada dokumen draf awal [**`vfrns_issmp_protocol_spec.md`**](file:///c:/Users/rizki/Programming/vfrns/vfrns_issmp_protocol_spec.md)).
+
+#### Arsitektur & Perancangan Protokol ISSMP:
+ISSMP dirancang secara khusus untuk lingkungan pensaklaran VFRNS sebagai protokol hibrida yang memadukan dua paradigma besar telekomunikasi dan jaringan komputer:
+1. **Telephony & ISDN Signaling (SS7 ISUP/MTP3 + DSS1/DSS2 Q.931/Q.932/Q.933 + ITU-T X.76)**:
+   - Menyediakan pembentukan koneksi sirkuit SVC/SPVC multi-hop berkecepatan tinggi, negosiasi kapabilitas antar-node switch, serta sinkronisasi status call state antar-instans VFRS.
+2. **Dynamic IP Routing Protocols (BGP + OSPF + RIP)**:
+   - Menyediakan pertukaran informasi metrik link, pembentukan topologi *Autonomous System* (`as=<number>`), propagasi status link antar-switch (`isic=<number>`), pencegahan *routing loop*, serta konvergensi perutean terpendek secara dinamis.
+3. **Native Frame Relay Transport**:
+   - Berjalan secara *native* di atas Frame Relay pada **DLCI 1015** dengan Network Layer Protocol Identifier **NLPID `0x8F`** (*Private Network Layer Protocols*), memanfaatkan frame LAPF tipe I (*Information*) dan tipe U (*Unnumbered*) untuk menjangkau lapisan DL-CORE dan DL-CONTROL tanpa memerlukan tumpukan protokol IP perantara.
+
+*Contoh Konfigurasi:*
+```ini
+issmp nni0/0 enable as=100 isic=1 cost=10 pw="secret123"
+```
+
+---
+
+### 10.11 Manajemen Kemacetan & CLLM (`cgst`)
 Mengatur ambang batas deteksi kemacetan per **ITU-T X.36 Klausul 12**, notifikasi FECN/BECN, pembuangan frame DE, dan transmisi pesan berkala CLLM per **ITU-T X.36 Annex C** & **ITU-T Q.922 Annex A.7**.
 
 ```ini
-congestion <port_name> rate=<fps> [clear=<fps>] [threshold=<n>] [cllm=on|off] [access_rate=<bps>]
-cllm <port_name> [tx=<s>]
+cgst <port-name> rate=<fps> [clear=<fps>] [threshold=<number>] [cllm={enable | disable} [txint=<s>]]
 ```
 
-- `rate=<fps>`: Ambang batas laju frame masuk per detik untuk memicu kondisi kemacetan (*Congestion Region II/III*).
-- `clear=<fps>`: Ambang batas laju frame untuk kembali ke kondisi normal (*Region I*).
-- `threshold=<n>`: Jumlah kegagalan penulisan buffer transmisi berturut-turut untuk menyatakan kemacetan.
-- `cllm=on|off`: Mengaktifkan pengiriman frame XID CLLM pada DLCI 1007.
-- `access_rate=<bps>`: Override laju akses fisik antarmuka untuk kalkulasi kapasitas buffer.
-- `tx=<s>`: Interval pengiriman pesan CLLM selama masa kemacetan, $5 \dots 30\text{s}$ (default: `10`s).
+#### Penjelasan Parameter `cgst`:
+- `rate=<fps>`: Ambang batas minimum laju frame masuk per detik untuk menyatakan kondisi kemacetan (*Congestion Region II/III*).
+- `clear=<fps>`: Ambang batas laju frame untuk menyatakan kondisi kembali normal (*Region I*, default: `rate / 2`).
+- `threshold=<number>`: Jumlah kegagalan penulisan buffer transmisi berturut-turut untuk memicu kemacetan (default: 0 = nonaktif).
+- `cllm={enable | disable}`: Mengaktifkan transmisi periodik frame XID CLLM pada DLCI 1007.
+- `txint=<s>`: Interval waktu transmisi pesan notifikasi CLLM selama masa kemacetan, $5 \dots 30\text{s}$ (default: `10s`).
+
+#### Mekanisme Aksi Kemacetan Bertingkat:
+1. **Kemacetan Ringan s.d. Sedang (Region II)**:
+   - Bit **FECN** disetel `1` pada frame arah maju (menuju node tujuan).
+   - Bit **BECN** disetel `1` pada frame arah berlawanan (menuju node sumber).
+2. **Kemacetan Sedang s.d. Berat (Region III)**:
+   - Frame dengan bit **DE = 1** langsung dibuang (*discarded*).
+   - Frame notifikasi CLLM XID dikirimkan secara periodik pada DLCI 1007 ke antarmuka yang terhubung.
+3. **Aturan Transparansi Bit Non-Clearing (ITU-T X.36 §9.3.3)**:
+   - Switch **DILARANG MERESET** bit FECN, BECN, atau DE yang bernilai 1 kembali menjadi 0. Bit tersebut harus diteruskan secara utuh (*passthrough*) ke node tujuan.
 
 *Contoh:*
 ```ini
-congestion uni0/0 rate=10000 clear=5000 cllm=on
-cllm uni0/0 tx=10
+cgst uni0/0 rate=1000 clear=500 threshold=5 cllm=enable txint=5s
 ```
 
 ---
 
-### 10.10 Multicast Groups & Members (`mcast`, `mcast_member`)
-Mengonfigurasi grup replikasi frame Frame Relay multicast per **Frame Relay Forum FRF.7** dan **ITU-T Recommendation X.6**.
+### 10.12 Perekaman Paket Live PCAP (`capture`)
+Merekam frame Frame Relay secara langsung ke berkas PCAP standar (`LINKTYPE_FRELAY`, DLT 107) yang kompatibel penuh dengan Wireshark.
 
 ```ini
-mcast <group_name> <source_port> <source_dlci> [oneway|twoway|nway] [cir=<bps>] [bc=<bits>] [be=<bits>]
-mcast_member <group_name> <member_port> <member_dlci>
+capture {<port-name> | <group-name> | global | all} <pcap-file-path> [svccap={iframe | uiframe}]
 ```
 
-- `oneway`: Replikasi frame satu arah (akar $\rightarrow$ daun / Point-to-Multipoint).
-- `twoway`: Komunikasi dua arah antara akar dan daun.
-- `nway`: Komunikasi multipoint-to-multipoint penuh (Full-Mesh dengan aturan *split-horizon*).
+#### Penjelasan Parameter `capture`:
+- `{<port-name> | <group-name> | global | all}`: Target perekaman (port spesifik seperti `uni0/0`, kelompok port, atau seluruh lalu lintas switch dengan `all`/`global`).
+- `<pcap-file-path>`: Jalur berkas rekaman PCAP yang akan dibuat di disk.
+- `svccap={iframe | uiframe}`: Tipe frame LAPF yang digunakan untuk merekam payload persinyalan SVC Q.933 dalam berkas PCAP (default: `iframe`).
 
 *Contoh:*
 ```ini
-mcast bcast1 uni0/0 1019 oneway cir=64000 bc=64000 be=0
-mcast_member bcast1 uni0/1 1020
-mcast_member bcast1 uni0/2 1021
-
-mcast mesh1 uni0/0 500 nway
-mcast_member mesh1 uni0/1 501
-mcast_member mesh1 uni0/2 502
-```
-
----
-
-### 10.11 Packet Capture (`capture`)
-Merekam frame Frame Relay secara langsung ke berkas PCAP standar (`LINKTYPE_FRELAY`, DLT 107).
-
-```ini
-capture <port_name|all> <filename> [svc=iframe|ui]
-```
-
-- `port_name|all`: Nama antarmuka spesifik (misal `uni0/0`) atau `all` untuk merekam seluruh frame switch.
-- `filename`: Lokasi berkas rekaman PCAP yang akan dibuat.
-
-*Contoh:*
-```ini
-capture uni0/0 captures/uni00_trace.pcap
-capture all captures/switch_full.pcap
+capture uni0/0 "captures/uni00_trace.pcap" svccap=iframe
+capture all "captures/switch_full.pcap"
 ```
 
 ---
@@ -1039,33 +1288,49 @@ Saat VFRS dijalankan dalam mode konsol interaktif (`./bin/vfrs.exe -c confs/exam
 
 VFRS dilengkapi dengan infrastruktur pengujian berlapis yang mencakup unit testing komponen C, pengujian kepatuhan protokol berbasis Python, hingga stress testing performa tinggi.
 
-### 12.1 C Unit Test Suite (`ie_test.exe`)
-Menguji parser dan generator Information Element (IE) Q.933 Layer 3 serta parser frame CLLM XID per **ITU-T X.36 Annex C** dan **ITU-T Q.922 Annex A.7**:
+### 12.1 C Configuration & Digit Analysis Unit Test (`cfg_test.exe`)
+Menguji lexer/tokenizer streaming, validator skema bertipe ketat, pohon analisis digit 10-way Radix Trie, hierarki cascading defaults, dan compiler AST:
+```bash
+./bin/tests/cfg_test.exe
+```
+*Cakupan:*
+- **Stream Lexer & Tokenizer**: Line continuation (`\`), komentar `#`, parsing string berkuotasi, penguraian token `key=val`.
+- **Strict Schema Parsers**: Parsing laju (`64000 bps`, `64k`, `2M`), durasi (`1500ms`, `1.5s`), boolean (`allow`/`deny`, `enable`/`disable`), serta penolakan nilai negatif atau non-numerik.
+- **Digit Analysis Tree**: Longest Prefix Match pada X.121 dan E.164, perutean multi-tier DNIC/SGC/SIC, dan deteksi nomor tak teralokasi (*unallocated number*).
+- **End-to-End AST Compilation**: Kompilasi konfigurasi modern 0 error, pewarisan default antarmuka, dan alokasi *autoprefix* / *autonumber*.
+
+### 12.2 C Information Element & Protocol Unit Test (`ie_test.exe`)
+Menguji parser dan generator Information Element (IE) Q.933 Layer 3 serta parser frame CLLM XID per **ITU-T X.36 Annex C** dan **ITU-T Q.922 Annex A.7** (22 skenario uji):
 ```bash
 ./bin/tests/ie_test.exe
 ```
 *Cakupan:*
-- Encoding/Decoding Bearer Capability (`0x04`), Called/Calling Party Number (`0x70`/`0x6C`), Link Layer Core Parameters (`0x48`).
-- Verifikasi batas field, bit ekstensi (EA), serta penanganan malformed IE buffers.
+- **Encoding/Decoding 18 IEs**: Bearer Capability (`0x04`), Called/Calling Party Number (`0x70`/`0x6C`), LLCORE QoS (`0x48`), Priority & Service Class (`0x6A`), Reverse Charging (`0x4A`), SPVC Called Party IE.
+- **Sub-IE 0x0B Minimum Acceptable CIR**: Perhitungan magnitude & multiplier throughput minimum.
+- **Cause IE Diagnostics & Recommendations**: Pengujian parsing Octet 3a (Recommendation field) dan Octet 5 diagnostic field untuk Cause 96, 98, 99, 100, 101.
+- **Header Parsing**: 1-octet, 2-octet, dan Global CRV `0x0000`.
+- **CLLM XID Parameter 3 Bit Alignment**: Pemetaan list DLCI kemacetan pada DLCI 1007.
 
-### 12.2 SVC Protocol Compliance Suite (`svc_compliance_test.py`)
+### 12.3 SVC Protocol Compliance Suite (`svc_compliance_test.py`)
 Rangkaian uji kepatuhan standar **ITU-T X.36 Klausul 10 (*Call connection control*)** dan **ITU-T Recommendation Q.933** yang berjalan di atas Named Pipes Windows:
 ```bash
 python tests/svc_compliance_test.py
 ```
 *Skenario Uji Kepatuhan:*
-1. **Normal Call Setup & Teardown**: `SETUP` $\rightarrow$ `CALL PROCEEDING` $\rightarrow$ `CONNECT` $\rightarrow$ pertukaran data dua arah $\rightarrow$ `RELEASE` $\rightarrow$ `RELEASE COMPLETE`.
-2. **Reverse Charging Verification**: Validasi pemrosesan bit *Reverse Charging Acceptance & Prevention* per **ITU-T X.36 Annex B**.
-3. **Invalid Called Number Rejection**: Pengujian pengiriman pesan `RELEASE COMPLETE` dengan Cause IE `#1: Unallocated number` per **ITU-T Q.850**.
-4. **QoS / Throughput Parameter Negotiation**: Validasi pencocokan CIR/Bc/Be antara permintaan DTE dan kapasitas switch per **ITU-T X.36 Klausul 8**.
+1. **Unrecognized STATUS ENQUIRY**: Menguji pengembalian pesan `STATUS` Call State Null dengan Cause 30 (*Response to STATUS ENQUIRY*).
+2. **Unrecognized STATUS Handling**: Menguji pengembalian `RELEASE COMPLETE` dengan Cause 101 saat menerima STATUS non-Null pada CRV tak dikenal, dan pengabaian jika melaporkan state Null.
+3. **Missing Mandatory IE Detection**: Validasi Cause IE `#96: Mandatory IE missing` dengan field diagnostik berisi identitas IE yang hilang (`0x04`).
+4. **Single-Octet IE Stepping**: Verifikasi injeksi IE single-octet tanpa merusak offset penguraian IE variabel berikutnya.
+5. **Duplicate Mandatory IE Retention**: Penegakan §10.10.5.2 dengan mempertahankan instans pertama dan membuang instans duplikat.
+6. **Full Call Establishment & Bidirectional Data Plane**: Pembentukan sirkuit SVC penuh dari `SETUP` hingga `RELEASE COMPLETE` serta pengujian transmisi data plane dua arah.
 
-### 12.3 Functional & Multi-Hop Call Test Suite (`svc_test.py`)
-Menguji skenario pemanggilan SVC lintas antarmuka NNI per **ITU-T X.76 Klausul 10 (*Frame relay SVC signalling*)** dan multi-switch transit:
+### 12.4 Functional & Multi-Hop Call Test Suite (`svc_test.py`)
+Menguji skenario pemanggilan SVC lintas antarmuka NNI per **ITU-T X.76 Klausul 10 (*Frame relay SVC signalling*)**, fasilitas *Reverse Charging Acceptance & Prevention*, negosiasi QoS, dan SPVC restoral:
 ```bash
 python tests/svc_test.py
 ```
 
-### 12.4 High-Throughput Loopback Smoke Test (`run_pipe_loopback_test.sh`)
+### 12.5 High-Throughput Loopback Smoke Test (`run_pipe_loopback_test.sh`)
 Menguji ketahanan pengiriman paket berkelanjutan pada laju tinggi melalui named-pipe loopback:
 ```bash
 bash tests/run_pipe_loopback_test.sh

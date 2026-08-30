@@ -3,13 +3,13 @@
  * Virtual Frame Relay Switch
  */
 
-#include "../vfr.h"
-#include "../svc_signalling/svc_sig_common.h"
-#include "../svc_signalling/svc_sig_iel.h"
-#include "../svc_signalling/svc_sig_iep.h"
-#include "../svc_signalling/svc_sig_nni.h"
-#include "../svc_signalling/svc_sig_uni.h"
-#include "../fr_switching/svc_routing_common.h"
+#include "vfr.h"
+#include "svc/svc_sig_common.h"
+#include "svc/svc_sig_iel.h"
+#include "svc/svc_sig_iep.h"
+#include "svc/svc_sig_nni.h"
+#include "svc/svc_sig_uni.h"
+#include "switching/svc_routing_common.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -3,10 +3,10 @@
  * Virtual Frame Relay Switch - Phase 1B
  */
 
-#include "../vfr.h"
-#include "../svc_signalling/svc_sig_common.h"
-#include "../svc_signalling/svc_sig_iel.h"
-#include "../svc_signalling/svc_sig_iep.h"
+#include "vfr.h"
+#include "svc/svc_sig_common.h"
+#include "svc/svc_sig_iel.h"
+#include "svc/svc_sig_iep.h"
 #include <assert.h>
 
 int main(void) {

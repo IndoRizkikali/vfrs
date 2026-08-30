@@ -518,6 +518,220 @@ int main() {
         printf("Test Case 14 (CLLM Congestion Notification on PVCs and SVCs): PASSED\n");
     }
 
+    /* ----------------------------------------------------------
+     * Test Case 15: Cause IE Diagnostics (q933_build_cause_ex)
+     * ---------------------------------------------------------- */
+    {
+        u8 buf[128];
+        memset(buf, 0, sizeof(buf));
+
+        /* 1. Standard 2-octet Cause IE (no diag) */
+        int len1 = q933_build_cause(buf, sizeof(buf), 2, 16);
+        (void)len1;
+        assert(len1 == 4);
+        assert(buf[0] == 0x08); /* Cause IE */
+        assert(buf[1] == 0x02); /* Length = 2 */
+        assert(buf[2] == 0x82); /* Location = Public local network */
+        assert(buf[3] == 0x90); /* Cause 16 */
+
+        /* 2. Diagnostic 3-octet Cause IE (with diag) */
+        memset(buf, 0, sizeof(buf));
+        int len2 = q933_build_cause_ex(buf, sizeof(buf), 2, 96, 0x04, 1);
+        (void)len2;
+        assert(len2 == 5);
+        assert(buf[0] == 0x08);
+        assert(buf[1] == 0x03); /* Length = 3 */
+        assert(buf[2] == 0x82);
+        assert(buf[3] == (0x80 | 96)); /* Cause 96 */
+        assert(buf[4] == 0x04);        /* Diagnostic = Bearer Capability IE */
+
+        printf("Test Case 15 (Cause IE with Diagnostic Octet 5): PASSED\n");
+    }
+
+    /* ----------------------------------------------------------
+     * Test Case 16: Extended Message Builders with Diagnostics
+     * ---------------------------------------------------------- */
+    {
+        u8 buf[128];
+        memset(buf, 0, sizeof(buf));
+
+        int len = q933_build_release_complete_ex(buf, sizeof(buf), 0x0055, 1, 2, 96, 0x70, 1);
+        (void)len;
+        assert(len > 0);
+        assert(buf[0] == 0x08); /* Protocol Discriminator */
+        assert(buf[1] == 0x02); /* CRV len = 2 */
+        assert(buf[2] == 0x80); /* Flag = 1 */
+        assert(buf[3] == 0x55); /* CRV = 0x0055 */
+        assert(buf[4] == 0x5A); /* Msg Type = RELEASE COMPLETE */
+        assert(buf[5] == 0x08); /* Cause IE */
+        assert(buf[6] == 0x03); /* Cause Length = 3 */
+        assert(buf[9] == 0x70); /* Diagnostic = Called Party Number IE */
+
+        printf("Test Case 16 (Extended Message Builders with Diagnostics): PASSED\n");
+    }
+
+    /* ----------------------------------------------------------
+     * Test Case 17: SPVC Information Elements (X.76 Annex A)
+     * ---------------------------------------------------------- */
+    {
+        u8 buf[128];
+        memset(buf, 0, sizeof(buf));
+
+        int build_rc = q933_build_called_spvc_ie(buf, sizeof(buf), 3, 512, 2);
+        (void)build_rc;
+        assert(build_rc == 4);
+        assert(buf[0] == 0x0A); /* Called Party SPVC IE */
+        assert(buf[1] == 0x02); /* Length = 2 */
+
+        q933_spvc_ie_t spvc_parsed;
+        memset(&spvc_parsed, 0, sizeof(spvc_parsed));
+        int parse_rc = q933_parse_called_spvc_ie(&buf[2], 2, &spvc_parsed);
+        (void)parse_rc;
+        assert(parse_rc == 0);
+        assert(spvc_parsed.dlci == 512);
+
+        printf("Test Case 17 (SPVC Called Party IE Encoding & Decoding): PASSED\n");
+    }
+
+    /* ----------------------------------------------------------
+     * Test Case 18: Cause IE with Octet 3a (Recommendation field)
+     * ---------------------------------------------------------- */
+    {
+        /* Synthetic NNI Cause IE with Octet 3a (X.76 Figure 19 / Q.850 Figure 1):
+         * Octet 3:  0x02 (Ext=0, Coding Std=00 ITU, Location=2 Public local network)
+         * Octet 3a: 0x87 (Ext=1, Rec=0000111 ITU-T Rec. X.76)
+         * Octet 4:  0x90 (Ext=1, Cause=16 Normal clearing)
+         * Octet 5:  0x70 (Diagnostic = Called Party Number IE)
+         */
+        const u8 nni_cause_ie[] = { 0x02, 0x87, 0x90, 0x70 };
+        u8 loc = 0, cv = 0, dlen = 0;
+        u8 diag[16] = {0};
+
+        int rc = q933_parse_cause_full(nni_cause_ie, sizeof(nni_cause_ie), &loc, &cv, diag, sizeof(diag), &dlen);
+        (void)rc;
+        assert(rc == 0);
+        assert(loc == 0x02);
+        assert(cv == 16);
+        assert(dlen == 1);
+        assert(diag[0] == 0x70);
+
+        printf("Test Case 18 (Cause IE with Octet 3a Recommendation Field): PASSED\n");
+    }
+
+    /* ----------------------------------------------------------
+     * Test Case 19: STATUS Message with Cause 98 Message Type Diagnostics
+     * ---------------------------------------------------------- */
+    {
+        u8 buf[128];
+        memset(buf, 0, sizeof(buf));
+
+        int len = q933_build_status_raw_ex(buf, sizeof(buf), 0x0012, 1, 2, 1, Q850_CAUSE_MSG_NOT_COMPAT_WITH_STATE, Q933_MSG_CONNECT, 1);
+        (void)len;
+        assert(len > 0);
+        assert(buf[0] == 0x08); /* Protocol Discriminator */
+        assert(buf[1] == 0x02); /* CRV length = 2 */
+        assert(buf[4] == Q933_MSG_STATUS); /* Status msg */
+        assert(buf[5] == Q933_IE_CAUSE);   /* Cause IE */
+        assert(buf[6] == 0x03);            /* Cause length = 3 */
+        assert(buf[7] == 0x82);            /* Location = Public local net */
+        assert(buf[8] == (0x80 | 98));     /* Cause 98 */
+        assert(buf[9] == Q933_MSG_CONNECT);/* Diagnostic = Offending Message Type 0x07 */
+        assert(buf[10] == Q933_IE_CALL_STATE); /* Call state IE */
+        assert(buf[12] == 0x01);           /* State = N1 (Call initiated) */
+
+        printf("Test Case 19 (STATUS Message with Cause 98 Message Type Diagnostics): PASSED\n");
+    }
+
+    /* ----------------------------------------------------------
+     * Test Case 20: 1-Octet vs 2-Octet CRV Header Parsing & Building
+     * ---------------------------------------------------------- */
+    {
+        /* 1. Parse 1-octet CRV header: 08 01 85 05 (CRV=5, Flag=1, SETUP) */
+        const u8 hdr1_data[] = { 0x08, 0x01, 0x85, 0x05 };
+        q933_msg_header_t hdr1;
+        int rc1 = q933_parse_header(hdr1_data, sizeof(hdr1_data), &hdr1);
+        (void)rc1;
+        assert(rc1 == 4);
+        assert(hdr1.protocol_disc == 0x08);
+        assert(hdr1.call_ref_len == 1);
+        assert(hdr1.call_ref_flag == 1);
+        assert(hdr1.call_ref_value == 5);
+        assert(hdr1.message_type == Q933_MSG_SETUP);
+
+        /* 2. Build 1-octet CRV header */
+        u8 build_buf[16];
+        int blen1 = q933_build_header(build_buf, sizeof(build_buf), 5, 1, 1, Q933_MSG_SETUP);
+        (void)blen1;
+        assert(blen1 == 4);
+        assert(memcmp(build_buf, hdr1_data, 4) == 0);
+
+        printf("Test Case 20 (1-Octet vs 2-Octet CRV Header Parsing & Building): PASSED\n");
+    }
+
+    /* ----------------------------------------------------------
+     * Test Case 21: Link Layer Core Sub-IE 0x0B (Minimum Acceptable CIR)
+     * ---------------------------------------------------------- */
+    {
+        /* LLCORE with Sub-IE 0x0A (CIR=64k: mag=3, mult=64 -> 0x30 0x40)
+         * and Sub-IE 0x0B (Min CIR=32k: mag=3, mult=32 -> 0x30 0x20)
+         */
+        const u8 llcore_data[] = {
+            0x0A, 0x30, 0x40, /* CIR = 64000 */
+            0x0B, 0x30, 0x20  /* Min CIR = 32000 */
+        };
+
+        q933_llcore_params_t params;
+        int rc = q933_parse_llcore_params(llcore_data, sizeof(llcore_data), &params);
+        (void)rc;
+        assert(rc == 0);
+        assert(params.fwd_cir == 64000);
+        assert(params.min_fwd_cir == 32000);
+        assert(params.min_bwd_cir == 32000);
+
+        printf("Test Case 21 (Link Layer Core Sub-IE 0x0B Minimum CIR Parsing): PASSED\n");
+    }
+
+    /* ----------------------------------------------------------
+     * Test Case 22: Multiple Cause IEs in Call Clearing
+     * ---------------------------------------------------------- */
+    {
+        /* Message with 2 consecutive Cause IEs:
+         * 1. Cause 17 (User busy, Loc 0 User) -> 08 02 80 91
+         * 2. Cause 102 (Recovery on timer expiry, Loc 2 Public Net) -> 08 02 82 E6
+         */
+        const u8 multi_cause_stream[] = {
+            0x08, 0x02, 0x80, 0x91,
+            0x08, 0x02, 0x82, 0xE6
+        };
+
+        u8 causes[2] = {0};
+        u8 locs[2] = {0};
+        int count = 0;
+        size_t off = 0;
+
+        while (off < sizeof(multi_cause_stream)) {
+            u8 ie_id = multi_cause_stream[off];
+            if (ie_id & 0x80) { off += 1; continue; }
+            if (off + 1 >= sizeof(multi_cause_stream)) break;
+            u8 ie_len = multi_cause_stream[off + 1];
+            if (off + 2 + ie_len > sizeof(multi_cause_stream)) break;
+
+            if (ie_id == Q933_IE_CAUSE && count < 2) {
+                q933_parse_cause(&multi_cause_stream[off + 2], ie_len, &locs[count], &causes[count]);
+                count++;
+            }
+            off += 2 + ie_len;
+        }
+
+        assert(count == 2);
+        assert(causes[0] == 17); /* Primary cause = User busy */
+        assert(locs[0] == 0);
+        assert(causes[1] == 102); /* Secondary cause = Recovery on timer expiry */
+        assert(locs[1] == 2);
+
+        printf("Test Case 22 (Multiple Cause IEs in Call Clearing): PASSED\n");
+    }
+
     printf("ALL INFORMATION ELEMENT & CONFORMANCE UNIT TESTS PASSED SUCCESSFULLY!\n");
     return 0;
 }

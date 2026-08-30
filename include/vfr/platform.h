@@ -107,13 +107,14 @@ typedef enum {
      extern __thread uint32_t vfr_tls_lock_bitmap;
 #  endif
 
-void vfr_log(int level, const char *file, int line, const char *fmt, ...);
+enum log_level;
+void vfr_log(enum log_level level, const char *file, int line, const char *fmt, ...);
 
 #  define ASSERT_LOCK_ORDER(level) \
      do { \
          uint32_t _higher = vfr_tls_lock_bitmap >> ((unsigned)(level) + 1u); \
          if (_higher) { \
-             vfr_log(4 /* LOG_ERROR */, __FILE__, __LINE__, \
+             vfr_log((enum log_level)4 /* LOG_ERROR */, __FILE__, __LINE__, \
                  "LOCK ORDER VIOLATION: acquiring level %d while bitmap=0x%x", \
                  (int)(level), vfr_tls_lock_bitmap); \
              abort(); \

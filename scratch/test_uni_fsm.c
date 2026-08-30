@@ -3,14 +3,14 @@
  * Virtual Frame Relay Switch - Phase 1C
  */
 
-#include "../vfr.h"
-#include "../fr_switching/fr_frame.h"
-#include "../svc_signalling/svc_sig_common.h"
-#include "../svc_signalling/svc_sig_iel.h"
-#include "../svc_signalling/svc_sig_iep.h"
-#include "../svc_signalling/svc_sig_uni.h"
-#include "../ports/svc_numbering/svc_numbering.h"
-#include "../fr_switching/svc_routing_common.h"
+#include "vfr.h"
+#include "switching/fr_frame.h"
+#include "svc/svc_sig_common.h"
+#include "svc/svc_sig_iel.h"
+#include "svc/svc_sig_iep.h"
+#include "svc/svc_sig_uni.h"
+#include "ports/svc_numbering/svc_numbering.h"
+#include "switching/svc_routing_common.h"
 #include <assert.h>
 
 /* Mock Frame Relay send function */

@@ -163,6 +163,8 @@ typedef struct {
 typedef struct {
     u32 fwd_cir;        /* Forward CIR (bps) */
     u32 bwd_cir;        /* Backward CIR (bps) */
+    u32 min_fwd_cir;    /* Minimum acceptable forward throughput (Sub-IE 0x0B) */
+    u32 min_bwd_cir;    /* Minimum acceptable backward throughput (Sub-IE 0x0B) */
     u32 fwd_bc;         /* Forward Bc (bits) */
     u32 bwd_bc;         /* Backward Bc (bits) */
     u32 fwd_be;         /* Forward Be (bits) */
@@ -176,7 +178,7 @@ typedef struct {
 typedef struct {
     u8  ftp;            /* Frame Transfer Priority (0-15) */
     u8  fdp;            /* Frame Discard Priority (0-7) */
-    u8  svc_class;      /* Service Class (0-3) */
+    u8  srv_class;      /* Service Class (0-3) */
     u8  present;
 } q933_priority_params_t;
 
@@ -245,6 +247,19 @@ typedef struct vfr_call_s {
     vfr_tni_list_t  tni_list;               /* Transit Network Identification chain (max 6) */
     char            clearing_net_id[16];    /* Clearing Network Identification (IE 0x6B) */
     u8              clearing_net_type_plan;
+
+    /* SPVC Tracking Fields (ITU-T X.76 Annex A) */
+    u8              is_spvc;
+    u8              spvc_selection_type;    /* 1=Any DLCI, 2=Specific DLCI, 3=Assigned DLCI, 4=SPVC Correlator */
+    u32             spvc_target_dlci;
+    u32             spvc_calling_dlci;
+
+    /* Multiple Clearing Cause Tracking (ITU-T X.36 Table 10-5 Note 2) */
+    u8              clearing_cause_count;
+    u8              clearing_causes[2];
+    u8              clearing_locations[2];
+    u8              clearing_diag_len[2];
+    u8              clearing_diags[2][32];
 
     /* Optional user details propagation */
     u8      llc_data[32];

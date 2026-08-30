@@ -344,25 +344,10 @@ static int send_sig_frame_common(vfr_port_t *port, const u8 *msg_data, size_t ms
     if (!port || !msg_data || msg_len == 0) return -1;
 
     if (port_get_lapf_ctx(port, 0)) {
-        return lapf_send_l3(port, 0, msg_data, msg_len);
+        return port_dl_send_data(port, 0, msg_data, msg_len);
     }
 
-    u8 frame_buf[FR_MAX_FRAMESZ];
-    fr_addr_t flags;
-    memset(&flags, 0, sizeof(flags));
-
-    size_t frame_len = fr_build_ui_frame(frame_buf, sizeof(frame_buf), 0, msg_data, msg_len, &flags);
-    if (frame_len == 0) return -1;
-
-    if (port->capture) {
-        pcap_writer_write(port->capture, frame_buf, frame_len);
-    }
-
-    if (port->ops && port->ops->send) {
-        return port->ops->send(port, frame_buf, frame_len);
-    }
-
-    return -1;
+    return port_dl_send_unit_data(port, 0, msg_data, msg_len, 0, 0, 0, 0);
 }
 
 void svc_poll_timers(vfr_port_t *port) {

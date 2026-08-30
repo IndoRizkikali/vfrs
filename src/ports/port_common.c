@@ -423,6 +423,11 @@ void port_free(vfr_port_t *port)
         port->ops->free(port);
     }
 
+    lapf_free(port);
+    cgst_free(port);
+    svc_free_port(port);
+    lmi_free(port);
+
     mutex_lock(&port->mutex);
 
     /* Close socket/file descriptor if not already closed by the transport destructor */
@@ -444,11 +449,6 @@ void port_free(vfr_port_t *port)
         free(port->capture);
         port->capture = NULL;
     }
-
-    lapf_free(port);
-    cgst_free(port);
-    svc_free_port(port);
-    lmi_free(port);
 
     if (port->dlci_array) {
         free(port->dlci_array);

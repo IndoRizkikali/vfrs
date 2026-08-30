@@ -3,7 +3,7 @@
  * VFRS - Virtual Frame Relay Switch
  */
 
-#include "../vfr.h"
+#include "vfr.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

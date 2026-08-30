@@ -18,6 +18,7 @@
 #include "congestion.h"
 #include "lapf.h"
 #include "svc.h"
+#include "fragment.h"
 
 #ifdef __cplusplus
 extern "C" {

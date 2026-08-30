@@ -41,6 +41,7 @@ TESTS_DIR = tests
 TARGET     = $(BIN_DIR)/vfrs.exe
 STATIC_LIB = $(BIN_DIR)/libvfrs.a
 IE_TEST    = $(BIN_DIR)/tests/ie_test.exe
+CFG_TEST   = $(BIN_DIR)/tests/cfg_test.exe
 
 # ------------------------------------------------------------------------------
 # Source File Structure
@@ -48,10 +49,15 @@ IE_TEST    = $(BIN_DIR)/tests/ie_test.exe
 
 # Core & Infrastructure
 SRCS_CORE = $(SRC_DIR)/core/logger.c \
+            $(SRC_DIR)/core/cfg_lexer.c \
+            $(SRC_DIR)/core/cfg_parser.c \
+            $(SRC_DIR)/core/cfg_schema.c \
+            $(SRC_DIR)/core/cfg_compiler.c \
             $(SRC_DIR)/core/config.c
 
 # Frame Relay Switching
 SRCS_SWITCH = $(SRC_DIR)/switching/fr_frame.c \
+              $(SRC_DIR)/switching/fr_fragment.c \
               $(SRC_DIR)/switching/fr_switch.c \
               $(SRC_DIR)/switching/svc_routing_common.c
 
@@ -78,12 +84,13 @@ SRCS_PVC = $(SRC_DIR)/pvc/pvc_lmi_common.c \
 SRCS_CGST = $(SRC_DIR)/congestion/cgst_mgnt.c \
             $(SRC_DIR)/congestion/cgst_cllm.c
 
-# SVC Signalling (Q.933 / X.36 / X.76)
+# SVC Signalling (Q.933 / X.36 / X.76) & SPVC
 SRCS_SVC = $(SRC_DIR)/svc/svc_sig_common.c \
            $(SRC_DIR)/svc/svc_sig_iel.c \
            $(SRC_DIR)/svc/svc_sig_iep.c \
            $(SRC_DIR)/svc/svc_sig_uni.c \
-           $(SRC_DIR)/svc/svc_sig_nni.c
+           $(SRC_DIR)/svc/svc_sig_nni.c \
+           $(SRC_DIR)/svc/svc_spvc.c
 
 # Library sources (all except main.c)
 LIB_SRCS  = $(SRCS_CORE) $(SRCS_SWITCH) $(SRCS_PORTS) $(SRCS_PVC) $(SRCS_CGST) $(SRCS_SVC)
@@ -154,10 +161,21 @@ $(IE_TEST): $(IE_TEST_OBJS)
 	@echo "  [LD]  $@"
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+# C Unit Test binary for Configuration Parser & Numbering Engine
+CFG_TEST_OBJS = $(BUILD_DIR)/tests/cfg_test.o \
+                $(LIB_OBJS)
+
+$(CFG_TEST): $(CFG_TEST_OBJS)
+	@$(MKDIR_P) $(BIN_DIR)/tests
+	@echo "  [LD]  $@"
+	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 # Run full test suite (C unit tests + Python compliance & functional tests)
-test: all $(IE_TEST)
+test: all $(IE_TEST) $(CFG_TEST)
 	@echo "=== Running C Unit Tests (IE Parser/Builder) ==="
 	@./$(IE_TEST)
+	@echo "=== Running C Unit Tests (Configuration Parser & Digit Trie) ==="
+	@./$(CFG_TEST)
 	@echo "=== Running Python SVC Compliance Test Suite ==="
 	@python tests/svc_compliance_test.py
 	@echo "=== Running Python SVC Functional Test Suite ==="

@@ -1,6 +1,331 @@
-[2026-08-23 16:05:59] logger.c:77: Logger initialized (console=INFO , file=vfrs.log)
-[2026-08-23 16:05:59] main.c:1624: VFRS - Virtual Frame Relay Switch
-[2026-08-23 16:05:59] main.c:1625: Build: Aug 23 2026 15:40:08
-[2026-08-23 16:05:59] main.c:166: Parsing configuration (Pass 1 - Defaults & Global Settings): .\confs\vfrsTestSvc.conf
-[2026-08-23 16:05:59] config.c:41: Opened configuration file: .\confs\vfrsTestSvc.conf
-[2026-08-23 16:05:59] main.c:221: Switch configured: vfrsTestSvc (DNIC=5104, PNIC=0, SGC=1, SIC=1, subnumlen=4)
+[2026-08-30 08:27:56] logger.c:85: Logger initialized (console=INFO , file=vfrs.log)
+[2026-08-30 08:27:56] main.c:720: VFRS - Virtual Frame Relay Switch
+[2026-08-30 08:27:56] main.c:721: Build: Aug 29 2026 20:51:22
+[2026-08-30 08:27:56] main.c:151: Parsing configuration: .\confs\vfrsTestSvc.conf
+[2026-08-30 10:50:09] logger.c:85: Logger initialized (console=INFO , file=vfrs.log)
+[2026-08-30 10:50:09] main.c:720: VFRS - Virtual Frame Relay Switch
+[2026-08-30 10:50:09] main.c:721: Build: Aug 30 2026 10:48:44
+[2026-08-30 10:50:09] main.c:151: Parsing configuration: tests/svc_compliance.conf
+[2026-08-30 10:50:09] port_common.c:409: Port created: uni0/1 (type=0, transport=7)
+[2026-08-30 10:50:09] cgst_mgnt.c:67: Congestion management initialized on uni0/1 (AR=0 bps, threshold=1000 fps)
+[2026-08-30 10:50:09] port_common.c:230: Port uni0/1 status: UP
+[2026-08-30 10:50:09] fr_switch.c:636: Propagating port status change for uni0/1
+[2026-08-30 10:50:09] port_udp.c:393: UDP server port created: uni0/1 listening on 127.0.0.1:30001
+[2026-08-30 10:50:09] fr_switch.c:815: Port added: uni0/1 (type=UNI, transport=7)
+[2026-08-30 10:50:09] port_common.c:409: Port created: uni0/2 (type=0, transport=7)
+[2026-08-30 10:50:09] cgst_mgnt.c:67: Congestion management initialized on uni0/2 (AR=0 bps, threshold=1000 fps)
+[2026-08-30 10:50:09] port_common.c:230: Port uni0/2 status: UP
+[2026-08-30 10:50:09] fr_switch.c:636: Propagating port status change for uni0/2
+[2026-08-30 10:50:09] port_udp.c:393: UDP server port created: uni0/2 listening on 127.0.0.1:30002
+[2026-08-30 10:50:09] fr_switch.c:815: Port added: uni0/2 (type=UNI, transport=7)
+[2026-08-30 10:50:09] svc_sig_common.c:99: SVC Init: Enabled on port uni0/1 (UNI, DLCI range 512-600 [low-side], CRV len cfg=0)
+[2026-08-30 10:50:09] svc_sig_common.c:99: SVC Init: Enabled on port uni0/2 (UNI, DLCI range 512-600 [low-side], CRV len cfg=0)
+[2026-08-30 10:50:09] svc_numbering.c:241: SVC Numbering: Registered subscriber '510401010001' on port uni0/1 (mode=manual, charge_acc=1, charge_prev=0)
+[2026-08-30 10:50:09] svc_numbering.c:241: SVC Numbering: Registered subscriber '510401010002' on port uni0/2 (mode=manual, charge_acc=1, charge_prev=0)
+[2026-08-30 10:50:09] svc_routing_common.c:268: SVC Routing: Added route '510401010002' -> egress port uni0/2 (transit_net=any, metric=10)
+[2026-08-30 10:50:09] main.c:239: Starting fast-path main loop (poll/WSAPoll)...
+[2026-08-30 10:50:09] main.c:171: Starting slow-path control plane thread...
+[2026-08-30 10:50:10] port_udp.c:84: UDP server port uni0/1 dynamically associated with client 127.0.0.1:51637
+[2026-08-30 10:50:10] fr_switch.c:1709: LAPF on uni0/1: Auto-activating LAPF stack for DLCI 0 on SABME receipt
+[2026-08-30 10:50:10] port_lapf.c:399: LAPF initialized on uni0/1 for DLCI 0 (dynamic hash): k=8 (v_k=8), n200=3, n201=1598, t200=1500ms, t203=30000ms
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=4, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_udp.c:84: UDP server port uni0/2 dynamically associated with client 127.0.0.1:51638
+[2026-08-30 10:50:10] fr_switch.c:1709: LAPF on uni0/2: Auto-activating LAPF stack for DLCI 0 on SABME receipt
+[2026-08-30 10:50:10] port_lapf.c:399: LAPF initialized on uni0/2 for DLCI 0 (dynamic hash): k=8 (v_k=8), n200=3, n201=1598, t200=1500ms, t203=30000ms
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=4, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:50: LAPF on uni0/1 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:50: LAPF on uni0/2 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:50: LAPF on uni0/1 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:50: LAPF on uni0/2 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:50: LAPF on uni0/1 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:50: LAPF on uni0/2 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:50: LAPF on uni0/1 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:10] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:10] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:10] port_lapf.c:50: LAPF on uni0/2 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:10] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:12] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:12] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=0
+[2026-08-30 10:50:12] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=5)
+[2026-08-30 10:50:12] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=5, byte0=0x08)
+[2026-08-30 10:50:12] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0099]: Received STATUS ENQUIRY message (5 bytes)
+[2026-08-30 10:50:12] svc_sig_uni.c:223: SVC [Port uni0/1]: Unrecognized CRV 0x0099 for STATUS ENQUIRY. Returning STATUS Call State Null.
+[2026-08-30 10:50:12] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=0, N(R)=1 (len=12, V(k)=8)
+[2026-08-30 10:50:12] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:12] port_lapf.c:1158: LAPF on uni0/1 (DLCI 0): Received N(R)=1, acknowledging 1 frames from V(A)=0
+[2026-08-30 10:50:12] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=1
+[2026-08-30 10:50:12] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=12)
+[2026-08-30 10:50:12] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=12, byte0=0x08)
+[2026-08-30 10:50:12] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0099]: Received STATUS message (12 bytes)
+[2026-08-30 10:50:12] svc_sig_uni.c:245: SVC [Port uni0/1]: STATUS message for unrecognized CRV 0x0099 reports non-Null state Active (N10). Returning RELEASE COMPLETE.
+[2026-08-30 10:50:12] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=1, N(R)=2 (len=9, V(k)=8)
+[2026-08-30 10:50:13] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:13] port_lapf.c:1158: LAPF on uni0/1 (DLCI 0): Received N(R)=2, acknowledging 1 frames from V(A)=1
+[2026-08-30 10:50:13] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=2
+[2026-08-30 10:50:13] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=12)
+[2026-08-30 10:50:13] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=12, byte0=0x08)
+[2026-08-30 10:50:13] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0099]: Received STATUS message (12 bytes)
+[2026-08-30 10:50:13] svc_sig_uni.c:251: SVC [Port uni0/1]: STATUS message for unrecognized CRV 0x0099 reports Null state. Discarding.
+[2026-08-30 10:50:13] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:13] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=3
+[2026-08-30 10:50:13] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=20)
+[2026-08-30 10:50:13] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=20, byte0=0x08)
+[2026-08-30 10:50:13] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0008]: Received SETUP message (20 bytes)
+[2026-08-30 10:50:13] svc_sig_uni.c:394: SVC [Port uni0/1 CRV 0x0008]: Bearer Capability missing in SETUP. Rejecting with Cause 96 (Diag: 0x04).
+[2026-08-30 10:50:13] svc_sig_uni.c:42: SVC [Port uni0/1 CRV 0x0008]: Initiating call clearing from state Call Initiated (N1) with Cause 96 ("Mandatory information element missing")
+[2026-08-30 10:50:13] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=2, N(R)=4 (len=9, V(k)=8)
+[2026-08-30 10:50:13] svc_sig_uni.c:83: SVC [Port uni0/1 CRV 0x0008]: Sent RELEASE -> State: Release Request (N19), T308 started (4000 ms)
+[2026-08-30 10:50:13] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:13] port_lapf.c:1158: LAPF on uni0/1 (DLCI 0): Received N(R)=3, acknowledging 1 frames from V(A)=2
+[2026-08-30 10:50:13] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=4
+[2026-08-30 10:50:13] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=5)
+[2026-08-30 10:50:13] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=5, byte0=0x08)
+[2026-08-30 10:50:13] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0008]: Received RELEASE COMPLETE message (5 bytes)
+[2026-08-30 10:50:13] svc_sig_uni.c:1161: SVC [Port uni0/1 CRV 0x0008]: Received RELEASE COMPLETE (Cause 31: "Normal, unspecified", State: Release Request (N19)) -> Call reference cleared to Null (N0)
+[2026-08-30 10:50:13] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:13] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=5
+[2026-08-30 10:50:13] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=41)
+[2026-08-30 10:50:13] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=41, byte0=0x08)
+[2026-08-30 10:50:13] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0009]: Received SETUP message (41 bytes)
+[2026-08-30 10:50:13] svc_sig_uni.c:468: SVC [Port uni0/1 CRV 0x0009]: SETUP parsed (Calling='510401010001', Called='510401010002', Ingress DLCI=512)
+[2026-08-30 10:50:13] svc_sig_uni.c:578: SVC [Port uni0/1 CRV 0x0009]: Route found -> Egress uni0/2 (Assigned Egress DLCI=512)
+[2026-08-30 10:50:13] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=3, N(R)=6 (len=9, V(k)=8)
+[2026-08-30 10:50:13] svc_sig_uni.c:587: SVC [Port uni0/1 CRV 0x0009]: Sent CALL PROCEEDING (DLCI=512) -> State: Outgoing Call Proceeding (N3), T310 started (35000 ms)
+[2026-08-30 10:50:13] port_lapf.c:623: LAPF on uni0/2 (DLCI 0): Sent I-frame N(S)=0, N(R)=0 (len=59, V(k)=8)
+[2026-08-30 10:50:13] svc_sig_uni.c:612: SVC [Port uni0/2 CRV 0x0001]: Forwarded SETUP to called DTE (DLCI=512) -> State: Call Present (N6), T303 started (4000 ms)
+[2026-08-30 10:50:13] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:13] port_lapf.c:1158: LAPF on uni0/1 (DLCI 0): Received N(R)=4, acknowledging 1 frames from V(A)=3
+[2026-08-30 10:50:13] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=6
+[2026-08-30 10:50:13] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=9)
+[2026-08-30 10:50:13] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=9, byte0=0x08)
+[2026-08-30 10:50:13] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0009]: Received RELEASE message (9 bytes)
+[2026-08-30 10:50:13] svc_sig_uni.c:1029: SVC [Port uni0/1 CRV 0x0009]: Received RELEASE (Cause 16: "Normal call clearing", State: Outgoing Call Proceeding (N3))
+[2026-08-30 10:50:13] port_lapf.c:623: LAPF on uni0/2 (DLCI 0): Sent I-frame N(S)=1, N(R)=0 (len=9, V(k)=8)
+[2026-08-30 10:50:13] svc_sig_uni.c:1093: SVC [Port uni0/2 CRV 0x0001]: Propagated RELEASE to peer -> State: Release Request (N19), T308 started (4000 ms)
+[2026-08-30 10:50:13] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=4, N(R)=7 (len=9, V(k)=8)
+[2026-08-30 10:50:13] svc_sig_uni.c:1114: SVC [Port uni0/1 CRV 0x0009]: Sent RELEASE COMPLETE -> Call reference cleared to Null (N0)
+[2026-08-30 10:50:13] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:13] port_lapf.c:1158: LAPF on uni0/2 (DLCI 0): Received N(R)=1, acknowledging 1 frames from V(A)=0
+[2026-08-30 10:50:13] port_lapf.c:1268: LAPF on uni0/2 (DLCI 0): Received expected I-frame N(S)=0
+[2026-08-30 10:50:13] port_lapf.c:640: LAPF on uni0/2: Received Layer 3 Payload (size=5)
+[2026-08-30 10:50:13] svc_sig_common.c:579: SVC L3 Recv on uni0/2 (UNI, len=5, byte0=0x08)
+[2026-08-30 10:50:13] svc_sig_uni.c:166: SVC [Port uni0/2 CRV 0x0001]: Received RELEASE COMPLETE message (5 bytes)
+[2026-08-30 10:50:13] svc_sig_uni.c:1161: SVC [Port uni0/2 CRV 0x0001]: Received RELEASE COMPLETE (Cause 31: "Normal, unspecified", State: Release Request (N19)) -> Call reference cleared to Null (N0)
+[2026-08-30 10:50:13] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:13] port_lapf.c:1158: LAPF on uni0/1 (DLCI 0): Received N(R)=5, acknowledging 1 frames from V(A)=4
+[2026-08-30 10:50:13] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=7
+[2026-08-30 10:50:13] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=60)
+[2026-08-30 10:50:13] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=60, byte0=0x08)
+[2026-08-30 10:50:13] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x000A]: Received SETUP message (60 bytes)
+[2026-08-30 10:50:13] svc_sig_uni.c:468: SVC [Port uni0/1 CRV 0x000A]: SETUP parsed (Calling='510401010001', Called='510401010002', Ingress DLCI=512)
+[2026-08-30 10:50:13] svc_sig_uni.c:578: SVC [Port uni0/1 CRV 0x000A]: Route found -> Egress uni0/2 (Assigned Egress DLCI=512)
+[2026-08-30 10:50:13] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=5, N(R)=8 (len=9, V(k)=8)
+[2026-08-30 10:50:13] svc_sig_uni.c:587: SVC [Port uni0/1 CRV 0x000A]: Sent CALL PROCEEDING (DLCI=512) -> State: Outgoing Call Proceeding (N3), T310 started (35000 ms)
+[2026-08-30 10:50:13] port_lapf.c:623: LAPF on uni0/2 (DLCI 0): Sent I-frame N(S)=2, N(R)=1 (len=59, V(k)=8)
+[2026-08-30 10:50:13] svc_sig_uni.c:612: SVC [Port uni0/2 CRV 0x0002]: Forwarded SETUP to called DTE (DLCI=512) -> State: Call Present (N6), T303 started (4000 ms)
+[2026-08-30 10:50:13] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:13] port_lapf.c:1158: LAPF on uni0/1 (DLCI 0): Received N(R)=6, acknowledging 1 frames from V(A)=5
+[2026-08-30 10:50:13] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=8
+[2026-08-30 10:50:13] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=9)
+[2026-08-30 10:50:13] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=9, byte0=0x08)
+[2026-08-30 10:50:13] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x000A]: Received RELEASE message (9 bytes)
+[2026-08-30 10:50:14] svc_sig_uni.c:1029: SVC [Port uni0/1 CRV 0x000A]: Received RELEASE (Cause 16: "Normal call clearing", State: Outgoing Call Proceeding (N3))
+[2026-08-30 10:50:14] port_lapf.c:623: LAPF on uni0/2 (DLCI 0): Sent I-frame N(S)=3, N(R)=1 (len=9, V(k)=8)
+[2026-08-30 10:50:14] svc_sig_uni.c:1093: SVC [Port uni0/2 CRV 0x0002]: Propagated RELEASE to peer -> State: Release Request (N19), T308 started (4000 ms)
+[2026-08-30 10:50:14] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=6, N(R)=9 (len=9, V(k)=8)
+[2026-08-30 10:50:14] svc_sig_uni.c:1114: SVC [Port uni0/1 CRV 0x000A]: Sent RELEASE COMPLETE -> Call reference cleared to Null (N0)
+[2026-08-30 10:50:14] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:14] port_lapf.c:1158: LAPF on uni0/2 (DLCI 0): Received N(R)=2, acknowledging 1 frames from V(A)=1
+[2026-08-30 10:50:14] port_lapf.c:1268: LAPF on uni0/2 (DLCI 0): Received expected I-frame N(S)=1
+[2026-08-30 10:50:14] port_lapf.c:640: LAPF on uni0/2: Received Layer 3 Payload (size=5)
+[2026-08-30 10:50:14] svc_sig_common.c:579: SVC L3 Recv on uni0/2 (UNI, len=5, byte0=0x08)
+[2026-08-30 10:50:14] svc_sig_uni.c:166: SVC [Port uni0/2 CRV 0x0001]: Received RELEASE COMPLETE message (5 bytes)
+[2026-08-30 10:50:14] svc_sig_uni.c:218: SVC [Port uni0/2]: Ignoring RELEASE COMPLETE for unrecognized CRV 0x0001
+[2026-08-30 10:50:14] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:14] port_lapf.c:1158: LAPF on uni0/1 (DLCI 0): Received N(R)=7, acknowledging 1 frames from V(A)=6
+[2026-08-30 10:50:14] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=9
+[2026-08-30 10:50:14] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=40)
+[2026-08-30 10:50:14] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=40, byte0=0x08)
+[2026-08-30 10:50:14] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x000B]: Received SETUP message (40 bytes)
+[2026-08-30 10:50:14] svc_sig_uni.c:468: SVC [Port uni0/1 CRV 0x000B]: SETUP parsed (Calling='510401010001', Called='510401010002', Ingress DLCI=512)
+[2026-08-30 10:50:14] svc_sig_uni.c:578: SVC [Port uni0/1 CRV 0x000B]: Route found -> Egress uni0/2 (Assigned Egress DLCI=512)
+[2026-08-30 10:50:14] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=7, N(R)=10 (len=9, V(k)=8)
+[2026-08-30 10:50:14] svc_sig_uni.c:587: SVC [Port uni0/1 CRV 0x000B]: Sent CALL PROCEEDING (DLCI=512) -> State: Outgoing Call Proceeding (N3), T310 started (35000 ms)
+[2026-08-30 10:50:14] port_lapf.c:623: LAPF on uni0/2 (DLCI 0): Sent I-frame N(S)=4, N(R)=2 (len=59, V(k)=8)
+[2026-08-30 10:50:14] svc_sig_uni.c:612: SVC [Port uni0/2 CRV 0x0003]: Forwarded SETUP to called DTE (DLCI=512) -> State: Call Present (N6), T303 started (4000 ms)
+[2026-08-30 10:50:14] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:14] port_lapf.c:1158: LAPF on uni0/2 (DLCI 0): Received N(R)=5, acknowledging 3 frames from V(A)=2
+[2026-08-30 10:50:14] port_lapf.c:1268: LAPF on uni0/2 (DLCI 0): Received expected I-frame N(S)=2
+[2026-08-30 10:50:14] port_lapf.c:640: LAPF on uni0/2: Received Layer 3 Payload (size=9)
+[2026-08-30 10:50:14] svc_sig_common.c:579: SVC L3 Recv on uni0/2 (UNI, len=9, byte0=0x08)
+[2026-08-30 10:50:14] svc_sig_uni.c:166: SVC [Port uni0/2 CRV 0x0003]: Received CONNECT message (9 bytes)
+[2026-08-30 10:50:14] svc_sig_uni.c:823: SVC [Port uni0/2 CRV 0x0003]: Called DTE accepted call with CONNECT (Connected='510401010002', DLCI=513) -> Terminating state: Active (N10)
+[2026-08-30 10:50:14] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=8, N(R)=10 (len=39, V(k)=8)
+[2026-08-30 10:50:14] svc_sig_uni.c:866: SVC [Port uni0/1 CRV 0x000B]: Propagated CONNECT to calling DTE/STE (Connected='510401010002', DLCI=512) -> Originating state: Active (N10)
+[2026-08-30 10:50:14] svc_sig_common.c:298: SVC Data path created: uni0/2:513 <-> uni0/1:512 (CIR=0)
+[2026-08-30 10:50:14] svc_sig_uni.c:874: SVC Call Established: uni0/2 (DLCI 513) <--> uni0/1 (DLCI 512) | Call is ACTIVE (N10)
+[2026-08-30 10:50:14] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:14] port_lapf.c:1268: LAPF on uni0/2 (DLCI 0): Received expected I-frame N(S)=3
+[2026-08-30 10:50:14] port_lapf.c:640: LAPF on uni0/2: Received Layer 3 Payload (size=5)
+[2026-08-30 10:50:14] svc_sig_common.c:579: SVC L3 Recv on uni0/2 (UNI, len=5, byte0=0x08)
+[2026-08-30 10:50:14] svc_sig_uni.c:166: SVC [Port uni0/2 CRV 0x0003]: Received DISCONNECT message (5 bytes)
+[2026-08-30 10:50:14] svc_sig_uni.c:935: SVC [Port uni0/2 CRV 0x0003]: Received DISCONNECT (Cause 16: "Normal call clearing", State: Active (N10)). Clearing call.
+[2026-08-30 10:50:14] svc_sig_common.c:322: SVC Data path destroyed: uni0/2:513 <-> uni0/1:512
+[2026-08-30 10:50:14] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=9, N(R)=10 (len=9, V(k)=8)
+[2026-08-30 10:50:14] svc_sig_uni.c:962: SVC [Port uni0/1 CRV 0x000B]: Propagated DISCONNECT to peer -> State: Disconnect Indication (N12), T305 started (30000 ms)
+[2026-08-30 10:50:14] port_lapf.c:623: LAPF on uni0/2 (DLCI 0): Sent I-frame N(S)=5, N(R)=4 (len=9, V(k)=8)
+[2026-08-30 10:50:14] svc_sig_uni.c:984: SVC [Port uni0/2 CRV 0x0003]: Sent RELEASE -> State: Release Request (N19), T308 started (4000 ms)
+[2026-08-30 10:50:14] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:14] port_lapf.c:1158: LAPF on uni0/2 (DLCI 0): Received N(R)=6, acknowledging 1 frames from V(A)=5
+[2026-08-30 10:50:14] port_lapf.c:1268: LAPF on uni0/2 (DLCI 0): Received expected I-frame N(S)=4
+[2026-08-30 10:50:14] port_lapf.c:640: LAPF on uni0/2: Received Layer 3 Payload (size=5)
+[2026-08-30 10:50:14] svc_sig_common.c:579: SVC L3 Recv on uni0/2 (UNI, len=5, byte0=0x08)
+[2026-08-30 10:50:14] svc_sig_uni.c:166: SVC [Port uni0/2 CRV 0x0003]: Received RELEASE COMPLETE message (5 bytes)
+[2026-08-30 10:50:14] svc_sig_uni.c:1161: SVC [Port uni0/2 CRV 0x0003]: Received RELEASE COMPLETE (Cause 31: "Normal, unspecified", State: Release Request (N19)) -> Call reference cleared to Null (N0)
+[2026-08-30 10:50:14] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=10, N(R)=10 (len=9, V(k)=8)
+[2026-08-30 10:50:14] logger.c:85: Logger initialized (console=INFO , file=vfrs.log)
+[2026-08-30 10:50:14] main.c:720: VFRS - Virtual Frame Relay Switch
+[2026-08-30 10:50:14] main.c:721: Build: Aug 30 2026 10:48:44
+[2026-08-30 10:50:14] main.c:151: Parsing configuration: tests/svc_test.conf
+[2026-08-30 10:50:14] port_common.c:409: Port created: uni0/1 (type=0, transport=7)
+[2026-08-30 10:50:14] cgst_mgnt.c:67: Congestion management initialized on uni0/1 (AR=0 bps, threshold=1000 fps)
+[2026-08-30 10:50:14] port_common.c:230: Port uni0/1 status: UP
+[2026-08-30 10:50:14] fr_switch.c:636: Propagating port status change for uni0/1
+[2026-08-30 10:50:14] port_udp.c:393: UDP server port created: uni0/1 listening on 127.0.0.1:30003
+[2026-08-30 10:50:14] fr_switch.c:815: Port added: uni0/1 (type=UNI, transport=7)
+[2026-08-30 10:50:14] port_common.c:409: Port created: uni0/2 (type=0, transport=7)
+[2026-08-30 10:50:14] cgst_mgnt.c:67: Congestion management initialized on uni0/2 (AR=0 bps, threshold=1000 fps)
+[2026-08-30 10:50:14] port_common.c:230: Port uni0/2 status: UP
+[2026-08-30 10:50:14] fr_switch.c:636: Propagating port status change for uni0/2
+[2026-08-30 10:50:14] port_udp.c:393: UDP server port created: uni0/2 listening on 127.0.0.1:30004
+[2026-08-30 10:50:14] fr_switch.c:815: Port added: uni0/2 (type=UNI, transport=7)
+[2026-08-30 10:50:14] svc_sig_common.c:99: SVC Init: Enabled on port uni0/1 (UNI, DLCI range 512-600 [low-side], CRV len cfg=0)
+[2026-08-30 10:50:14] svc_sig_common.c:99: SVC Init: Enabled on port uni0/2 (UNI, DLCI range 512-600 [low-side], CRV len cfg=0)
+[2026-08-30 10:50:14] svc_numbering.c:241: SVC Numbering: Registered subscriber '510401010001' on port uni0/1 (mode=manual, charge_acc=1, charge_prev=0)
+[2026-08-30 10:50:14] svc_numbering.c:241: SVC Numbering: Registered subscriber '510401010002' on port uni0/2 (mode=manual, charge_acc=0, charge_prev=1)
+[2026-08-30 10:50:14] svc_routing_common.c:268: SVC Routing: Added route '510401010002' -> egress port uni0/2 (transit_net=any, metric=10)
+[2026-08-30 10:50:14] main.c:239: Starting fast-path main loop (poll/WSAPoll)...
+[2026-08-30 10:50:14] main.c:171: Starting slow-path control plane thread...
+[2026-08-30 10:50:15] port_udp.c:84: UDP server port uni0/1 dynamically associated with client 127.0.0.1:51639
+[2026-08-30 10:50:15] fr_switch.c:1709: LAPF on uni0/1: Auto-activating LAPF stack for DLCI 0 on SABME receipt
+[2026-08-30 10:50:15] port_lapf.c:399: LAPF initialized on uni0/1 for DLCI 0 (dynamic hash): k=8 (v_k=8), n200=3, n201=1598, t200=1500ms, t203=30000ms
+[2026-08-30 10:50:15] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=4, pf=1, resp=0
+[2026-08-30 10:50:15] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:15] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:15] port_udp.c:84: UDP server port uni0/2 dynamically associated with client 127.0.0.1:51640
+[2026-08-30 10:50:15] fr_switch.c:1709: LAPF on uni0/2: Auto-activating LAPF stack for DLCI 0 on SABME receipt
+[2026-08-30 10:50:15] port_lapf.c:399: LAPF initialized on uni0/2 for DLCI 0 (dynamic hash): k=8 (v_k=8), n200=3, n201=1598, t200=1500ms, t203=30000ms
+[2026-08-30 10:50:16] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=4, pf=1, resp=0
+[2026-08-30 10:50:16] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:16] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:16] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:16] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:16] port_lapf.c:50: LAPF on uni0/1 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:16] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:16] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:16] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:16] port_lapf.c:50: LAPF on uni0/2 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:16] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:16] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:16] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:16] port_lapf.c:50: LAPF on uni0/1 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:16] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:16] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:16] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:16] port_lapf.c:50: LAPF on uni0/2 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:16] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:16] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:16] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=0
+[2026-08-30 10:50:16] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=51)
+[2026-08-30 10:50:16] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=51, byte0=0x08)
+[2026-08-30 10:50:16] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0005]: Received SETUP message (51 bytes)
+[2026-08-30 10:50:16] svc_sig_uni.c:468: SVC [Port uni0/1 CRV 0x0005]: SETUP parsed (Calling='510401010001', Called='510401010002', Ingress DLCI=512)
+[2026-08-30 10:50:16] svc_sig_uni.c:497: SVC [Port uni0/1 CRV 0x0005]: Target subscriber '510401010002' has Reverse Charging Prevention enabled. Rejecting call with Cause 29.
+[2026-08-30 10:50:16] svc_sig_uni.c:42: SVC [Port uni0/1 CRV 0x0005]: Initiating call clearing from state Call Initiated (N1) with Cause 29 ("Facility rejected")
+[2026-08-30 10:50:16] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=0, N(R)=1 (len=9, V(k)=8)
+[2026-08-30 10:50:16] logger.c:85: Logger initialized (console=INFO , file=vfrs.log)
+[2026-08-30 10:50:16] main.c:720: VFRS - Virtual Frame Relay Switch
+[2026-08-30 10:50:16] main.c:721: Build: Aug 30 2026 10:48:44
+[2026-08-30 10:50:16] main.c:151: Parsing configuration: tests/svc_test.conf
+[2026-08-30 10:50:16] port_common.c:409: Port created: uni0/1 (type=0, transport=7)
+[2026-08-30 10:50:16] cgst_mgnt.c:67: Congestion management initialized on uni0/1 (AR=0 bps, threshold=1000 fps)
+[2026-08-30 10:50:16] port_common.c:230: Port uni0/1 status: UP
+[2026-08-30 10:50:16] fr_switch.c:636: Propagating port status change for uni0/1
+[2026-08-30 10:50:16] port_udp.c:393: UDP server port created: uni0/1 listening on 127.0.0.1:30003
+[2026-08-30 10:50:16] fr_switch.c:815: Port added: uni0/1 (type=UNI, transport=7)
+[2026-08-30 10:50:16] port_common.c:409: Port created: uni0/2 (type=0, transport=7)
+[2026-08-30 10:50:16] cgst_mgnt.c:67: Congestion management initialized on uni0/2 (AR=0 bps, threshold=1000 fps)
+[2026-08-30 10:50:16] port_common.c:230: Port uni0/2 status: UP
+[2026-08-30 10:50:16] fr_switch.c:636: Propagating port status change for uni0/2
+[2026-08-30 10:50:16] port_udp.c:393: UDP server port created: uni0/2 listening on 127.0.0.1:30004
+[2026-08-30 10:50:16] fr_switch.c:815: Port added: uni0/2 (type=UNI, transport=7)
+[2026-08-30 10:50:16] svc_sig_common.c:99: SVC Init: Enabled on port uni0/1 (UNI, DLCI range 512-600 [low-side], CRV len cfg=0)
+[2026-08-30 10:50:16] svc_sig_common.c:99: SVC Init: Enabled on port uni0/2 (UNI, DLCI range 512-600 [low-side], CRV len cfg=0)
+[2026-08-30 10:50:16] svc_numbering.c:241: SVC Numbering: Registered subscriber '510401010001' on port uni0/1 (mode=manual, charge_acc=1, charge_prev=0)
+[2026-08-30 10:50:16] svc_numbering.c:241: SVC Numbering: Registered subscriber '510401010002' on port uni0/2 (mode=manual, charge_acc=1, charge_prev=0)
+[2026-08-30 10:50:16] svc_routing_common.c:268: SVC Routing: Added route '510401010002' -> egress port uni0/2 (transit_net=any, metric=10)
+[2026-08-30 10:50:16] main.c:239: Starting fast-path main loop (poll/WSAPoll)...
+[2026-08-30 10:50:16] main.c:171: Starting slow-path control plane thread...
+[2026-08-30 10:50:17] port_udp.c:84: UDP server port uni0/1 dynamically associated with client 127.0.0.1:51641
+[2026-08-30 10:50:17] port_udp.c:84: UDP server port uni0/2 dynamically associated with client 127.0.0.1:51642
+[2026-08-30 10:50:17] fr_switch.c:1709: LAPF on uni0/1: Auto-activating LAPF stack for DLCI 0 on SABME receipt
+[2026-08-30 10:50:17] port_lapf.c:399: LAPF initialized on uni0/1 for DLCI 0 (dynamic hash): k=8 (v_k=8), n200=3, n201=1598, t200=1500ms, t203=30000ms
+[2026-08-30 10:50:17] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=4, pf=1, resp=0
+[2026-08-30 10:50:17] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:17] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:17] fr_switch.c:1709: LAPF on uni0/2: Auto-activating LAPF stack for DLCI 0 on SABME receipt
+[2026-08-30 10:50:17] port_lapf.c:399: LAPF initialized on uni0/2 for DLCI 0 (dynamic hash): k=8 (v_k=8), n200=3, n201=1598, t200=1500ms, t203=30000ms
+[2026-08-30 10:50:17] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=4, pf=1, resp=0
+[2026-08-30 10:50:17] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:17] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:17] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:17] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:17] port_lapf.c:50: LAPF on uni0/1 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:17] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:17] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:17] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:17] port_lapf.c:50: LAPF on uni0/2 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:17] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:18] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:18] port_lapf.c:946: LAPF on uni0/1: Received SABME command
+[2026-08-30 10:50:18] port_lapf.c:50: LAPF on uni0/1 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:18] port_lapf.c:968: LAPF on uni0/1 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:18] port_lapf.c:902: LAPF on uni0/2: Recv frame type=0x6F, state=7, pf=1, resp=0
+[2026-08-30 10:50:18] port_lapf.c:946: LAPF on uni0/2: Received SABME command
+[2026-08-30 10:50:18] port_lapf.c:50: LAPF on uni0/2 (DLCI 0): MDL-ERROR(F) — Peer-initiated re-establishment (SABME) [state=7]
+[2026-08-30 10:50:18] port_lapf.c:968: LAPF on uni0/2 (DLCI 0): Link established (state=ESTABLISHED, T203 started)
+[2026-08-30 10:50:18] port_lapf.c:902: LAPF on uni0/1: Recv frame type=0x00, state=7, pf=0, resp=0
+[2026-08-30 10:50:18] port_lapf.c:1268: LAPF on uni0/1 (DLCI 0): Received expected I-frame N(S)=0
+[2026-08-30 10:50:18] port_lapf.c:640: LAPF on uni0/1: Received Layer 3 Payload (size=51)
+[2026-08-30 10:50:18] svc_sig_common.c:579: SVC L3 Recv on uni0/1 (UNI, len=51, byte0=0x08)
+[2026-08-30 10:50:18] svc_sig_uni.c:166: SVC [Port uni0/1 CRV 0x0005]: Received SETUP message (51 bytes)
+[2026-08-30 10:50:18] svc_sig_uni.c:468: SVC [Port uni0/1 CRV 0x0005]: SETUP parsed (Calling='510401010001', Called='510401010002', Ingress DLCI=512)
+[2026-08-30 10:50:18] svc_sig_uni.c:578: SVC [Port uni0/1 CRV 0x0005]: Route found -> Egress uni0/2 (Assigned Egress DLCI=512)
+[2026-08-30 10:50:18] port_lapf.c:623: LAPF on uni0/1 (DLCI 0): Sent I-frame N(S)=0, N(R)=1 (len=9, V(k)=8)
+[2026-08-30 10:50:18] svc_sig_uni.c:587: SVC [Port uni0/1 CRV 0x0005]: Sent CALL PROCEEDING (DLCI=512) -> State: Outgoing Call Proceeding (N3), T310 started (35000 ms)
+[2026-08-30 10:50:18] port_lapf.c:623: LAPF on uni0/2 (DLCI 0): Sent I-frame N(S)=0, N(R)=0 (len=70, V(k)=8)

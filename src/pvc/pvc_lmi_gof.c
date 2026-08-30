@@ -133,6 +133,13 @@ int lmi_gof_handle_frame(vfr_port_t *port, const u8 *frame, size_t len)
         /* D-5: per X.36 §11.4.1.6.2 NOTE 1 — invalid recv_seq means ignore entire STATUS */
         int seq_valid = (recv_seq == 0 || recv_seq == lmi->dte_seq_send);
         if (seq_valid) {
+            /* ITU-T X.36 Appendix III Loopback Detection:
+             * Suspect loopback if received send_seq matches our send sequence counter */
+            if (send_seq != 0 && send_seq == lmi->dte_seq_send) {
+                LOG_WARN("Cisco LMI on %s: Suspected physical layer loopback condition detected per ITU-T X.36 Appendix III (received send_seq=%u matches tx send_seq)",
+                         port->name, send_seq);
+            }
+
             lmi->dte_dce_seq_recv = send_seq;
             lmi->dte_status_received = 1;
 

@@ -50,6 +50,25 @@
 #define LAPF_FRMR_Y        0x04  /* Bit 3 (Y): I-field exceeded maximum established length (N201) */
 #define LAPF_FRMR_Z        0x08  /* Bit 4 (Z): Invalid N(R) sequence number */
 
+/* Deferred callback entry for queue-then-flush pattern (F-10).
+ * During lapf_handle_frame, callbacks are queued here while holding the mutex.
+ * After the mutex is released, they are invoked outside the lock. */
+#define LAPF_MAX_DEFERRED  8
+
+typedef enum {
+    LAPF_CB_NONE = 0,
+    LAPF_CB_L3_DATA,       /* Deliver L3 payload via lapf_l3_recv_cb */
+    LAPF_CB_EVENT,         /* Deliver event via on_event callback */
+} lapf_cb_type_t;
+
+typedef struct {
+    lapf_cb_type_t  type;
+    const u8       *data;      /* Pointer to payload (only valid during frame processing) */
+    size_t          len;       /* Payload length */
+    int             event;     /* LAPF_EVENT_* for CB_EVENT type */
+    u32             dlci;      /* DLCI for the event */
+} lapf_deferred_cb_t;
+
 /* Derive default window size (k) from access rate per Q.922 §5.9.4.
  * Access rate 0 means "unknown/unconfigured" → use k=32 (conservative default). */
 static inline u8 lapf_default_k_for_rate(u32 access_rate_bps) {
@@ -83,6 +102,20 @@ typedef struct {
     u8          retransmission_count;
     u8          acknowledgement_pending;
     u8          rej_exception;      /* 1 if in REJ exception condition */
+
+    /* Dynamic Windowing (ITU-T Q.922 Appendix I) */
+    u8          v_k;                /* Current working window size (1 <= v_k <= k) */
+    u8          n_w;                /* Dynamic window step size (default: 5) */
+    u16         ia_ct;              /* Information acknowledge counter */
+
+    /* Connection Management Parameter Negotiation (ITU-T Q.922 Appendix III) */
+    vfr_timer_t tm20_timer;         /* TM20 parameter negotiation timer (2.5s) */
+    u8          nm20_retries;       /* NM20 retry count (max 3) */
+
+    /* L3 event callback (F-01/F-02): invoked for DL-ESTABLISH / DL-RELEASE indications.
+     * Set during initialization or by the SVC module. Called OUTSIDE the port mutex
+     * via the deferred callback flush mechanism. */
+    void          (*on_event)(vfr_port_t *port, u32 dlci, int event_type);
 
     /* Timers */
     vfr_timer_t t200_timer;
@@ -123,6 +156,10 @@ typedef struct {
     u64         ui_rx;
 } vfr_lapf_state_t;
 
+/* Internal centralized frame builder (DL-CORE) */
+int port_dl_build_frame(vfr_port_t *port, u32 dlci, u8 ctrl_byte, const u8 *payload, size_t len,
+                        int cr, int fecn, int becn, int de, u8 *out_buf, size_t max_len, size_t *out_len);
+
 /* Initialize LAPF on a port for a specific DLCI */
 int lapf_port_init(vfr_port_t *port, u32 dlci, u8 k, u8 n200, u16 n201, u32 t200, u32 t203);
 
@@ -140,6 +177,10 @@ int lapf_establish_link(vfr_port_t *port, u32 dlci);
 
 /* Release LAPF link actively for a specific DLCI */
 int lapf_release_link(vfr_port_t *port, u32 dlci);
+
+/* Set L3 event callback for DL-ESTABLISH/DL-RELEASE indications */
+void lapf_set_event_cb(vfr_port_t *port, u32 dlci,
+                       void (*on_event)(vfr_port_t *port, u32 dlci, int event_type));
 
 /* Callback invoked when Layer 3 payload is received */
 void lapf_l3_recv_cb(vfr_port_t *port, const u8 *data, size_t len);

@@ -19,6 +19,14 @@
 enum log_level g_log_console = LOG_INFO;
 enum log_level g_log_file = LOG_DEBUG;
 
+#ifndef NDEBUG
+#  ifdef _MSC_VER
+     __declspec(thread) uint32_t vfr_tls_lock_bitmap = 0;
+#  else
+     __thread uint32_t vfr_tls_lock_bitmap = 0;
+#  endif
+#endif
+
 static FILE    *g_log_fp       = NULL;
 static mutex_t  g_log_mutex;
 static int      g_logger_init  = 0;
@@ -148,10 +156,10 @@ static void logger_rotate(void)
     }
 
     /* Shift existing rotated files: .N.log -> .(N+1).log, drop oldest */
-    char old_path[VFR_MAX_PATH];
-    char new_path[VFR_MAX_PATH];
+    char old_path[VFR_MAX_PATH + 32];
+    char new_path[VFR_MAX_PATH + 32];
 
-    /* Strip the trailing ".log" suffix from the base name, if present, to
+    /* Strip trailing ".log" from base path to get the stem, then
      * build the rotated filenames as  <stem>.<N>.log. */
     char stem[VFR_MAX_PATH];
     strncpy(stem, g_log_file_base, sizeof(stem) - 1);

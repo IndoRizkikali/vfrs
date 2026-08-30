@@ -403,6 +403,13 @@ int lmi_ansi_handle_frame(vfr_port_t *port, const u8 *frame, size_t len)
         int seq_valid = (lmi->dte_link_down) ? (recv_seq == 0 || recv_seq == lmi->dte_seq_send)
                                              : (recv_seq == lmi->dte_seq_send);
         if (seq_valid) {
+            /* ITU-T X.36 Appendix III Loopback Detection:
+             * Suspect loopback if received send_seq matches our send sequence counter */
+            if (send_seq != 0 && send_seq == lmi->dte_seq_send) {
+                LOG_WARN("ANSI LMI on %s: Suspected physical layer loopback condition detected per ITU-T X.36 Appendix III (received send_seq=%u matches tx send_seq)",
+                         port->name, send_seq);
+            }
+
             lmi->dte_dce_seq_recv = send_seq;
             lmi->dte_status_received = 1;
 

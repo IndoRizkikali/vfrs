@@ -6,6 +6,7 @@
 #include "vfr.h"
 #include "ports/svc_numbering/svc_numbering.h"
 #include "svc_routing_common.h"
+#include "svc/svc_spvc.h"
 #include "ports/lapf/port_lapf.h"
 
 /* ============================================================
@@ -554,6 +555,11 @@ int vfrs_dlci_is_active_unlocked(vfrs_ctx_t *ctx, vfr_port_t *port, vfr_dlci_ent
     if (lmi) {
         if (lmi->dce_link_down) return 0;
         if (lmi->dte_enabled && lmi->dte_link_down) return 0;
+    }
+
+    /* 2a. Check SPVC endpoint state (ITU-T X.76 Annex A.4.5.3) */
+    if (spvc_is_spvc_dlci(ctx, port->name, entry->dlci_in)) {
+        return spvc_is_dlci_active(ctx, port->name, entry->dlci_in);
     }
 
     /* 3. Check destination port status */
@@ -1315,6 +1321,38 @@ int vfrs_switch_frame(vfrs_ctx_t *ctx, vfr_port_t *src_port,
         memcpy(out_frame + out_addr_len, frame + in_addr_len, payload_len);
     }
 
+    /* Check for FRF.12 Egress Fragmentation */
+    size_t eff_frag_size = entry->fragment_size > 0 ? entry->fragment_size : dst_port->fragment_size;
+    if (eff_frag_size > 0 && payload_len > eff_frag_size) {
+        u8 frags[FRF12_MAX_FRAGMENTS][FR_MAX_FRAMESZ + 32];
+        size_t frag_lens[FRF12_MAX_FRAGMENTS];
+        int num_frags = frf12_fragment_frame(out_frame, new_len, eff_frag_size, frags, frag_lens, FRF12_MAX_FRAGMENTS, &entry->frag_seq);
+        if (num_frags > 0) {
+            for (int f = 0; f < num_frags; f++) {
+                size_t flen = frag_lens[f];
+                if (dst_port->transport == PORT_TRANS_SERIAL || dst_port->transport == PORT_TRANS_PIPE) {
+                    u16 fcs = crc16_fcs(frags[f], flen);
+                    frags[f][flen + 0] = fcs & 0xFF;
+                    frags[f][flen + 1] = (fcs >> 8) & 0xFF;
+                    flen += 2;
+                }
+                if (dst_port->ops && dst_port->ops->send) {
+                    int ret = dst_port->ops->send(dst_port, frags[f], flen);
+                    if (ret >= 0) {
+                        dst_port->stats.tx_frames++;
+                        dst_port->stats.tx_bytes += (u64)ret;
+                    }
+                }
+            }
+            src_port->stats.switched++;
+            dst_port->stats.switched++;
+            entry->tx_frames++;
+            entry->tx_bytes += new_len;
+            cgst_handle_write_success(dst_port);
+            return 0;
+        }
+    }
+
     /* Recompute FCS after DLCI rewrite — X.36 §9.2.4.
      * FCS covers [address..data] = out_frame[0..new_len-1].
      * crc16_fcs uses non-reflected CRC-16-CCITT (init=0xFFFF, final XOR).
@@ -1714,11 +1752,25 @@ int fr_switch_input_processed(vfrs_ctx_t *ctx, vfr_port_t *port, const fr_addr_t
         }
     }
 
-    /* Check if DLCI is valid for user traffic (not reserved) */
-    if (!fr_dlci_valid(addr.dlci)) {
-        LOG_DEBUG("Reserved DLCI %u on %s - dropped", addr.dlci, port->name);
-        port->stats.dropped++;
-        return -1;
+    /* Check for FRF.12 Fragmentation reassembly */
+    size_t in_addr_len = fr_get_addr_len(frame, frame_len);
+    vfr_dlci_entry_t *in_entry = port_lookup_dlci(port, addr.dlci);
+    if (in_entry && (in_entry->fragment_size > 0 || port->fragment_size > 0 || (frame_len > in_addr_len + 2 && (frame[in_addr_len] & 0xC0) != 0))) {
+        if (!in_entry->reasm_ctx) {
+            in_entry->reasm_ctx = calloc(1, sizeof(fr_reasm_ctx_t));
+            if (in_entry->reasm_ctx) frf12_reasm_init((fr_reasm_ctx_t *)in_entry->reasm_ctx);
+        }
+        if (in_entry->reasm_ctx) {
+            u8 reasm_out[FR_MAX_FRAMESZ + 128];
+            size_t reasm_len = 0;
+            int is_comp = 0;
+            if (frf12_reassemble_frame((fr_reasm_ctx_t *)in_entry->reasm_ctx, frame, frame_len, reasm_out, &reasm_len, &is_comp) == 0) {
+                if (!is_comp) {
+                    return 0; /* Middle or initial fragment buffered, awaiting more fragments */
+                }
+                return vfrs_switch_frame(ctx, port, addr.dlci, reasm_out, reasm_len);
+            }
+        }
     }
 
     /* Switch the frame.
